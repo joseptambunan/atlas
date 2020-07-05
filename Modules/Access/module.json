@@ -1,0 +1,13 @@
+{
+    "name": "Access",
+    "alias": "access",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Access\\Providers\\AccessServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
