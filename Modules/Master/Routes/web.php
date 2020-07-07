@@ -29,6 +29,9 @@ Route::prefix('master')->group(function() {
     Route::post('/modules/create',"ModulesController@create");
     Route::post('/modules/delete',"ModulesController@delete");
 
-    Route::get('/adjuster','ModulesController@adjuster');
-    
+    Route::get('/adjusters','AdjustersController@index');
+   	Route::get('/adjusters/add','AdjustersController@add'); 
+   	Route::post('/adjusters/create','AdjustersController@create'); 
+   	Route::get('/adjusters/show/{id}','AdjustersController@show');
+   	Route::post('/adjusters/update','AdjustersController@update');
 });

@@ -13,4 +13,8 @@
 
 Route::prefix('setting')->group(function() {
     Route::get('/', 'SettingController@index');
+
+    Route::get('/user','SettingController@user');
+    Route::get('/user/add','SettingController@add');
+    Route::get('/user/show/{id}','SettingController@show');
 });

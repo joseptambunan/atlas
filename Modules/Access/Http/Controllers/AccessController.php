@@ -14,6 +14,9 @@ class AccessController extends Controller
 {
 
     public function index(){
+        if ( isset(Auth::user()->id)){
+            return redirect("access/home");
+        }
         return view("access::index");
     }
 

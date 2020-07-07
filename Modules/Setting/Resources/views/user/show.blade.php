@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  @include("master::position.header")
+  @include("setting::user.header")
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  @include ("master::position.navbar")
+  @include ("setting::user.navbar")
   @include( "sidebar",['user' => $user, 'config_sidebar' => $config_sidebar] )
 
   <!-- Content Wrapper. Contains page content -->
@@ -24,46 +24,51 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Master Position</h3>
+              <h3 class="box-title">Detail User</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <div class="col-md-12">
-                <form role="form" method="post" name="form1" action="{{ url('/')}}/master/position/create">
+              <div class="col-md-6">
+                <form role="form" method="post" name="form1" action="{{ url('/')}}/setting/user/update">
                   {{ csrf_field() }}
+                  <input type="hidden" name="id" value="{{ $detail_user->id }}">
                   <!-- text input -->
                   <div class="form-group">
-                    <label>Add Position</label>
-                    <input type="text" class="form-control" autocomplete="off" name="position" required>
+                    <label>Email</label>
+                    <input type="text" class="form-control" autocomplete="off" name="document" value="{{ $detail_user->email }}" required>
                   </div>
                   <div class="form-group">
-                    <button class="btn btn-success" type="submit">Add</button>
+                    <label>Adjuster</label>
+                    <input type="text" class="form-control" autocomplete="off" name="document" value="{{ $detail_user->adjusters->name }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Jabatan</label>
+                    <input type="text" class="form-control" autocomplete="off" name="document" value="{{ $detail_user->adjusters->position->position_name }}" disabled required>
+                    <a href="{{url('/')}}/master/adjusters/show/{{$detail_user->adjuster_id}}">Click here to update position name</a>
+                  </div>
+                  <div class="form-group">
+                    <button class="btn btn-success" type="submit">Update</button>
+                    <a href="{{ url('/')}}/setting/user" class="btn btn-danger">Back</a>
                   </div>
                 </form>
               </div>
-            
+              <div class="col-md-6">
+                 <h3><strong>Created at : {{ date("d-M-Y", strtotime($detail_user->created_at)) }}</strong> </h3>
+                 <h3><strong>Latest Login : {{ date("d-M-Y", strtotime($detail_user->updated_at)) }}</strong> </h3>
+
+              </div>
               <table id="example2" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>
                   <th>No.</th>
-                  <th>Nama Document</th>
+                  <th>Jabatan</th>
+                  <th>Level Approval</th>
                   <th>Edit</th>
                 </tr>
                 </thead>
-                <tbody>
-                  @foreach ( $master_position as $key => $value )
-                    @if ( $value->id != 1)
-                      <tr>
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ $value->position_name}}</td>
-                        <td><a class="btn btn-info" href="{{ url('/')}}/master/position/show?id={{$value->id}}">Detail</a></td>
-                      </tr>
-                    @endif
-                  @endforeach
-                </tbody>
               </table>
             </div>
             <!-- /.box-body -->

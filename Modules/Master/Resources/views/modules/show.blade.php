@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  @include("master::document.header")
+  @include("master::modules.header")
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  @include ("master::document.navbar")
+  @include ("master::modules.navbar")
   @include( "sidebar",['user' => $user, 'config_sidebar' => $config_sidebar] )
 
   <!-- Content Wrapper. Contains page content -->
