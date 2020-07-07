@@ -19,6 +19,7 @@ class CreateMasterAdjustersTable extends Migration
             $table->string("nik")->nullable();
             $table->string("email")->nullable();
             $table->string("phone")->nullable();
+            $table->longtext("thubmnail")->nullable();
             $table->timestamps();
             $table->integer("created_by")->nullable();
             $table->integer("updated_by")->nullable();

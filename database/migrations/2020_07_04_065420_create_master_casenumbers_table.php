@@ -16,6 +16,7 @@ class CreateMasterCasenumbersTable extends Migration
         Schema::create('master_casenumbers', function (Blueprint $table) {
             $table->id();
             $table->string("case_number")->nullable();
+            $table->string("title")->nullable();
             $table->timestamps();
             $table->integer("created_by")->nullable();
             $table->integer("updated_by")->nullable();
