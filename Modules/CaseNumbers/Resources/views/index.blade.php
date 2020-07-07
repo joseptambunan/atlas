@@ -32,7 +32,7 @@
             <!-- /.box-header -->
             <div class="box-body">
               <div class="col-md-12">
-                <a class="btn btn-success" type="submit" href="{{ url('/')}}/master/casenumbers/add">Add New Case</a>
+                <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>
               </div>
             
               <table id="example4" class="table table-bordered table-hover">
@@ -41,17 +41,27 @@
                   <th>No.</th>
                   <th>Case Number</th>
                   <th>Title</th>
+                  <th>Created at</th>
+                  <th>Created by</th>
+                  <th>Status</th>
                   <th>Detail</th>
                 </tr>
                 </thead>
                 <tbody>
-                  @foreach ( $master_case_numbers as $key => $value )
+                  @php $i=0; @endphp
+                  @foreach ( $master_casenumbers as $key => $value )
+                    @if ( $value->deleted_at == "")
                     <tr>
-                      <td>{{ $key + 1 }}</td>
-                      <td>{{ $value->name}}</td>
+                      <td>{{ $i + 1 }}</td>
+                      <td>{{ $value->case_number}}</td>
                       <td>{{ $value->title}}</td>
-                      <td><a class="btn btn-info" href="{{ url('/')}}/master/case/show/{{$value->id}}">Detail</a></td>
+                      <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
+                      <td>{{ $value->created }}</td>
+                      <td></td>
+                      <td><a class="btn btn-info" href="{{ url('/')}}/casenumbers/show/{{$value->id}}">Detail</a></td>
                     </tr>
+                    @php $i++;@endphp
+                    @endif
                   @endforeach
                 </tbody>
               </table>

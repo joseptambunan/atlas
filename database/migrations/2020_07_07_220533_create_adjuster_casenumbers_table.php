@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMasterCasenumbersTable extends Migration
+class CreateAdjusterCasenumbersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateMasterCasenumbersTable extends Migration
      */
     public function up()
     {
-        Schema::create('master_casenumbers', function (Blueprint $table) {
+        Schema::create('adjuster_casenumbers', function (Blueprint $table) {
             $table->id();
-            $table->string("case_number")->nullable();
-            $table->text("title")->nullable();
-            $table->timestamps();
             $table->integer("created_by")->nullable();
             $table->integer("updated_by")->nullable();
             $table->datetime("deleted_at")->nullable();
             $table->integer("deleted_by")->nullable();
+            $table->foreignId('adjuster_id')->references('id')->on('master_adjusters')->constrained();
+            $table->foreignId('case_number_id')->references('id')->on('master_casenumbers')->constrained();
+            $table->timestamps();
+            $table->index(['adjuster_id','case_number_id']);
         });
     }
 
@@ -32,6 +33,6 @@ class CreateMasterCasenumbersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('master_casenumbers');
+        Schema::dropIfExists('adjuster_casenumbers');
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Config;
+use Modules\Master\Entities\MasterCasenumbers;
 
 class AccessController extends Controller
 {
@@ -21,7 +22,8 @@ class AccessController extends Controller
     }
 
     public function logout(){
-
+        Auth::logout();
+        return redirect("/");
     }
 
     public function reset(){
@@ -50,16 +52,18 @@ class AccessController extends Controller
     public function home(){
         $config_sidebar = Config::get('sidebar');
         $user = User::find(Auth::user()->id);
+        $master_casenumbers = MasterCasenumbers::get();
         if ( $user->adjusters->position->id == 1){
             return view("access::home",compact("user","config_sidebar"));
         }else if ( $user->adjusters->position->id == 2) {
-
         }else if ( $user->adjusters->position->id == 3) {
 
         }else if ( $user->adjusters->position->id == 4) {
 
         }else if ( $user->adjusters->position->id == 5) {
-
+            //finance
+            return redirect("/casenumbers/index");
         }
     }
+
 }

@@ -55,7 +55,6 @@ class AdjustersController extends Controller
         for ($i = 0; $i < 6; $i++) {
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
-        
 
         $user = new User;
         $user->name = $request->email;
@@ -65,7 +64,7 @@ class AdjustersController extends Controller
         $user->created_by = Auth::user()->id;
         $user->adjuster_id = $adjuster->id;
         $user->save();
-
+        
         return redirect("master/adjusters/show/".$adjuster->id);
     }
 

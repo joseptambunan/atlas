@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  @include("master::case.header")
+  @include("master::adjuster.header")
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  @include ("master::case.navbar")
+  @include ("master::adjuster.navbar")
   @include( "sidebar",['user' => $user, 'config_sidebar' => $config_sidebar] )
 
   <!-- Content Wrapper. Contains page content -->
@@ -24,37 +24,32 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-xs-12">
+        <div class="col-xs-6">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Master Case Number</h3>
+              <h3 class="box-title">Add Case</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <div class="col-md-12">
-                <a class="btn btn-success" type="submit" href="{{ url('/')}}/master/casenumbers/add">Add New Case</a>
-              </div>
-            
-              <table id="example4" class="table table-bordered table-hover">
-                <thead class="header_background">
-                <tr>
-                  <th>No.</th>
-                  <th>Case Number</th>
-                  <th>Title</th>
-                  <th>Detail</th>
-                </tr>
-                </thead>
-                <tbody>
-                  @foreach ( $master_case_numbers as $key => $value )
-                    <tr>
-                      <td>{{ $key + 1 }}</td>
-                      <td>{{ $value->name}}</td>
-                      <td>{{ $value->title}}</td>
-                      <td><a class="btn btn-info" href="{{ url('/')}}/master/case/show/{{$value->id}}">Detail</a></td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
+              <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/casenumbers/create">
+                {{ csrf_field() }}
+                <div class="box-body">
+                  <div class="form-group">
+                    <label>Casenumber</label>
+                    <input type="text" class="form-control" id="casenumber" name="casenumber" autocomplete="off" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" class="form-control" id="title" name="title" autocomplete="off" required>
+                  </div>
+                </div>
+                <!-- /.box-body -->
+
+                <div class="box-footer">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+              </form>
+          
             </div>
             <!-- /.box-body -->
           </div>

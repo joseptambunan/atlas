@@ -45,7 +45,7 @@ class ModulesController extends Controller
         $modules->deleted_at = date("Y-m-d H:i:s");
         $modules->deleted_by = Auth::user()->id;
         $modules->save();
-
+        
         $data['status'] = 0;
         echo json_encode($data);
     }

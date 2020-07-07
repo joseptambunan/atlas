@@ -10,7 +10,7 @@
 
   @include ("master::modules.navbar")
   @include( "sidebar",['user' => $user, 'config_sidebar' => $config_sidebar] )
-
+  {{ csrf_field() }}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -64,7 +64,7 @@
                       </td>
                       <td>
                         <button class="btn btn-info" onClick="editmodules('{{ $value->id}}','{{ $value->modules_name }}')">Edit</button>
-                        <button class="btn btn-danger" onClick="removemodules('{{ $value->id}}')">Delete</button>
+                        <button class="btn btn-danger" onClick="removemodules('{{ $value->id}};')">Delete</button>
                       </td>
                     </tr>
                     @endif
@@ -93,10 +93,17 @@
 <!-- ./wrapper -->
 @include("master::document.footer");
 <script type="text/javascript">
+  $( document ).ready(function() {
+      $.ajaxSetup({
+          headers: {
+              'X-CSRF-Token': $('input[name=_token]').val()
+          }
+        });
+    });
+
+
   function removemodules(id){
     if ( confirm("Are you sure to delete this module")){
-      return false
-    }else{
       var request = $.ajax({
         url : "{{url('/')}}/master/modules/delete",
         dataType: "json",
@@ -110,9 +117,12 @@
         if ( data.status == 0 ){
           alert("Data has been deleted");
         }
-
+        window.location.reload();
         return false;
-      })
+      });
+
+    }else{
+      return false;
     }
   }
 

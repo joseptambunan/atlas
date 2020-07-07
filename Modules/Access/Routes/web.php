@@ -16,4 +16,5 @@ Route::prefix('access')->group(function() {
     Route::post('/submit','AccessController@submit');
     Route::get('/fail','AccessController@fail');
 	Route::get('/home','AccessController@home')->middleware("auth");
+	Route::get('/logout','AccessController@logout');
 });

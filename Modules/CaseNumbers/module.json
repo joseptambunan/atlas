@@ -1,0 +1,13 @@
+{
+    "name": "CaseNumbers",
+    "alias": "casenumbers",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\CaseNumbers\\Providers\\CaseNumbersServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
