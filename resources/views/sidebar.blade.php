@@ -21,6 +21,7 @@
           </ul>
         </li>
         @endforeach
+        <li><a href="{{ url('/')}}/access/logout"><i class="fa fa-circle-o"></i> Logout </a></li>
       </ul>
     </section>
     <!-- /.sidebar -->

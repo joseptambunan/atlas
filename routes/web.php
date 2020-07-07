@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', "HomeController@index");
+Route::get('/',function(){
+	return redirect("/access");
+});
 
 Route::get('login', function(){
 	return redirect("access/");
