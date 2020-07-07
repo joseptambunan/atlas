@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         UserModules::truncate(); 
 
         $position = new MasterPositions;
-        $position->name = "SuperAdmin";
+        $position->position_name = "SuperAdmin";
         $position->save();    
 
         $adjuster = new MasterAdjusters;
