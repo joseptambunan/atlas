@@ -35,7 +35,7 @@ class DocumentsController extends Controller
     	$master_document->created_at = date("Y-m-d H:i:s");
     	$master_document->save();
 
-    	return redirect("master/document/show?id=".$master_document->id);
+    	return redirect("master/document/show/".$master_document->id);
     }
 
     public function show(Request $request){
