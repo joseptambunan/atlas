@@ -59,7 +59,8 @@ class AccessController extends Controller
         }else if ( $user->adjusters->position->id == 3) {
 
         }else if ( $user->adjusters->position->id == 4) {
-
+            //Adjuster
+            return redirect("adjuster/index");
         }else if ( $user->adjusters->position->id == 5) {
             //finance
             return redirect("/casenumbers/index");

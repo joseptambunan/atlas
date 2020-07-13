@@ -132,22 +132,12 @@
                         <h4>Adjuster</h4>
                         <ul>
                         @foreach ( $casenumber->adjusters as $key => $value )
+                          @if ( $value->deleted_at == "")
                           <li>{{ $value->adjuster->name }}</li>
-                        @endforeach
-                        </ul>
-                        <p>&nbsp;</p>
-                        <hr/>
-                        <h3>Adjuster List</h3>
-                        <form action="{{ url('/')}}/casenumbers/saveadjusters" method="post" name="form1">
-                          <input type="hidden" name="casenumber_id" value="{{ $casenumber->id }}">
-                        {{ csrf_field() }} 
-                        @foreach ( $adjuster_list as $key => $value )
-                          @if ( $value->position_id == 4)
-                          <input type="checkbox" name="adjuster[]" value="{{ $value->id}}">{{ $value->name }}</br/>
                           @endif
                         @endforeach
-                        <button class="btn btn-info" type="submit">Submit</button>
-                        </form>
+                        </ul>
+                        <a href="{{ url('/')}}/casenumbers/adjuster/all/{{$casenumber->id}}" class="btn btn-success">Add Adjuster</a>
                       </div>
                     </div>
                     <!-- /.tab-content -->

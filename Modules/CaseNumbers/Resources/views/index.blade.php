@@ -7,7 +7,7 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
+  {{ csrf_field() }}
   @include ("master::case.navbar")
   @include( "sidebar",['user' => $user, 'config_sidebar' => $config_sidebar] )
 
@@ -87,7 +87,9 @@
 <!-- ./wrapper -->
 @include("master::document.footer");
 <script type="text/javascript">
-   $('#example4').DataTable({
+    
+
+    $('#example4').DataTable({
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,

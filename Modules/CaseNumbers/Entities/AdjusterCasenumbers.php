@@ -11,4 +11,8 @@ class AdjusterCasenumbers extends Model
     public function adjuster(){
     	return $this->belongsTo("Modules\Master\Entities\MasterAdjusters");
     }
+
+    public function case(){
+    	return $this->belongsTo("Modules\Master\Entities\MasterCasenumbers","case_number_id");
+    }
 }

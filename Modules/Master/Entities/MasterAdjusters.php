@@ -11,4 +11,12 @@ class MasterAdjusters extends Model
     public function position(){
     	return $this->belongsTo("Modules\Master\Entities\MasterPositions","position_id");
     }
+
+    public function cases(){
+    	return $this->hasMany("Modules\CaseNumbers\Entities\AdjusterCasenumbers","adjuster_id");
+    }
+
+    public function ious(){
+    	return $this->hasMany("Modules\Adjuster\Entities\IouLists","adjuster_id");
+    }
 }

@@ -95,6 +95,10 @@ class CaseNumbersController extends Controller
 
     public function saveadjusters(Request $request){
 
+        if ( count($request->adjuster) <= 0 ){
+            return redirect("/casenumbers/adjuster/all/".$request->casenumber_id);
+        }
+
         foreach ($request->adjuster as $key => $value) {
            $adjuster_case = new AdjusterCasenumbers;
            $adjuster_case->adjuster_id = $value;
@@ -104,7 +108,24 @@ class CaseNumbersController extends Controller
            $adjuster_case->save();
         }
 
-        return redirect("/casenumbers/show/".$request->casenumber_id);
+        return redirect("/casenumbers/adjuster/all/".$request->casenumber_id);
+    }
+
+    public function alladjuster(Request $request){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $master_adjuster = MasterAdjusters::whereIn("position_id",[2,3,4])->get();
+        $case_number = MasterCasenumbers::find($request->id);
+        return view('casenumbers::adjuster',compact("user","config_sidebar","master_adjuster","case_number"));
+    }
+
+    public function removeadjuster(Request $request){
+        $adjuster_case = AdjusterCasenumbers::find($request->id);
+        $adjuster_case->deleted_at = date("Y-m-d H:i:s");
+        $adjuster_case->deleted_by = Auth::user()->id;
+        $adjuster_case->save();
+        return redirect("/casenumbers/adjuster/all/".$adjuster_case->case_number_id);
+
     }
     
 }

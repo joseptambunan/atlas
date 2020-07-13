@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/adjuster",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Adjuster\\Providers\\AdjusterServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Adjuster\\": ""
+        }
+    }
+}

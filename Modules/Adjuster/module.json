@@ -1,0 +1,13 @@
+{
+    "name": "Adjuster",
+    "alias": "adjuster",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\Adjuster\\Providers\\AdjusterServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
