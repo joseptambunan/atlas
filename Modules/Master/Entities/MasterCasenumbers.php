@@ -16,4 +16,15 @@ class MasterCasenumbers extends Model
     public function adjusters(){
     	return $this->hasMany("Modules\Casenumbers\Entities\AdjusterCasenumbers","case_number_id");
     }
+
+    public function expenses(){
+    	return $this->hasMany("Modules\Adjuster\Entities\CaseExpenses");
+    }
+
+    public function getStatusAttribute(){
+        $data['label'] = "In Progress";
+        $data['class']  = "label label-info";
+
+        return $data;
+    }
 }

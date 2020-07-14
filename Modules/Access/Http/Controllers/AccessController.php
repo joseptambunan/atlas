@@ -50,21 +50,23 @@ class AccessController extends Controller
     }
 
     public function home(){
+        $config_sidebar = Config::get('services');
+        $user = User::find(Auth::user()->id);
+        $master_casenumbers = MasterCasenumbers::get();
+
+        if ( count($user->user_modules) > 0 ){
+            $menus = strtolower(trim($user->user_modules->first()->access_modules->modules->modules_name));
+        }
+
+        return redirect($config_sidebar['menus'][$menus]);
+    }
+
+    public function master(){
         $config_sidebar = Config::get('sidebar');
         $user = User::find(Auth::user()->id);
         $master_casenumbers = MasterCasenumbers::get();
-        if ( $user->adjusters->position->id == 1){
-            return view("access::home",compact("user","config_sidebar"));
-        }else if ( $user->adjusters->position->id == 2) {
-        }else if ( $user->adjusters->position->id == 3) {
+        return view("access::home",compact("user","config_sidebar","master_casenumbers"));
 
-        }else if ( $user->adjusters->position->id == 4) {
-            //Adjuster
-            return redirect("adjuster/index");
-        }else if ( $user->adjusters->position->id == 5) {
-            //finance
-            return redirect("/casenumbers/index");
-        }
     }
 
 }

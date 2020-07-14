@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMasterCasenumbersTable extends Migration
+class CreateCaseExpensesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,19 @@ class CreateMasterCasenumbersTable extends Migration
      */
     public function up()
     {
-        Schema::create('master_casenumbers', function (Blueprint $table) {
+        Schema::create('case_expenses', function (Blueprint $table) {
             $table->id();
-            $table->string("case_number")->nullable();
-            $table->text("title")->nullable();
-            $table->string("invoice_number")->nullable();
+            $table->string("type")->nullable();
+            $table->string("ammount")->nullable();
+            $table->string("description")->nullable();
+            $table->integer("iou_detail_id")->nullable();
+            $table->integer("master_casenumbers_id")->nullable();
             $table->timestamps();
             $table->integer("created_by")->nullable();
             $table->integer("updated_by")->nullable();
             $table->datetime("deleted_at")->nullable();
             $table->integer("deleted_by")->nullable();
+            $table->index(['iou_detail_id','master_casenumbers_id']);
         });
     }
 
@@ -33,6 +36,6 @@ class CreateMasterCasenumbersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('master_casenumbers');
+        Schema::dropIfExists('case_expenses');
     }
 }

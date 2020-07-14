@@ -56,7 +56,9 @@
 
                 <div class="box-footer">
                   <button type="submit" class="btn btn-primary">Update</button>
-                  <button type="button" class="btn btn-info" onClick="checkInvoice('{{ $casenumber->id }}');">Create Invoice</button>
+                  @if ( count($casenumber->expenses) > 0 )
+                   <button type="button" class="btn btn-info" onClick="checkInvoice('{{ $casenumber->id }}');">Create Invoice</button>
+                  @endif
                   <button type="button" class="btn {{$class[$status]['button']}}" onClick="cancelthiscase('{{$casenumber->id}}','{{ $status}}');">Update to {{ $status }} this case</button>
                   <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/">Back</a>
                 </div>
@@ -72,50 +74,23 @@
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="tab_1">
-                        <h4>IOU List</h4>
-                        <table id="example4" class="table table-bordered table-hover">
-                          <thead class="header_background">
-                          <tr>
-                            <th>No.</th>
-                            <th>IOU Number</th>
-                            <th>Title</th>
-                            <th>Created at</th>
-                            <th>Created by</th>
-                            <th>Status Expenses</th>
-                            <th>Status Approval</th>
-                            <th>Detail</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- /.tab-pane -->
-                      <div class="tab-pane" id="tab_2">
+
                         <h4>Expenses List</h4>
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
                           <tr>
                             <th>No.</th>
-                            <th>Expenses Number</th>
-                            <th>IOU Reference</th>
-                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Ammount</th>
                             <th>Created at</th>
                             <th>Created by</th>
-                            <th>Status Expenses</th>
                             <th>Status Approval</th>
+                            <th>IOU Reference</th>
                             <th>Detail</th>
                           </tr>
                           </thead>
                           <tbody>
+                            @foreach ( $casenumber->expenses as $key => $value )
                             <tr>
                               <td></td>
                               <td></td>
@@ -123,10 +98,15 @@
                               <td></td>
                               <td></td>
                               <td></td>
-                              <td></td>
                             </tr>
+                            @endforeach
                           </tbody>
                         </table>
+                      </div>
+                      <!-- /.tab-pane -->
+                      <div class="tab-pane" id="tab_2">
+                        <h4>IOU List</h4>
+                        
                       </div>
                       <div class="tab-pane" id="tab_3">
                         <h4>Adjuster</h4>

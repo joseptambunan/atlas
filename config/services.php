@@ -31,8 +31,8 @@ return [
     ],
 
     'menus' => [
-        'master' => 'access/home',
-        'setting' => 'access/home',
+        'master' => 'access/master',
+        'setting' => 'access/master',
         'casenumbers' => 'casenumbers/index',
         'adjuster' => 'adjuster/index',
         'approval' => 'approval/index'

@@ -25,7 +25,7 @@ class CaseNumbersController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
-        $master_casenumbers = MasterCasenumbers::get();
+        $master_casenumbers = MasterCasenumbers::orderBy('invoice_number', 'DESC')->get();
         return view('casenumbers::index',compact("user","config_sidebar","master_casenumbers"));
     }
 

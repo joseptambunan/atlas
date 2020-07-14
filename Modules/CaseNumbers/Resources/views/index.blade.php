@@ -57,7 +57,7 @@
                       <td>{{ $value->title}}</td>
                       <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
                       <td>{{ $value->created }}</td>
-                      <td></td>
+                      <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
                       <td><a class="btn btn-info" href="{{ url('/')}}/casenumbers/show/{{$value->id}}">Detail</a></td>
                     </tr>
                     @php $i++;@endphp
