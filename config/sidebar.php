@@ -10,7 +10,7 @@
 			'User' => '/setting/user',
 			'Config' => '/setting/config',
 		],
-		'case' => [
+		'casenumbers' => [
 			'List' => '/casenumbers/index',
 			'Create' => '/casenumbers/add',
 			'History' => '#'

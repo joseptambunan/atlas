@@ -30,4 +30,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'menus' => [
+        'master' => 'access/home',
+        'setting' => 'access/home',
+        'casenumbers' => 'casenumbers/index',
+        'adjuster' => 'adjuster/index',
+        'approval' => 'approval/index'
+    ]
+
 ];
