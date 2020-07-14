@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use App\User;
 use Modules\Master\Entities\MasterModules;
+use Modules\Setting\Entities\AccessModules;
 
 class ModulesController extends Controller
 {
@@ -36,6 +37,18 @@ class ModulesController extends Controller
         $modules->created_at = date("Y-m-d H:i:s");
         $modules->created_by = Auth::user()->id;
         $modules->save();
+
+        $modules_data = MasterModules::find($modules->id);
+
+        if ( count($modules_data->access_modules) <= 0 ){
+            $access_modules = new AccessModules;
+            $access_modules->created = 1;
+            $access_modules->read = 1;
+            $access_modules->update = 1;
+            $access_modules->insert = 1;
+            $access_modules->modules_id = $modules->id;
+            $access_modules->save();
+        }
 
         return redirect("master/modules");
     }   

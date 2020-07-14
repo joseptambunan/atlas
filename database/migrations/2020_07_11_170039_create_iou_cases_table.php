@@ -15,8 +15,8 @@ class CreateIouCasesTable extends Migration
     {
         Schema::create('iou_cases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('adjuster_casenumber_id')->references('id')->on('adjuster_casenumbers')->constrained();
-            $table->foreignId('iou_lists_id')->references('id')->on('iou_lists')->constrained();
+            $table->integer('adjuster_casenumber_id')->nullable();
+            $table->integer('iou_lists_id')->nullable();
             $table->timestamps();
             $table->integer("created_by")->nullable();
             $table->integer("updated_by")->nullable();

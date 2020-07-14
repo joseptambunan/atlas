@@ -55,10 +55,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                  @php $i=0; @endphp
                   @foreach ( $master_modules as $key => $value )
                     @if ( $value->deleted_at == "")
                     <tr>
-                      <td>{{ $key + 1 }}</td>
+                      <td>{{ $i + 1 }}</td>
                       <td>
                         {{ $value->modules_name}}
                       </td>
@@ -67,6 +68,7 @@
                         <button class="btn btn-danger" onClick="removemodules('{{ $value->id}};')">Delete</button>
                       </td>
                     </tr>
+                    @php $i++; @endphp
                     @endif
                   @endforeach
                 </tbody>

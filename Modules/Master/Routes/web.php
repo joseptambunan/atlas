@@ -19,6 +19,7 @@ Route::prefix('master')->group(function() {
     Route::get('/document/show/{id}','DocumentsController@show');
     Route::post('/document/update','DocumentsController@update');
     Route::post('/document/approval','DocumentsController@approval');
+    Route::post('/document/deleteapproval','DocumentsController@deleteapproval');
 
     Route::get('/position','PositionsController@index');
     Route::get('/position/show/{id}','PositionsController@show');

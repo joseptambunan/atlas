@@ -49,9 +49,10 @@
                     <a href="{{ url('/')}}/master/position" class="btn btn-danger">Back</a>
                   </div>
                 </form>
-              </div>
-            
-              <table id="example2" class="table table-bordered table-hover">
+              </div>  
+              
+              <div class="col-md-12 box-body table-responsive no-padding">
+              <table id="example2" class="table table-bordered table-hover table-responsive">
                 <thead class="header_background">
                 <tr>
                   <th>No.</th>
@@ -60,7 +61,19 @@
                   <th>Edit</th>
                 </tr>
                 </thead>
+                <tbody>
+                  @foreach ( $position->approval as $key => $value )
+                  <tr>
+                    <td>{{ $key + 1 }}</td>
+                    <td>{{ $value->approval_document->document->document }}</td>
+                    <td>{{ $value->approval_document->level }}</td>
+                    <td><a href="{{ url('/')}}/master/document/show/{{$value->approval_document->document->id}}" class="btn btn-warning" target="_blank">Edit</a></td>
+                  </tr>
+                  @endforeach
+                </tbody>
               </table>
+              </div>
+
             </div>
             <!-- /.box-body -->
           </div>

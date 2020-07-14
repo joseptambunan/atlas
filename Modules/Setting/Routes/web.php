@@ -17,4 +17,8 @@ Route::prefix('setting')->group(function() {
     Route::get('/user','SettingController@user');
     Route::get('/user/add','SettingController@add');
     Route::get('/user/show/{id}','SettingController@show');
+    Route::post('/user/access_module/','SettingController@access_module');
+
+    Route::get('/config/','ConfigsController@index');
+    Route::post('/config/create','ConfigsController@create');
 });

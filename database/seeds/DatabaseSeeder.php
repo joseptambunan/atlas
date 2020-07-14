@@ -17,8 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::truncate();
-        UserModules::truncate(); 
 
         $position = new MasterPositions;
         $position->position_name = "SuperAdmin";
@@ -40,6 +38,23 @@ class DatabaseSeeder extends Seeder
 
         $master_modules = new MasterModules;
         $master_modules->modules_name = "Master";
+        $master_modules->save();
+
+        $access_modules = new AccessModules;
+        $access_modules->modules_id = $master_modules->id;
+        $access_modules->created = true;
+        $access_modules->read = true;
+        $access_modules->update = true;
+        $access_modules->insert = true;
+        $access_modules->save();
+
+        $user_modules = new UserModules;
+        $user_modules->user_id = $user->id;
+        $user_modules->access_approval_id = $access_modules->id;
+        $user_modules->save();
+
+        $master_modules = new MasterModules;
+        $master_modules->modules_name = "Setting";
         $master_modules->save();
 
         $access_modules = new AccessModules;

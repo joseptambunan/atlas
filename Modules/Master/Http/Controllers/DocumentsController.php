@@ -69,9 +69,12 @@ class DocumentsController extends Controller
     }
 
     public function approval(Request $request){
+        $jabatan = MasterPositions::find($request->position);
+
         $master_approval = new MasterApprovals;
         $master_approval->document_id = $request->id;
         $master_approval->level = $request->level;
+        $master_approval->description = $jabatan->position_name;
         $master_approval->created_at = date('Y-m-d H:i:s');
         $master_approval->created_by = Auth::user()->id;
         $master_approval->save();
@@ -84,6 +87,19 @@ class DocumentsController extends Controller
         $jabatan_approval->save();
         return redirect("master/document/show/".$request->id);
 
+    }
+
+    public function deleteapproval(Request $request){
+        $master_approval = MasterApprovals::find($request->id);
+
+        $jabatan_approval = JabatanApprovals::find($master_approval->jabatan_approvals->id);
+        $jabatan_approval->delete();
+
+        $approval = MasterApprovals::find($request->id);
+        $approval->delete();
+        $data['status'] = "0";
+        
+        echo json_encode($data);
     }
     
 }

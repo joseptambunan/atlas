@@ -4,16 +4,25 @@
 			'Document' => '/master/document',
 			'Jabatan' => '/master/position',
 			'Modules' => '/master/modules',
-			'Adjuster' => '/master/adjusters'
+			'Staff' => '/master/adjusters'
 		],
 		'setting' => [
 			'User' => '/setting/user',
 			'Config' => '/setting/config',
 		],
 		'case' => [
-			'List' => '/case/index',
-			'Create' => '/case/add',
-			'History' => 'case/history'
+			'List' => '/casenumbers/index',
+			'Create' => '/casenumbers/add',
+			'History' => '#'
+		],
+		'iou' => [
+			'CaseList' => '/iou/caselist',
+			'Expenses' => '/iou/expenses'
+		],
+		'adjuster' => [
+			'Home' => '/adjuster/index',
+			'IOU' => 'adjuster/iou',
+			'History' => '/adjuster/history'
 		]
 	];
 ?>

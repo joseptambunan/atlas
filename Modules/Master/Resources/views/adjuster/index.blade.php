@@ -27,19 +27,19 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Master Adjuster</h3>
+              <h3 class="box-title">Master Staff</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               <div class="col-md-12">
-                <a class="btn btn-success" type="submit" href="{{ url('/')}}/master/adjusters/add">Add New Adjuster</a>
+                <a class="btn btn-success" type="submit" href="{{ url('/')}}/master/adjusters/add">Add New Staff</a>
               </div>
             
               <table id="example4" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>
                   <th>No.</th>
-                  <th>Nama Adjuster</th>
+                  <th>Staff Name</th>
                   <th>Edit</th>
                 </tr>
                 </thead>

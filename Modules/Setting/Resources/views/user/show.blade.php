@@ -60,16 +60,69 @@
                  <h3><strong>Latest Login : {{ date("d-M-Y", strtotime($detail_user->updated_at)) }}</strong> </h3>
 
               </div>
-              <table id="example2" class="table table-bordered table-hover">
-                <thead class="header_background">
-                <tr>
-                  <th>No.</th>
-                  <th>Jabatan</th>
-                  <th>Level Approval</th>
-                  <th>Edit</th>
-                </tr>
-                </thead>
-              </table>
+
+              <div class="col-md-12">
+                  <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                      <li class="active"><a href="#tab_1" data-toggle="tab">Approval</a></li>
+                      <li><a href="#tab_2" data-toggle="tab">Menus</a></li>
+                    </ul>
+                    <div class="tab-content">
+                      <div class="tab-pane active" id="tab_1">
+                        <table id="example2" class="table table-bordered table-hover">
+                          <thead class="header_background">
+                          <tr>
+                            <th>No.</th>
+                            <th>Jabatan</th>
+                            <th>Document</th>
+                            <th>Level Approval</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            @foreach ($detail_user->adjusters->position->approval as $key => $value  )
+                            <tr>
+                              <td>{{ $key + 1 }}</td>
+                              <td>{{ $value->approval_document->description }}</td>
+                              <td>{{ $value->approval_document->document->document }}</td>
+                              <td>{{ $value->approval_document->level }}</td>
+                            </tr>
+                            @endforeach
+                          </tbody>
+                        </table>
+                      </div>
+                      <!-- /.tab-pane -->
+                      <div class="tab-pane" id="tab_2">
+                        <form role="form" method="post" name="form1" action="{{ url('/')}}/setting/user/access_module">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="user_id" value="{{ $detail_user->id }}">
+                            <!-- text input -->
+                            <div class="form-group">
+                              <label>List Menus</label>
+                              <select class="form-control" name="menus">
+                                @foreach ( $master_modules as $key => $value )
+                                  @foreach ( $value->access_modules as $key_access => $value_access)
+                                    <option value="{{ $value_access->id }}">{{ $value->modules_name }}</option>
+                                  @endforeach
+                                @endforeach
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <button type="submit" class="btn btn-info">Submit</button>
+                            </div>
+                        </form>
+
+                        <ul>
+                          @foreach ( $detail_user->user_modules as $key => $value )
+                            <li>{{ $value->access_modules->modules->modules_name }}</li>
+                          @endforeach
+                        </ul>
+                      </div>
+                      <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                  </div>
+                  <!-- nav-tabs-custom -->
+              </div>
             </div>
             <!-- /.box-body -->
           </div>

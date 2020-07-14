@@ -70,6 +70,7 @@
                   <td>{{ $start + 1 }}</td>
                   <td>{{ $value->jabatan_approvals->jabatan->position_name}}</td>
                   <td>{{ $value->level }}</td>
+                  <td><button class="btn btn-sm btn-danger" onClick="removeDocument('{{$value->id}}')">Delete</button></td>
                  </tr>
                  @endforeach
                </tbody>

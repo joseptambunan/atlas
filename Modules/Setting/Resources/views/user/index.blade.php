@@ -46,7 +46,7 @@
                   @foreach ( $list_user as $key => $value )
                     <tr>
                       <td>{{ $key + 1 }}</td>
-                      <td>{{ $value->name}}</td>
+                      <td>{{ $value->adjusters->name}}</td>
                       <td>{{ $value->email }}
                       <td><a class="btn btn-primary" href="{{ url('/')}}/setting/user/show/{{$value->id}}">Detail</a></td>
                     </tr>

@@ -59,7 +59,7 @@
                       <tr>
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $value->position_name}}</td>
-                        <td><a class="btn btn-info" href="{{ url('/')}}/master/position/show?id={{$value->id}}">Detail</a></td>
+                        <td><a class="btn btn-info" href="{{ url('/')}}/master/position/show/{{$value->id}}">Detail</a></td>
                       </tr>
                     @endif
                   @endforeach

@@ -9,6 +9,7 @@ use Modules\Master\Entities\MasterPositions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use App\User;
+use Modules\Master\Entities\MasterModules;
 
 class PositionsController extends Controller
 {
@@ -38,12 +39,13 @@ class PositionsController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $position = MasterPositions::find($request->id);
+        $modules = MasterModules::get();
 
         $checked = "checked";
         if ( $position->deleted_at != ""){
             $checked = "";
         }
-        return view('master::position.show',compact("user","config_sidebar","position","checked"));
+        return view('master::position.show',compact("user","config_sidebar","position","checked","modules"));
     }
 
     public function update(Request $request){
