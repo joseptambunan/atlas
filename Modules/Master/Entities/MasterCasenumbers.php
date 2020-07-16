@@ -27,4 +27,21 @@ class MasterCasenumbers extends Model
 
         return $data;
     }
+
+
+    public function getTotalIouAttribute(){
+        $array_status = array(
+            "in_progress" => 0,
+            "expenses_complete" => 0,
+            "total" => 0
+        );
+
+        foreach ($this->adjusters as $key => $value) {
+            foreach ($value->ious as $key_ious => $value_ious) {
+                $array_status['total'] = $array_status['total'] + 1;
+            }
+        }
+
+        return $array_status;
+    }
 }

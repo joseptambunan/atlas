@@ -19,4 +19,8 @@ class MasterAdjusters extends Model
     public function ious(){
     	return $this->hasMany("Modules\Adjuster\Entities\IouLists","adjuster_id");
     }
+
+    public function user_detail(){
+        return $this->hasOne("App\User","adjuster_id");
+    }
 }

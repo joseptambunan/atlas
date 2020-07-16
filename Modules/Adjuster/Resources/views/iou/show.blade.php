@@ -150,8 +150,28 @@
                        
                       </div>
                       <div class="tab-pane" id="tab_3">
-                        <h4>Adjuster</h4>
-                        
+                        <h4>Approval History</h4>
+                        <table id="example4" class="table table-bordered table-hover">
+                          <thead class="header_background">
+                            <tr>
+                              <td>No.</td>
+                              <td>Name</td>
+                              <td>Status</td>
+                              <td>Message</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @php $i= 0; @endphp
+                            @foreach ( $approval_histories as $key => $value )
+                            <tr>
+                              <td>{{ $i + 1 }}</td>
+                              <td>{{ $value['name']}}</td>
+                              <td><span class="{{ $value['class']}}">{{ $value['status']}}</span></td>
+                              <td>{{ $value['message']}}</td>
+                            </tr>
+                            @endforeach
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                     <!-- /.tab-content -->
@@ -182,7 +202,7 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Default Modal</h4>
+          <h4 class="modal-title">Input Detail</h4>
         </div>
         <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/adjuster/iou/savedetail">
           <div class="modal-body">
@@ -218,17 +238,6 @@
 </div>
 <!-- ./wrapper -->
 @include("adjuster::iou.footer");
-<script type="text/javascript">
-   $( document ).ready(function() {
-      $.ajaxSetup({
-          headers: {
-              'X-CSRF-Token': $('input[name=_token]').val()
-          }
-        });
 
-      $('#ammount').number(true);
-    });
-
-</script>
 </body>
 </html>

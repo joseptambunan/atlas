@@ -12,7 +12,7 @@
 		],
 		'casenumbers' => [
 			'List' => '/casenumbers/index',
-			'Create' => '/casenumbers/add',
+			'IOU' => '/casenumbers/iou',
 			'History' => '#'
 		],
 		'iou' => [

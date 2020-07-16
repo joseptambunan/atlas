@@ -128,4 +128,14 @@ class CaseNumbersController extends Controller
 
     }
     
+    public function createinvoice(Request $request){
+        $case_number = MasterCasenumbers::find($request->case_id);
+        $case_number->invoice_number = $request->invoice_number;
+        $case_number->invoice_number_by = Auth::user()->id;
+        $case_number->invoice_number_at = date("Y-m-d H:i:s");
+        $case_number->save() ;
+
+        $data['status'] = 0;
+        echo json_encode($data);
+    }
 }

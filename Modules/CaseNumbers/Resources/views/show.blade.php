@@ -32,7 +32,7 @@
             <!-- /.box-header -->
             <div class="box-body">
               <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/casenumbers/update">
-                <input type="hidden" value="{{ $casenumber->id}}" name="casenumber_id">
+                <input type="hidden" value="{{ $casenumber->id}}" name="casenumber_id" id="casenumber_id">
                 {{ csrf_field() }}
                 <div class="box-body">
                   <div class="form-group">
@@ -44,20 +44,35 @@
                     <input type="text" class="form-control" id="title" name="title" value="{{ $casenumber->title }}" autocomplete="off" required>
                   </div>
                   <div class="form-group">
-                    Status : 
-                    @if ( $casenumber->deleted_at == "")
-                    <span class="label label-success">Active</span>
-                    @else
-                    <span class="label label-danger">Non Active</span>
-                    @endif
+                    
+                    <div class="col-md-6">
+                      Status : 
+                      @if ( $casenumber->deleted_at == "")
+                      <span class="label label-success">Active</span>
+                      @else
+                      <span class="label label-danger">Non Active</span>
+                      @endif
+
+                      <h5>Total IOU : <span>{{ $casenumber->total_iou['total'] }}</span></h5>
+                      <h5>Complete: <span class="label label-success">{{ $casenumber->total_iou['expenses_complete']}}</span></h5>
+                      <h5>In Complete: <span class="label label-danger">{{ $casenumber->total_iou['in_progress']}}</span></h5>
+                    </div>
+                    <div class="col-md-6">
+                      @if ( $casenumber->invoice_number != "" && $casenumber->total_iou['in_progress'] > 0 )
+                      <div class="col-md-6 alert alert-danger">
+                        <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+                        This Case has been IOU not completed
+                      </div>
+                      @endif
+                    </div> 
                   </div>
                 </div>
                 <!-- /.box-body -->
 
                 <div class="box-footer">
                   <button type="submit" class="btn btn-primary">Update</button>
-                  @if ( count($casenumber->expenses) > 0 )
-                   <button type="button" class="btn btn-info" onClick="checkInvoice('{{ $casenumber->id }}');">Create Invoice</button>
+                  @if ( ($casenumber->total_iou['total']) > 0 )
+                   <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#modal-default">Create Invoice</button>
                   @endif
                   <button type="button" class="btn {{$class[$status]['button']}}" onClick="cancelthiscase('{{$casenumber->id}}','{{ $status}}');">Update to {{ $status }} this case</button>
                   <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/">Back</a>
@@ -68,8 +83,8 @@
                 <!-- Custom Tabs -->
                   <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                      <li class="active"><a href="#tab_1" data-toggle="tab">IOU</a></li>
-                      <li><a href="#tab_2" data-toggle="tab">Expenses</a></li>
+                      <li class="active"><a href="#tab_1" data-toggle="tab">Expenses</a></li>
+                      <li><a href="#tab_2" data-toggle="tab">IOU</a></li>
                       <li><a href="#tab_3" data-toggle="tab">Adjuster</a></li>
                     </ul>
                     <div class="tab-content">
@@ -106,7 +121,38 @@
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
                         <h4>IOU List</h4>
-                        
+                        <table id="example4" class="table table-bordered table-hover">
+                          <thead class="header_background">
+                          <tr>
+                            <th>No.</th>
+                            <th>Type</th>
+                            <th>Ammount</th>
+                            <th>Created at</th>
+                            <th>Created by</th>
+                            <th>Status Approval</th>
+                            <th>Detail</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            @php $i=0; @endphp
+                            @foreach ( $casenumber->adjusters as $key => $value )
+                              @foreach ( $value->ious as $key_iou => $value_ious )
+                                @if ( $value_ious->iou->deleted_at == "")
+                                <tr>
+                                  <td>{{ $i + 1 }}</td>
+                                  <td>{{ $value_ious->iou->type_of_survey }}</td>
+                                  <td>Rp. {{ number_format($value_ious->iou->total) }}</td>
+                                  <td>{{ $value_ious->iou->created->adjusters->name }}</td>
+                                  <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
+                                  <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
+                                  <td><a href="{{ url('/')}}/casenumber/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
+                                </tr>
+                                @php $i++; @endphp
+                                @endif
+                              @endforeach
+                            @endforeach
+                          </tbody>
+                        </table>
                       </div>
                       <div class="tab-pane" id="tab_3">
                         <h4>Adjuster</h4>
@@ -142,6 +188,28 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
+  <div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Invoice</h4>
+        </div>
+        <div class="modal-body">
+          <label>Invoice Number</label>
+          <input type="text" class="form-control" id="invoice_number" name="invoice_number" value="" autocomplete="off" required />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onClick="submitInvoice()">Save</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 </div>
 <!-- ./wrapper -->
 @include("master::document.footer");
@@ -178,6 +246,30 @@
       request.done(function(data){
         if ( data.status == 0 ){
           alert("Case has been updated");
+        }
+
+        window.location.reload();
+      })
+    }else{
+      return false;
+    }
+   }
+
+   function submitInvoice(){
+    if ( confirm("Are you sure to create invoice ? ")){
+      var request = $.ajax({
+        url : "{{ url('/')}}/casenumbers/invoice/create",
+        dataType : "json",
+        data :{
+          invoice_number : $("#invoice_number").val(),
+          case_id : $("#casenumber_id").val()
+        },
+        type : "post"
+      });
+
+      request.done(function(data){
+        if ( data.status == "0"){
+          alert("Invoice has been created");
         }
 
         window.location.reload();

@@ -30,8 +30,10 @@
           headers: {
               'X-CSRF-Token': $('input[name=_token]').val()
           }
-        });
-	});
+      });
+
+    $("#ammount").number(true);
+   });
 
 	
 
@@ -73,11 +75,8 @@
           if ( data.status == 0 ){
             alert("IOU has been send");
           }
-
           window.location.reload();
-        })
-
-        window.location.reload();
+        });
       }else{
         return false;
       }

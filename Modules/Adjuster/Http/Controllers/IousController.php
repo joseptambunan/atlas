@@ -14,7 +14,9 @@ use Modules\Adjuster\Entities\IouLists;
 use Modules\Adjuster\Entities\IouCases;
 use Modules\Adjuster\Entities\IouDetails;
 use App\Approvals;
-
+use Modules\Master\Entities\MasterDocument;
+use Modules\Master\Entities\MasterApprovals;
+use App\ApprovalDetails;
 
 class IousController extends Controller
 {
@@ -84,9 +86,23 @@ class IousController extends Controller
 
         $check_approval = "";
         if ( in_array($iou_data->status['status'], $array_approval)){
-            $check_approval = true;
+            $check_approval = "exist";
         }
-        return view('adjuster::iou.show',compact("user","config_sidebar","iou_data","adjuster_data","check_approval"));
+
+        $approval_histories = array();
+        $check_approval_id = Approvals::where("document_type",1)->where("document_id",$iou_data->id)->get();
+        if ( count($check_approval_id) > 0 ){
+            $approval = Approvals::find($check_approval_id->first()->id);
+            foreach ($approval->details as $key => $value) {
+                $approval_histories[] = array(
+                    "name" => $value->user_detail->adjusters->name,
+                    "status" => $value->status_description['label'],
+                    "class" => $value->status_description['class'],
+                    "message" => $value->description
+                );
+            }
+        }
+        return view('adjuster::iou.show',compact("user","config_sidebar","iou_data","adjuster_data","check_approval","approval_histories"));
     }
 
     
@@ -145,15 +161,42 @@ class IousController extends Controller
         echo json_encode($data);
     }
 
+    //Usahakan diinput di middleware
     public function approval(Request $request){
         $data['status'] = 0;
-        $approval = new Approvals;
-        $approval->document_type = "iou";
-        $approval->document_id = $request->id;
-        $approval->status = 1;
-        $approval->created_by = Auth::user()->id;
-        $approval->created_at = date("Y-m-d H:i:s");
-        $approval->save();
+        $level_approval = array();
+        $document = MasterDocument::where("document","IOU")->get();
+        if ( count($document) > 0 ){
+            $master_document = MasterDocument::find($document->first()->id);
+            foreach ($master_document->approvals as $key => $value) {
+                if ( $key == 0 ){
+                    foreach ($value->jabatan_approvals->jabatan->adjusters as $key_master => $value_master) {
+                       $save_approval = new Approvals;
+                       $save_approval->document_type = $master_document->id;
+                       $save_approval->document_id = $request->id;
+                       $save_approval->status = 1;
+                       $save_approval->approval_by = $value_master->user_detail->id;
+                       $save_approval->approval_at = NULL;
+                       $save_approval->created_at = date("Y-m-d H:i:s");
+                       $save_approval->created_by = Auth::user()->id;
+                       $save_approval->save();
+                   }
+                }
+
+                foreach ($value->jabatan_approvals->jabatan->adjusters as $key_detail => $value_detail) {
+                   $save_approval_detail = new ApprovalDetails;
+                   $save_approval_detail->approval_id = $save_approval->id;
+                   $save_approval_detail->status = 1;
+                   $save_approval_detail->approval_by = $value_detail->user_detail->id;
+                   $save_approval_detail->approval_at = NULL;
+                   $save_approval_detail->level = $value->level;
+                   $save_approval_detail->created_at = date("Y-m-d H:i:s");
+                   $save_approval_detail->created_by = Auth::user()->id;
+                   $save_approval_detail->save();
+               }               
+            }
+        }
+
         echo json_encode($data);
     }
 }

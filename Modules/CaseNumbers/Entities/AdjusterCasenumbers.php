@@ -15,4 +15,9 @@ class AdjusterCasenumbers extends Model
     public function case(){
     	return $this->belongsTo("Modules\Master\Entities\MasterCasenumbers","case_number_id");
     }
+
+    
+    public function ious(){
+        return $this->hasMany("Modules\Adjuster\Entities\IouCases","adjuster_casenumber_id");
+    }
 }

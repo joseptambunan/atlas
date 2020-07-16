@@ -23,6 +23,8 @@ class CreateMasterCasenumbersTable extends Migration
             $table->integer("updated_by")->nullable();
             $table->datetime("deleted_at")->nullable();
             $table->integer("deleted_by")->nullable();
+            $table->integer("invoice_number_by")->nullable();
+            $table->datetime("invoice_number_at")->nullable();
         });
     }
 

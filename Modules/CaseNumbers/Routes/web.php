@@ -22,4 +22,5 @@ Route::prefix('casenumbers')->group(function() {
     Route::post('/saveadjusters','CaseNumbersController@saveadjusters');
     Route::get('/adjuster/all/{id}','CaseNumbersController@alladjuster');
     Route::post('/remove/adjuster','CaseNumbersController@removeadjuster');
+    Route::post('/invoice/create','CaseNumbersController@createinvoice');
 });

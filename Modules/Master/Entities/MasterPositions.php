@@ -15,4 +15,8 @@ class MasterPositions extends Model
     public function menus(){
     	return $this->hasMany("Modules\Master\Entities\MasterModules");
     }
+
+    public function adjusters(){
+    	return $this->hasMany("Modules\Master\Entities\MasterAdjusters","position_id");
+    }
 }

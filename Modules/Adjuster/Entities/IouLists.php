@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Adjuster\Entities\IouLists;
 use App\Approvals;
 use App\ApprovalHistories;
+use App\User;
 
 class IouLists extends Model
 {
@@ -24,7 +25,7 @@ class IouLists extends Model
     		"3" => array( "label" => "Approval", "class" => "label label-info", "status" => 3  )
     	);
 
-    	$check_apprival = Approvals::where("document_type","iou")->where("document_id",$iou_list->id)->get();
+    	$check_apprival = Approvals::where("document_type",1)->where("document_id",$iou_list->id)->get();
     	if ( count($check_apprival) <= 0){
     		return $array_status[0];
     	}else{
@@ -47,5 +48,11 @@ class IouLists extends Model
         }
 
         return $total;
+    }
+
+    public function getCreatedAttribute(){
+        $user = "";
+        $user = User::find($this->created_by);
+        return $user;
     }
 }
