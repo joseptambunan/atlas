@@ -7,6 +7,7 @@ use Modules\Adjuster\Entities\IouLists;
 use App\Approvals;
 use App\ApprovalHistories;
 use App\User;
+use Modules\Master\Entities\MasterConfigs;
 
 class IouLists extends Model
 {
@@ -20,9 +21,10 @@ class IouLists extends Model
     	$iou_list = IouLists::find($this->id);
     	$array_status = array(
     		"0" => array( "label" => "Not Finish", "class" => "label label-info", "status" => 0 ),
-    		"1" => array( "label" => "Waiting for Approval", "class" => "label label-info", "status" => 1  ),
-    		"2" => array( "label" => "Reject", "class" => "label label-info", "status" => 2  ),
-    		"3" => array( "label" => "Approval", "class" => "label label-info", "status" => 3  )
+    		"1" => array( "label" => "Waiting for Approval", "class" => "label label-warning", "status" => 1  ),
+    		"2" => array( "label" => "Reject", "class" => "label label-danger", "status" => 2  ),
+    		"3" => array( "label" => "Approval", "class" => "label label-info", "status" => 3  ),
+            "4" => array( "label" => "Expired", "class" => "label label-danger", "status" => 4  )
     	);
 
     	$check_apprival = Approvals::where("document_type",1)->where("document_id",$iou_list->id)->get();
@@ -54,5 +56,18 @@ class IouLists extends Model
         $user = "";
         $user = User::find($this->created_by);
         return $user;
+    }
+
+    public function expenses(){
+        return $this->hasMany("Modules\Adjuster\Entities\CaseExpenses");
+    }
+
+    public function getApprovalAttribute(){
+        $check_apprival = Approvals::where("document_type",1)->where("document_id",$this->id)->get();
+        if ( count($check_apprival) > 0 ){
+            return $check_apprival;
+        }else{
+            return false;
+        }
     }
 }

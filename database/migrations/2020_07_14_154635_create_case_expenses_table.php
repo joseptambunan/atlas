@@ -18,7 +18,7 @@ class CreateCaseExpensesTable extends Migration
             $table->string("type")->nullable();
             $table->string("ammount")->nullable();
             $table->string("description")->nullable();
-            $table->integer("iou_detail_id")->nullable();
+            $table->integer("iou_lists_id")->nullable();
             $table->integer("master_casenumbers_id")->nullable();
             $table->timestamps();
             $table->integer("created_by")->nullable();

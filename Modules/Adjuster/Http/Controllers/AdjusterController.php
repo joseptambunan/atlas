@@ -41,6 +41,34 @@ class AdjusterController extends Controller
             $user->save();
         }
 
-        return redirect("adjuster/index");
+        return redirect("access/logout");
+    }
+
+    public function user_detail(){
+        $this->belongsTo("App\User");
+    }
+
+    public function todolist(Request $request){
+        $data['html'] = "<h4> -Not Pending Todo List- </h4>";
+        $data['status'] = 0;
+        $data['total'] = 0;
+        $html = "";
+
+        $adjuster_data = MasterAdjusters::find($request->adjuster_id);
+        foreach ($adjuster_data->to_do as $key => $value) {
+            if ( $value['total'] > 0 ){
+                $html .= "<li>";
+                $html .= "<span class='text'><a href='".url('/').$value['link']."'>".$value['label']."</a></span>";
+                $html .= "<span class='".$value['class']."'>".$value['total']."</span>";
+                $html .= "</li>";
+                $data['total'] = $data['total'] + $value['total'];
+            }
+        }
+
+        if ( $data['total'] > 0 ){
+            $data['html'] = "<ul class='todo-list'>". $html. "</ul>";
+        }
+
+        echo json_encode($data);
     }
 }

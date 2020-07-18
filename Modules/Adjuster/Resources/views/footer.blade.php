@@ -9,3 +9,34 @@
 <script src="{{url('/')}}/assets/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{url('/')}}/assets/dist/js/demo.js"></script>
+<script type="text/javascript">
+	$(function () {
+		$.ajaxSetup({
+	      headers: {
+	          'X-CSRF-Token': $('input[name=_token]').val()
+	      }
+	    });
+
+		loadTodoList();
+
+	});
+
+	function loadTodoList(){
+		var request = $.ajax({
+			url : "{{ url('/')}}/adjuster/todolist",
+			dataType : "json",
+			data : {
+				adjuster_id : $("#adjuster_id").val()
+			},
+			type : "post"
+		});
+
+		request.done(function(data){
+			$("#box_todo_list").html("");
+
+			if ( data.status == 0 ){
+				$("#box_todo_list").html(data.html);
+			}
+		});
+	}
+</script>

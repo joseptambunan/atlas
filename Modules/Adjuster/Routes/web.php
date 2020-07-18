@@ -14,6 +14,7 @@
 Route::prefix('adjuster')->group(function() {
     Route::get('/index', 'AdjusterController@index');
     Route::post('/update/data','AdjusterController@update');
+    Route::post('/todolist','AdjusterController@todolist');
 
     Route::get('/iou/add','IousController@create');
     Route::post('/iou/store','IousController@store');
@@ -22,4 +23,7 @@ Route::prefix('adjuster')->group(function() {
     Route::post('/iou/savedetail','IousController@savedetail');
     Route::post('/iou/delete','IousController@delete');
     Route::post('/iou/approval','IousController@approval');
+
+    Route::get('/case/show/{id}','CasesController@show');
+
 });

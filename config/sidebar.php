@@ -23,6 +23,11 @@
 			'Home' => '/adjuster/index',
 			'IOU' => 'adjuster/iou',
 			'History' => '/adjuster/history'
+		],
+		'approval' => [
+			'List' => '/approval/index',
+			'Invoice' => '/approval/invoice',
+			'IOU' => '/approval/iou'
 		]
 	];
 ?>

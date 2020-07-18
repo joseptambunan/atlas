@@ -44,4 +44,9 @@ class User extends Authenticatable
     public function adjusters(){
         return $this->belongsTo("Modules\Master\Entities\MasterAdjusters","adjuster_id");
     }
+
+    public function approval_detail(){
+        return $this->hasMany("App\ApprovalDetails","approval_by");
+    }
+
 }

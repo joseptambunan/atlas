@@ -23,4 +23,7 @@ Route::prefix('casenumbers')->group(function() {
     Route::get('/adjuster/all/{id}','CaseNumbersController@alladjuster');
     Route::post('/remove/adjuster','CaseNumbersController@removeadjuster');
     Route::post('/invoice/create','CaseNumbersController@createinvoice');
+
+    Route::get('/iou','CaseNumbersController@iou');
+    Route::get('/iou/show/{id}','CaseNumbersController@iou_show');
 });

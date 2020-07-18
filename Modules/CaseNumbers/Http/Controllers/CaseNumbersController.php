@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Config;
 use Modules\Master\Entities\MasterCasenumbers;
 use Modules\Master\Entities\MasterAdjusters;
 use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
+use Modules\Adjuster\Entities\IouLists;
+use App\Approvals;
 
 class CaseNumbersController extends Controller
 {
@@ -137,5 +139,33 @@ class CaseNumbersController extends Controller
 
         $data['status'] = 0;
         echo json_encode($data);
+    }
+
+    public function iou(){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $master_iou = IouLists::orderBy("id","DESC")->get();
+        return view("casenumbers::iou",compact("user","config_sidebar","master_iou"));
+    }
+
+    public function iou_show(Request $request){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $iou_data = IouLists::find($request->id);
+        $check_approval = "";
+        $approval_histories = array();
+        $check_approval_id = Approvals::where("document_type",1)->where("document_id",$iou_data->id)->get();
+        if ( count($check_approval_id) > 0 ){
+            $approval = Approvals::find($check_approval_id->first()->id);
+            foreach ($approval->details as $key => $value) {
+                $approval_histories[] = array(
+                    "name" => $value->user_detail->adjusters->name,
+                    "status" => $value->status_description['label'],
+                    "class" => $value->status_description['class'],
+                    "message" => $value->description
+                );
+            }
+        }
+        return view("casenumbers::iou_show",compact("user","config_sidebar","iou_data","check_approval","approval_histories"));
     }
 }
