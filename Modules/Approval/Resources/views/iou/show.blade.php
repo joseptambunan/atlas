@@ -149,6 +149,7 @@
                               <td><span class="{{ $value['class']}}">{{ $value['status']}}</span></td>
                               <td>{{ $value['message']}}</td>
                             </tr>
+                            @php $i++; @endphp
                             @endforeach
                           </tbody>
                         </table>

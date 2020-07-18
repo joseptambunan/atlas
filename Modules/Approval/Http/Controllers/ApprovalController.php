@@ -36,16 +36,18 @@ class ApprovalController extends Controller
             switch (strtolower(trim($master_document->document))) {
                 case 'iou':
                     $approval_data = IouLists::find($value->approval->document_id);
-
-                    $list_approval[$i] = array(
-                        "title" => $approval_data->title,
-                        "document_type" => strtolower(trim($master_document->document)),
-                        "created_at" => date("d-M-Y",strtotime($approval_data->created_at)),
-                        "created_by" => $approval_data->created->adjusters->name,
-                        "status" => $approval_data->status['label'],
-                        "document_id" => $approval_data->id,
-                        "approval_id" => $value->id
-                    );
+                    if ( $value->approval_by == $user->id ){
+                        $list_approval[$i] = array(
+                            "title" => $approval_data->title,
+                            "document_type" => strtolower(trim($master_document->document)),
+                            "created_at" => date("d-M-Y",strtotime($approval_data->created_at)),
+                            "created_by" => $approval_data->created->adjusters->name,
+                            "status" => $approval_data->status['label'],
+                            "document_id" => $approval_data->id,
+                            "approval_id" => $value->id
+                        );
+                        $i++;
+                    }
 
                     break;
                 case 'expenses':
@@ -53,8 +55,6 @@ class ApprovalController extends Controller
                     break;
             }
 
-
-            $i++;
         }
 
         return view('approval::approval.index',compact("user","config_sidebar","adjuster_data","list_approval"));
