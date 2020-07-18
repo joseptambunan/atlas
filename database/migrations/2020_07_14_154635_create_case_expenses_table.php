@@ -25,7 +25,7 @@ class CreateCaseExpensesTable extends Migration
             $table->integer("updated_by")->nullable();
             $table->datetime("deleted_at")->nullable();
             $table->integer("deleted_by")->nullable();
-            $table->index(['iou_detail_id','master_casenumbers_id']);
+            $table->index(['iou_lists_id','master_casenumbers_id']);
         });
     }
 
