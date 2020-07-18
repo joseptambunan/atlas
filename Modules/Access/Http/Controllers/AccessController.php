@@ -27,7 +27,7 @@ class AccessController extends Controller
     }
 
     public function reset(){
-
+        return view("access::reset");
     }
 
     public function submit(Request $request){
@@ -67,6 +67,30 @@ class AccessController extends Controller
         $master_casenumbers = MasterCasenumbers::get();
         return view("access::home",compact("user","config_sidebar","master_casenumbers"));
 
+    }
+
+    public function submitreset(Request $request){
+        $user = User::where("email",$request->email)->get();
+        if ( count($user) > 0 ){
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $charactersLength = strlen($characters);
+            $randomString = '';
+            for ($i = 0; $i < 6; $i++) {
+                $randomString .= $characters[rand(0, $charactersLength - 1)];
+            }
+            
+            return redirect("access/reset/success");
+        }else{
+            return redirect("access/reset/fail");
+        }
+    }
+
+    public function successreset(){
+        return view("access::sucess_reset");
+    }
+
+    public function failreset(){
+         return view("access::fail_reset");
     }
 
 }

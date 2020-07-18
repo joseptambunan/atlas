@@ -18,4 +18,8 @@ Route::prefix('access')->group(function() {
 	Route::get('/home','AccessController@home')->middleware("auth");
 	Route::get('/logout','AccessController@logout');
 	Route::get('/master','AccessController@master')->middleware("auth");
+	Route::get('/reset','AccessController@reset');
+	Route::post('/submit/reset','AccessController@submitreset');
+	Route::get('/reset/success','AccessController@successreset');
+	Route::get('/reset/fail','AccessController@failreset');
 });
