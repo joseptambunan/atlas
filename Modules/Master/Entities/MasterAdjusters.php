@@ -21,7 +21,7 @@ class MasterAdjusters extends Model
     }
 
     public function ious(){
-    	return $this->hasMany("Modules\Adjuster\Entities\IouLists","adjuster_id");
+    	return $this->hasMany("Modules\Adjuster\Entities\IouLists","adjuster_id")->where("deleted_at",NULL);
     }
 
     public function user_detail(){
@@ -34,7 +34,7 @@ class MasterAdjusters extends Model
         $config_iou = MasterConfigs::where("name","submit_expenses")->get()->first()->value;
         foreach ($this->ious as $key => $value) {
             if ( count($value->status) > 0 ){
-                if ( $value->status['status'] == 2 ){
+                if ( $value->status['status'] == 3 ){
     
                     $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
                    
@@ -102,7 +102,7 @@ class MasterAdjusters extends Model
         if ( count($detail_jabatan->approval) > 0 ){
             foreach ($masterIou as $key => $value) {
                if ( count($value->status) > 0 ){
-                    if ( $value->status['status'] == 2 ){
+                    if ( $value->status['status'] == 3 ){
                         $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
                    
                         if ( $remaining > (0.8 * $config_iou)) {

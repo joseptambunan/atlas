@@ -128,14 +128,42 @@ class ApprovalController extends Controller
 
         $highest_level = min($array_jabatan);
 
-        if ( $highest_level == $approval_detail->level ){
+        if ( $request->status == 2 ){
             $approval = Approvals::find($approval_detail->approval->id);
             $approval->status = $request->status;
             $approval->approval_at = date("Y-m-d H:i:s");
             $approval->updated_at = date("Y-m-d H:i:s");
             $approval->updated_by = Auth::user()->id;
-            $approval->description = $request->description;
-            $approval_detail->save();
+            $approval->description = "Rejected by Manager with message : ".$request->description;
+            $approval->save();
+        }else{
+            if ( $highest_level == $approval_detail->level ){
+                $approval = Approvals::find($approval_detail->approval->id);
+                $approval->status = $request->status;
+                $approval->approval_at = date("Y-m-d H:i:s");
+                $approval->updated_at = date("Y-m-d H:i:s");
+                $approval->updated_by = Auth::user()->id;
+                $approval->description = $request->description;
+                $approval->save();
+            }else{
+                $approval_histories = new ApprovalHistories;
+                $approval_histories->approval_id = $request->approval_id;
+                $approval_histories->approval_by = Auth::user()->id;
+                $approval_histories->approval_at = date("Y-m-d H:i:s");
+                $approval_histories->status = $request->status;
+                $approval_histories->description = "Request to Director because manager has approve";
+                $approval_histories->created_at =  date("Y-m-d H:i:s");
+                $approval_histories->created_by = Auth::user()->id;
+                $approval_histories->save();
+
+                $approval = Approvals::find($approval_detail->approval->id);
+                $approval->status = 1;
+                $approval->approval_at = date("Y-m-d H:i:s");
+                $approval->updated_at = date("Y-m-d H:i:s");
+                $approval->updated_by = Auth::user()->id;
+                $approval->description = "";
+                $approval->save();
+            }
         }
         
 

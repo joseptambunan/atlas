@@ -17,6 +17,7 @@ use App\Approvals;
 use Modules\Master\Entities\MasterDocument;
 use Modules\Master\Entities\MasterApprovals;
 use App\ApprovalDetails;
+use App\ApprovalHistories;
 
 class IousController extends Controller
 {
@@ -83,6 +84,7 @@ class IousController extends Controller
         $iou_data = IouLists::find($id);
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
         $array_approval = array("1","3");
+        $approval_id = "";
 
         $check_approval = "";
         if ( in_array($iou_data->status['status'], $array_approval)){
@@ -93,6 +95,7 @@ class IousController extends Controller
         $check_approval_id = Approvals::where("document_type",1)->where("document_id",$iou_data->id)->get();
         if ( count($check_approval_id) > 0 ){
             $approval = Approvals::find($check_approval_id->first()->id);
+            $approval_id = $check_approval_id->first()->id;
             foreach ($approval->details as $key => $value) {
                 $approval_histories[] = array(
                     "name" => $value->user_detail->adjusters->name,
@@ -102,7 +105,7 @@ class IousController extends Controller
                 );
             }
         }
-        return view('adjuster::iou.show',compact("user","config_sidebar","iou_data","adjuster_data","check_approval","approval_histories"));
+        return view('adjuster::iou.show',compact("user","config_sidebar","iou_data","adjuster_data","check_approval","approval_histories","approval_id"));
     }
 
     
@@ -166,36 +169,67 @@ class IousController extends Controller
         $data['status'] = 0;
         $level_approval = array();
         $document = MasterDocument::where("document","IOU")->get();
-        if ( count($document) > 0 ){
-            $master_document = MasterDocument::find($document->first()->id);
-            foreach ($master_document->approvals as $key => $value) {
-                if ( $key == 0 ){
-                    foreach ($value->jabatan_approvals->jabatan->adjusters as $key_master => $value_master) {
-                       $save_approval = new Approvals;
-                       $save_approval->document_type = $master_document->id;
-                       $save_approval->document_id = $request->id;
-                       $save_approval->status = 1;
-                       $save_approval->approval_by = $value_master->user_detail->id;
-                       $save_approval->approval_at = NULL;
-                       $save_approval->created_at = date("Y-m-d H:i:s");
-                       $save_approval->created_by = Auth::user()->id;
-                       $save_approval->save();
-                   }
-                }
+        $approval_id = $request->approval_id;
 
-                foreach ($value->jabatan_approvals->jabatan->adjusters as $key_detail => $value_detail) {
-                   $save_approval_detail = new ApprovalDetails;
-                   $save_approval_detail->approval_id = $save_approval->id;
-                   $save_approval_detail->status = 1;
-                   $save_approval_detail->approval_by = $value_detail->user_detail->id;
-                   $save_approval_detail->approval_at = NULL;
-                   $save_approval_detail->level = $value->level;
-                   $save_approval_detail->created_at = date("Y-m-d H:i:s");
-                   $save_approval_detail->created_by = Auth::user()->id;
-                   $save_approval_detail->save();
-               }               
+        if ( $approval_id != "" ){
+            $approvals = Approvals::find($approval_id);
+            $approvals->status = 1;
+            $approvals->updated_at = date("Y-m-d H:i:s");
+            $approvals->updated_by = Auth::user()->id;
+            $approvals->description = "";
+            $approvals->save();
+
+            foreach ($approvals->details as $key => $value) {
+                $approval_detail = ApprovalDetails::find($value->id);
+                $approval_detail->status = 1;
+                $approval_detail->updated_at = date("Y-m-d H:i:s");
+                $approval_detail->updated_by = Auth::user()->id;
+                $approval_detail->description = "";
+                $approval_detail->save();
+
+                $approval_histories = new ApprovalHistories;
+                $approval_histories->approval_id = $approval_detail->id;
+                $approval_histories->approval_by = Auth::user()->id;
+                $approval_histories->approval_at = date("Y-m-d H:i:s");
+                $approval_histories->status = 1;
+                $approval_histories->description = "Request Approve Revisi";
+                $approval_histories->created_at =  date("Y-m-d H:i:s");
+                $approval_histories->created_by = Auth::user()->id;
+                $approval_histories->save();
+            }
+        }else{
+            if ( count($document) > 0 ){
+                $master_document = MasterDocument::find($document->first()->id);
+                foreach ($master_document->approvals as $key => $value) {
+                    if ( $key == 0 ){
+                        foreach ($value->jabatan_approvals->jabatan->adjusters as $key_master => $value_master) {
+                           $save_approval = new Approvals;
+                           $save_approval->document_type = $master_document->id;
+                           $save_approval->document_id = $request->id;
+                           $save_approval->status = 1;
+                           $save_approval->approval_by = $value_master->user_detail->id;
+                           $save_approval->approval_at = NULL;
+                           $save_approval->created_at = date("Y-m-d H:i:s");
+                           $save_approval->created_by = Auth::user()->id;
+                           $save_approval->save();
+                       }
+                    }
+
+                    foreach ($value->jabatan_approvals->jabatan->adjusters as $key_detail => $value_detail) {
+                       $save_approval_detail = new ApprovalDetails;
+                       $save_approval_detail->approval_id = $save_approval->id;
+                       $save_approval_detail->status = 1;
+                       $save_approval_detail->approval_by = $value_detail->user_detail->id;
+                       $save_approval_detail->approval_at = NULL;
+                       $save_approval_detail->level = $value->level;
+                       $save_approval_detail->created_at = date("Y-m-d H:i:s");
+                       $save_approval_detail->created_by = Auth::user()->id;
+                       $save_approval_detail->save();
+                   }               
+                }
             }
         }
+        
 
         echo json_encode($data);
     }

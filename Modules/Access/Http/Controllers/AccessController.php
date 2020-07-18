@@ -57,7 +57,7 @@ class AccessController extends Controller
         if ( count($user->user_modules) > 0 ){
             $menus = strtolower(trim($user->user_modules->first()->access_modules->modules->modules_name));
         }
-
+        
         return redirect($config_sidebar['menus'][$menus]);
     }
 

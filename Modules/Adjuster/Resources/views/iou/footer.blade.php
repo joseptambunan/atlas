@@ -60,13 +60,14 @@
       }
     }
 
-    function requestApproval(id){
+    function requestApproval(id, approval_id){
       if ( confirm("Are you sure to request approve ? ")){
         var request = $.ajax({
           url : "{{ url('/')}}/adjuster/iou/approval",
           dataType : "json",
           data : {
-            id : id
+            id : id,
+            approval_id : approval_id
           },
           type : "post"
         });

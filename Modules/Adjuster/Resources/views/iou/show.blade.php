@@ -82,13 +82,16 @@
                   <div class="col-md-6">
                     <label>Total</label>
                     <h4>Rp. {{ number_format($iou_data->total)}}</h4>
+                    @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 3)
+                      <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
+                    @endif
                   </div>
                 </div>
                 <!-- /.box-body -->
 
                 <div class="box-footer">
                   @if ( $check_approval == "" )
-                    <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}')">Request Approval</button>
+                    <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}','{{ $approval_id}}')">Request Approval</button>
                     <button type="submit" class="btn btn-primary">Update</button>
                   @else
                     <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
