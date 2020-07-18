@@ -40,6 +40,10 @@
                     <input type="text" class="form-control" value="{{date('d-M-Y', strtotime($iou_data->created_at)) }}" disabled>
                   </div>
                   <div class="col-md-6">
+                    <label>Adjuster</label>
+                    <input type="text" class="form-control" value="{{ $iou_data->created->adjusters->name }}" disabled>
+                  </div>
+                  <div class="col-md-6">
                     <label>Title</label>
                     <input type="text" class="form-control" name="title" value="{{$iou_data->title}}" disabled>
                   </div>
@@ -180,9 +184,11 @@
   <div class="modal fade" id="modal-default">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="{{ url('/')}}/approval/submit/reject" method="post">
+      <form action="{{ url('/')}}/approval/submit" method="post">
       {{ csrf_field() }}
       <input type="hidden" name="approval_id" id="approval_id" value="{{$approval_detail->id}}">
+      <input type="hidden" name="status" id="status" value="2">
+      <input type="hidden" name="type" id="type" value="form">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span></button>

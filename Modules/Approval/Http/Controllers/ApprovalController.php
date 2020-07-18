@@ -15,6 +15,7 @@ use Modules\Master\Entities\MasterDocument;
 use Modules\Adjuster\Entities\CaseExpenses;
 use App\Approvals;
 use App\ApprovalDetails;
+use App\ApprovalHistories;
 
 class ApprovalController extends Controller
 {
@@ -36,7 +37,7 @@ class ApprovalController extends Controller
             switch (strtolower(trim($master_document->document))) {
                 case 'iou':
                     $approval_data = IouLists::find($value->approval->document_id);
-                    if ( $value->approval_by == $user->id ){
+                    if ( $value->approval_by == $user->id && $value->status == 1 ){
                         $list_approval[$i] = array(
                             "title" => $approval_data->title,
                             "document_type" => strtolower(trim($master_document->document)),
@@ -109,27 +110,40 @@ class ApprovalController extends Controller
         $approval_detail->description = $request->description;
         $approval_detail->save();
 
+        $approval_histories = new ApprovalHistories;
+        $approval_histories->approval_id = $request->approval_id;
+        $approval_histories->approval_by = Auth::user()->id;
+        $approval_histories->approval_at = date("Y-m-d H:i:s");
+        $approval_histories->status = $request->status;
+        $approval_histories->description = $request->description;
+        $approval_histories->created_at =  date("Y-m-d H:i:s");
+        $approval_histories->created_by = Auth::user()->id;
+        $approval_histories->save();
+
         $approval = Approvals::find($approval_detail->approval->id);
         $array_jabatan = array();
         foreach ($approval->details as $key => $value) {
             array_push($array_jabatan, $value->level );
         }
 
-        ksort($array_jabatan);
-        foreach ($array_jabatan as $key => $value) {
-            if ( $value == $approval_detail->level ){
-                $approval->status = $request->status;
-                $approval->approval_at = date("Y-m-d H:i:s");
-                $approval->updated_at = date("Y-m-d H:i:s");
-                $approval->updated_by = Auth::user()->id;
-                $approval->description = $request->description;
-                //$approval_detail->save();
-            }
-        }
+        $highest_level = min($array_jabatan);
 
-        error_log("[APPROVAL_DETAIL]".$approval_detail);
-        error_log("[APPROVAL]".$approval);
+        if ( $highest_level == $approval_detail->level ){
+            $approval = Approvals::find($approval_detail->approval->id);
+            $approval->status = $request->status;
+            $approval->approval_at = date("Y-m-d H:i:s");
+            $approval->updated_at = date("Y-m-d H:i:s");
+            $approval->updated_by = Auth::user()->id;
+            $approval->description = $request->description;
+            $approval_detail->save();
+        }
+        
+
         $data['status'] = 0;
         echo json_encode($data);
+
+        if ( $request->status == 2 ){
+            return redirect("/approval/show/iou/".$approval->document_id.'/'.$approval_detail->id);
+        }
     }
 }

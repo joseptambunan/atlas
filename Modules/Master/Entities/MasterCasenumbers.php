@@ -14,7 +14,7 @@ class MasterCasenumbers extends Model
     }
 
     public function adjusters(){
-    	return $this->hasMany("Modules\Casenumbers\Entities\AdjusterCasenumbers","case_number_id");
+    	return $this->hasMany("Modules\CaseNumbers\Entities\AdjusterCasenumbers","case_number_id");
     }
 
     public function expenses(){
