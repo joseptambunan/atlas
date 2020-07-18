@@ -24,6 +24,7 @@ class CreateApprovalHistoriesTable extends Migration
             $table->integer("updated_by")->nullable();
             $table->datetime("deleted_at")->nullable();
             $table->integer("deleted_by")->nullable();
+            $table->integer("status")->nullable();
             $table->index(['approval_id']);
         });
     }
