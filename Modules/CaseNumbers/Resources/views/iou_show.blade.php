@@ -31,7 +31,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/adjuster/iou/update">
+              
                 {{ csrf_field() }}
                 <input type="hidden" value="{{ $iou_data->id}}" name="iou_id">
                 <div class="box-body">
@@ -45,19 +45,19 @@
                   </div>
                   <div class="col-md-6">
                     <label>Client</label>
-                    <input type="text" class="form-control" name="client" value="{{$iou_data->client}}">
+                    <input type="text" class="form-control" name="client" value="{{$iou_data->client}}" disabled>
                   </div>
                   <div class="col-md-6">
                     <label>Division</label>
-                    <input type="text" class="form-control" name="division" value="{{$iou_data->division}}">
+                    <input type="text" class="form-control" name="division" value="{{$iou_data->division}}" disabled>
                   </div>
                   <div class="col-md-6">
                     <label>Type of Survey</label>
-                    <input type="text" class="form-control" name="tos" value="{{$iou_data->type_of_survey}}">
+                    <input type="text" class="form-control" name="tos" value="{{$iou_data->type_of_survey}}" disabled>
                   </div>
                   <div class="col-md-6">
                     <label>Location</label>
-                    <input type="text" class="form-control" name="location" value="{{$iou_data->location}}">
+                    <input type="text" class="form-control" name="location" value="{{$iou_data->location}}" disabled>
                   </div>
                   <div class="col-md-6">
                     <label>Periode Date</label><br/>
@@ -71,15 +71,15 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  @if ( $check_approval == "" )
-                    <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}')">Request Approval</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                  @else
-                    <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
+
+                  @if ( $iou_data->status['status'] == 3 )
+                  <span class="label label-success">Approve</span>
+                  <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-default">
+                    Input Struck Number
+                  </button>
                   @endif
-                  <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/index/">Back</a>
+                  <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/iou/">Back</a>
                 </div>
-              </form>
             
               <div class="col-md-12">
                 <!-- Custom Tabs -->
@@ -97,9 +97,7 @@
                           @endforeach
                         </ul>
                         <h4>Planned Expenses Detail</h4> 
-                        @if ( $check_approval == "" )
-                          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">Add Detail</button>
-                        @endif
+                        
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
                             <tr>
@@ -107,7 +105,6 @@
                               <td>Type</td>
                               <td>Ammount</td>
                               <td>Description</td>
-                              <td>Delete</td>
                             </tr>
                           </thead>
                           <tbody>
@@ -118,11 +115,6 @@
                                     <td>{{ $value->type }}</td>
                                     <td>Rp. {{ number_format($value->ammount) }}</td>
                                     <td>{{ $value->description}}</td>
-                                    <td>
-                                      @if ( $check_approval == "" )
-                                      <button class="btn btn-sm btn-danger" onclick="removeData('{{$value->id}}')">Delete</button>
-                                      @endif
-                                    </td>
                                   </tr>
                               @endforeach
                           </tbody>
@@ -182,38 +174,29 @@
   <div class="control-sidebar-bg"></div>
   <div class="modal fade" id="modal-default">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Input Detail</h4>
-        </div>
-        <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/adjuster/iou/savedetail">
+      <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/casenumbers/iou/update_reference">
+        {{ csrf_field() }}
+        <input type="hidden" name="iou_id" id="iou_id" value="{{ $iou_data->id }}">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Document Reference</h4>
+          </div>
           <div class="modal-body">
-              {{ csrf_field() }}
-              <input type="hidden" name="iou_id" value="{{$iou_data->id}}">
-              <div class="box-body">
-                <div class="form-group">
-                  <label>Type</label>
-                  <input type="text" class="form-control" id="type" name="type" autocomplete="off" required>
-                </div>
-                <div class="form-group">
-                  <label>Ammount</label>
-                  <input type="text" class="form-control" id="ammount" name="ammount" autocomplete="off" required>
-                </div>
-                <div class="form-group">
-                  <label>Description</label>
-                  <input type="text" class="form-control" id="desc" name="desc" autocomplete="off" required>
-                </div>
-              </div>
+            <p>Please input invoice number or transaction slip</p>
+            <div class="form-group">
+              <label>Document Number</label>
+              <input type="text" class="form-control" name="doc_reference" value="" required>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
-        </form>
-      </div>
-      <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-content -->
+      </form>
     </div>
     <!-- /.modal-dialog -->
   </div>

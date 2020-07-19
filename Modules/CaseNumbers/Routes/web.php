@@ -26,4 +26,5 @@ Route::prefix('casenumbers')->group(function() {
 
     Route::get('/iou','CaseNumbersController@iou');
     Route::get('/iou/show/{id}','CaseNumbersController@iou_show');
+    Route::post('/iou/update_reference',"CaseNumbersController@update_reference");
 });

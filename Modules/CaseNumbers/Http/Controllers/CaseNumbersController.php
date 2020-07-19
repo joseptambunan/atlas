@@ -14,6 +14,7 @@ use Modules\Master\Entities\MasterAdjusters;
 use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
 use Modules\Adjuster\Entities\IouLists;
 use App\Approvals;
+use Modules\CaseNumbers\Entities\Invoices;
 
 class CaseNumbersController extends Controller
 {
@@ -27,8 +28,16 @@ class CaseNumbersController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
-        $master_casenumbers = MasterCasenumbers::orderBy('invoice_number', 'DESC')->get();
-        return view('casenumbers::index',compact("user","config_sidebar","master_casenumbers"));
+        $master_casenumbers = MasterCasenumbers::where("invoice_number",NULL)->orderBy('invoice_number', 'DESC')->get();
+
+        $total_iou = 0;
+        $iou_list = IouLists::where("document_number",NULL)->get();
+        foreach ($iou_list as $key => $value) {
+            if ( $value->status['status'] == 3 ){
+                $total_iou  += 1;
+            }
+        }
+        return view('casenumbers::index',compact("user","config_sidebar","master_casenumbers","total_iou"));
     }
 
     public function add(){
@@ -131,8 +140,14 @@ class CaseNumbersController extends Controller
     }
     
     public function createinvoice(Request $request){
+        $invoice = new Invoices;
+        $invoice->invoice_number = $request->invoice_number;
+        $invoice->created_at = date("Y-m-d H:i:s");
+        $invoice->created_by = Auth::user()->id;
+        $invoice->save();
+
         $case_number = MasterCasenumbers::find($request->case_id);
-        $case_number->invoice_number = $request->invoice_number;
+        $case_number->invoice_number = $invoice->id;
         $case_number->invoice_number_by = Auth::user()->id;
         $case_number->invoice_number_at = date("Y-m-d H:i:s");
         $case_number->save() ;
@@ -144,7 +159,7 @@ class CaseNumbersController extends Controller
     public function iou(){
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
-        $master_iou = IouLists::orderBy("id","DESC")->get();
+        $master_iou = IouLists::where("document_number",NULL)->orderBy("id","DESC")->get();
         return view("casenumbers::iou",compact("user","config_sidebar","master_iou"));
     }
 
@@ -168,4 +183,16 @@ class CaseNumbersController extends Controller
         }
         return view("casenumbers::iou_show",compact("user","config_sidebar","iou_data","check_approval","approval_histories"));
     }
+
+    public function update_reference(Request $request){
+        $iou_data = IouLists::find($request->iou_id);
+        $iou_data->document_number = $request->doc_reference;
+        $iou_data->updated_at = date("Y-m-d H:i:s");
+        $iou_data->updated_by = Auth::user()->id;
+        $iou_data->save();
+
+        return redirect("casenumbers/iou/show/".$iou_data->id);
+
+    }
+
 }

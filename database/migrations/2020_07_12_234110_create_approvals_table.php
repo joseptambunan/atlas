@@ -26,7 +26,7 @@ class CreateApprovalsTable extends Migration
             $table->integer("updated_by")->nullable();
             $table->datetime("deleted_at")->nullable();
             $table->integer("deleted_by")->nullable();
-            $table->index(['document_id','approval_by']);
+            $table->index(['document_id','approval_by','document_type']);
         });
     }
 

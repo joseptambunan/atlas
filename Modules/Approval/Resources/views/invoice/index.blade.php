@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  @include("master::case.header")
+  @include("approval::invoice.header")
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
   {{ csrf_field() }}
-  @include ("master::case.navbar")
+  @include ("approval::invoice.navbar")
   @include( "sidebar",['user' => $user, 'config_sidebar' => $config_sidebar] )
 
   <!-- Content Wrapper. Contains page content -->
@@ -27,43 +27,33 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Master Case Number</h3>
+              <h3 class="box-title">Master IOU</h3>
+              <a href="{{ url('/')}}/adjuster/index" class="btn btn-warning">Back</a>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <div class="col-md-12">
-                <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>
-                <a href="{{ url('/')}}/casenumbers/iou" class="btn btn-warning">Go to IOU</a>
-                <h4>Total IOU need to process : <strong>{{ $total_iou }}</strong> IOU </h4> 
-              </div>
-            
               <table id="example4" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>
                   <th>No.</th>
                   <th>Case Number</th>
-                  <th>Title</th>
                   <th>Created at</th>
                   <th>Created by</th>
-                  <th>Status</th>
                   <th>Detail</th>
                 </tr>
                 </thead>
                 <tbody>
                   @php $i=0; @endphp
-                  @foreach ( $master_casenumbers as $key => $value )
-                    @if ( $value->deleted_at == "")
+                  @foreach ( $adjuster_data->pending_invoice as $key => $value )
+              
                     <tr>
                       <td>{{ $i + 1 }}</td>
-                      <td>{{ $value->case_number}}</td>
-                      <td>{{ $value->title}}</td>
-                      <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
-                      <td>{{ $value->created }}</td>
-                      <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                      <td><a class="btn btn-info" href="{{ url('/')}}/casenumbers/show/{{$value->id}}">Detail</a></td>
+                      <td>{{ $value['case_number'] }}</td>
+                      <td>{{ $value['created_at']}}</td>
+                      <td>{{ $value['created_by']}}</td>
+                      <td><a class="btn btn-warning" href="{{ url('/')}}/approval/invoice/show/{{$value['id']}}">Detail</a></td>
                     </tr>
-                    @php $i++;@endphp
-                    @endif
+                    @php $i++ @endphp
                   @endforeach
                 </tbody>
               </table>
@@ -87,7 +77,7 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
-@include("casenumbers::footer");
+@include("approval::invoice.footer");
 <script type="text/javascript">
     
 

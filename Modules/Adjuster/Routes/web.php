@@ -23,6 +23,7 @@ Route::prefix('adjuster')->group(function() {
     Route::post('/iou/savedetail','IousController@savedetail');
     Route::post('/iou/delete','IousController@delete');
     Route::post('/iou/approval','IousController@approval');
+    Route::get('/iou/index','IousController@index');
 
     Route::get('/case/show/{id}','CasesController@show');
 

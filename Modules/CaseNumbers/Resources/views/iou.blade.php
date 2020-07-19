@@ -40,13 +40,14 @@
                   <th>Created at</th>
                   <th>Created by</th>
                   <th>Status</th>
+                  <th>Total</th>
                   <th>Detail</th>
                 </tr>
                 </thead>
                 <tbody>
                   @php $i=0; @endphp
                   @foreach ( $master_iou as $key => $value )
-                    
+                    @if ( $value->status['status'] == 3 )
                     <tr>
                       <td>{{ $key + 1 }}</td>
                       <td>{{ $value->title }}</td>
@@ -54,9 +55,10 @@
                       <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
                       <td>{{ $value->created->adjusters->name }}</td>
                       <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
+                      <td>Rp. {{ number_format($value->total)}}</td>
                       <td><a class="btn btn-info" href="{{ url('/')}}/casenumbers/iou/show/{{$value->id}}">Detail</a></td>
                     </tr>
-                   
+                    @endif
                   @endforeach
                 </tbody>
               </table>

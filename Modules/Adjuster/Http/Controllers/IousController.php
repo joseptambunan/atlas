@@ -21,13 +21,18 @@ use App\ApprovalHistories;
 
 class IousController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Response
-     */
+    
+     public function _construct(){
+        $this->middleware("auth");
+    }
+
     public function index()
-    {
-        return view('adjuster::index');
+    {   
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
+
+        return view('adjuster::iou.index',compact("user","config_sidebar","adjuster_data"));
     }
 
     /**

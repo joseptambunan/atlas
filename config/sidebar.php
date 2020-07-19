@@ -21,13 +21,13 @@
 		],
 		'adjuster' => [
 			'Home' => '/adjuster/index',
-			'IOU' => 'adjuster/iou',
-			'History' => '/adjuster/history'
+			'IOU' => '/adjuster/iou/',
+			'History' => '#'
 		],
 		'approval' => [
 			'List' => '/approval/index',
-			'Invoice' => '/approval/invoice',
-			'IOU' => '/approval/iou'
+			'Invoice' => '/approval/invoice/',
+			'IOU' => '/approval/iou/team'
 		]
 	];
 ?>

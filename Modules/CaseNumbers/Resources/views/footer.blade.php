@@ -41,28 +41,11 @@
           'X-CSRF-Token': $('input[name=_token]').val()
       }
     });
+
+    getTodo();
   })
 
-  function removeDocument(id){
-    if ( confirm("Are you sure to remove approvel ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/master/document/deleteapproval",
-        dataType : "json",
-        data :{
-          id:id
-        },
-        type :"post"
-      });
-
-      request.done(function(data){
-        if ( data.status == "0"){
-          alert("Data has been deleted");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
+  function getTodo(){
+    console.log("adssa");
   }
 </script>

@@ -60,7 +60,7 @@
             <div class="tab-content">
               <div class="active tab-pane" id="activity">
                 <a href="{{ url('/')}}/adjuster/iou/add" class="btn btn-primary">Request IOU</a>
-                <a href="{{ url('/')}}/adjuster/iou/expenses" class="btn btn-info">Create Expenses</a>
+                <a href="#" class="btn btn-info">Create Expenses</a>
                 <center><h5>IOU List</h5></center>
                 <table class="table table-bordered table-hover">
                   <thead class="header_background">

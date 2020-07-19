@@ -31,8 +31,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/casenumbers/update">
-                <input type="hidden" value="{{ $casenumber->id}}" name="casenumber_id" id="casenumber_id">
+              
                 {{ csrf_field() }}
                 <div class="box-body">
                   <div class="form-group">
@@ -70,14 +69,9 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  <button type="submit" class="btn btn-primary">Update</button>
-                  @if ( ($casenumber->total_iou['total']) > 0 )
-                   <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#modal-default">Create Invoice</button>
-                  @endif
-                  <button type="button" class="btn {{$class[$status]['button']}}" onClick="cancelthiscase('{{$casenumber->id}}','{{ $status}}');">Update to {{ $status }} this case</button>
-                  <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/">Back</a>
+                  
+                  <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
-              </form>
             
               <div class="col-md-12">
                 <!-- Custom Tabs -->
@@ -145,7 +139,7 @@
                                   <td>{{ $value_ious->iou->created->adjusters->name }}</td>
                                   <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
                                   <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
-                                  <td><a href="{{ url('/')}}/casenumbers/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
+                                  <td><a href="{{ url('/')}}/approval/iou/show/{{$value_ious->iou->id}}" target="_blank" class="btn btn-warning">Detail</a></td>
                                 </tr>
                                 @php $i++; @endphp
                                 @endif
@@ -188,28 +182,7 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
-  <div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Invoice</h4>
-        </div>
-        <div class="modal-body">
-          <label>Invoice Number</label>
-          <input type="text" class="form-control" id="invoice_number" name="invoice_number" value="" autocomplete="off" required />
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onClick="submitInvoice()">Save</button>
-        </div>
-      </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
-  <!-- /.modal -->
+  
 </div>
 <!-- ./wrapper -->
 @include("master::document.footer");
@@ -231,53 +204,7 @@
       'autoWidth'   : false
     });
 
-   function cancelthiscase(id,status){
-    if ( confirm("Are you sure to update this case ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/casenumbers/delete",
-        dataType : "json",
-        data : {
-          id : id,
-          status: status
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == 0 ){
-          alert("Case has been updated");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
-
-   function submitInvoice(){
-    if ( confirm("Are you sure to create invoice ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/casenumbers/invoice/create",
-        dataType : "json",
-        data :{
-          invoice_number : $("#invoice_number").val(),
-          case_id : $("#casenumber_id").val()
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == "0"){
-          alert("Invoice has been created");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
+   
 </script>
 </body>
 </html>

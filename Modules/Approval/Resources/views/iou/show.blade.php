@@ -85,7 +85,9 @@
                   @else
                   <span class="{{$array_status[$approval_detail->status]['class']}}">{{$array_status[$approval_detail->status]['label']}}</span>
                   @endif
-                  <a class="btn btn-warning" href="{{ url('/')}}/approval/index/">Back</a>
+
+                  <a class="btn btn-warning" href="{{ url('/')}}/{{$start}}">Back</a>
+
                 </div>
               </form>
             

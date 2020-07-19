@@ -16,4 +16,9 @@ Route::prefix('approval')->group(function() {
     Route::get('/show/{type}/{id}/{approval_id}','ApprovalController@show');
 
     Route::post('/submit/','ApprovalController@submit');
+    Route::get('/iou/team','ApprovalController@ioupending');
+    Route::get('/iou/show/{id}','ApprovalController@ioushow');
+
+    Route::get('/invoice/index','ApprovalController@invoice');
+    Route::get('/invoice/show/{id}','ApprovalController@invoice_show');
 });

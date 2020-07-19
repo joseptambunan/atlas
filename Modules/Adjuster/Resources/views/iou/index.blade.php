@@ -27,22 +27,20 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Master Case Number</h3>
+              <h3 class="box-title">Master IOU</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               <div class="col-md-12">
-                <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>
-                <a href="{{ url('/')}}/casenumbers/iou" class="btn btn-warning">Go to IOU</a>
-                <h4>Total IOU need to process : <strong>{{ $total_iou }}</strong> IOU </h4> 
+                <a class="btn btn-success" type="submit" href="{{ url('/')}}/adjuster/iou/add">Add New IOU</a>
               </div>
             
               <table id="example4" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>
                   <th>No.</th>
-                  <th>Case Number</th>
                   <th>Title</th>
+                  <th>Client</th>
                   <th>Created at</th>
                   <th>Created by</th>
                   <th>Status</th>
@@ -50,20 +48,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                  @php $i=0; @endphp
-                  @foreach ( $master_casenumbers as $key => $value )
-                    @if ( $value->deleted_at == "")
+                  @foreach ( $adjuster_data->iou_not_complete as $key => $value )
+                   
                     <tr>
-                      <td>{{ $i + 1 }}</td>
-                      <td>{{ $value->case_number}}</td>
-                      <td>{{ $value->title}}</td>
-                      <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
-                      <td>{{ $value->created }}</td>
-                      <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                      <td><a class="btn btn-info" href="{{ url('/')}}/casenumbers/show/{{$value->id}}">Detail</a></td>
+                      <td>{{ $key + 1 }}</td>
+                      <td>{{ $value['title']}}</td>
+                      <td>{{ $value['client']}}</td>
+                      <td>{{ date("d-M-Y", strtotime($value['created_at'])) }}</td>
+                      <td>{{ $value['created'] }}</td>
+                      <td>{{ $value['status']}}</td>
+                      <td><a class="btn btn-info" href="{{ url('/')}}/adjuster/iou/show/{{$value['id'] }}">Detail</a></td>
                     </tr>
-                    @php $i++;@endphp
-                    @endif
                   @endforeach
                 </tbody>
               </table>

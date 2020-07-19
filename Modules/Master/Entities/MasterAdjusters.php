@@ -7,6 +7,8 @@ use Modules\Master\Entities\MasterConfigs;
 use Modules\Adjuster\Entities\IouLists;
 use App\Approvals;
 use App\ApprovalDetails;
+use Modules\Master\Entities\MasterCaseNumbers;
+use Modules\CaseNumbers\Entities\Invoices;
 
 class MasterAdjusters extends Model
 {
@@ -35,17 +37,23 @@ class MasterAdjusters extends Model
         foreach ($this->ious as $key => $value) {
             if ( count($value->status) > 0 ){
                 if ( $value->status['status'] == 3 ){
-    
-                    $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
-                   
-                    if ( $remaining > (0.8 * $config_iou)) {
-                           $array[$i] = array(
-                            "title" => $value->title,
-                            "created_at" => $value->created_at,
-                            "ammount" => $value->total,
-                            "remaining" => round($remaining)
-                        );
-                        $i++;
+                    if ( count($value->expenses) <= 0 ){
+
+                        $remaining = round (( strtotime("now") - strtotime($value->updated_at)) / 86400);
+                       
+                        if ( $remaining > (0.8 * $config_iou)) {
+                               $array[$i] = array(
+                                "title" => $value->title,
+                                "created_at" => $value->created_at,
+                                "ammount" => $value->total,
+                                "remaining" => round($remaining),
+                                "status" => $value->status['label'],
+                                "created" => $value->created->adjusters->name,
+                                "id" => $value->id,
+                                "client" => $value->client
+                            );
+                            $i++;
+                        }
                     }
                 }
             }
@@ -66,7 +74,7 @@ class MasterAdjusters extends Model
                 "total" => count($this->iou_not_complete_team),
                 "label" => "IOU Not Complete by Team",
                 "class" => "label label-danger",
-                "link" => "/adjuster/iou/team"
+                "link" => "/approval/iou/team"
             ),
             "iou" => array (
                 "total" => count($this->iou_not_complete),
@@ -81,10 +89,10 @@ class MasterAdjusters extends Model
                 "link" => "/adjuster/iou/expired"
             ),
             "invoice" => array(
-                "total" => 0,
+                "total" => count($this->pending_invoice),
                 "label" => "Pending Invoice",
                 "class" => "label label-danger",
-                "link" => "/adjuster/invoice/index"
+                "link" => "/approval/invoice/index"
             )
         );
 
@@ -103,16 +111,23 @@ class MasterAdjusters extends Model
             foreach ($masterIou as $key => $value) {
                if ( count($value->status) > 0 ){
                     if ( $value->status['status'] == 3 ){
-                        $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
-                   
-                        if ( $remaining > (0.8 * $config_iou)) {
-                               $array[$i] = array(
-                                "title" => $value->title,
-                                "created_at" => $value->created_at,
-                                "ammount" => $value->total,
-                                "remaining" => round($remaining)
-                            );
-                            $i++;
+                        if ( count($value->expenses) <= 0 ){
+                            
+                            $remaining = round (( strtotime("now") - strtotime($value->updated_at)) / 86400);
+                       
+                            if ( $remaining > (0.8 * $config_iou)) {
+                                   $array[$i] = array(
+                                    "title" => $value->title,
+                                    "client" => $value->client,
+                                    "created_at" => $value->created_at,
+                                    "created_by" => $value->created->adjusters->name,
+                                    "ammount" => $value->total,
+                                    "remaining" => round($remaining),
+                                    "status" => $value->status['label'],
+                                    "id" => $value->id
+                                );
+                                $i++;
+                            }
                         }
                     }
                }
@@ -131,7 +146,7 @@ class MasterAdjusters extends Model
         foreach ($this->ious as $key => $value) {
             if ( $value->status['status'] == 1 || $value->status['status'] == 4 ){
                 if ( $value->deleted_by == "" ){
-                    $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
+                    $remaining = round (( strtotime("now") - strtotime($value->updated_at)) / 86400);
                     if ( $remaining > $expired_day ) {
                         $iou_data = IouLists::find($value->id);
                         if ( $iou_data->deleted_at == "" ){
@@ -164,6 +179,39 @@ class MasterAdjusters extends Model
                             "remaining" => round($remaining)
                         );
                         $i++;
+                    }
+                }
+            }
+        }
+
+        return $array;
+    }
+
+    public function getPendingInvoiceAttribute(){
+        $array = array();
+
+        $detail_jabatan = $this->position;
+        if ( count($detail_jabatan->approval) > 0 ){
+            $invoice = Invoices::get();
+            foreach ($invoice as $key => $value) {
+                foreach ($value->cases as $key_cases => $value_cases) {
+                    foreach ($value_cases->adjusters as $key_adjusters => $value_adjusters) {
+                       foreach ($value_adjusters->ious as $key_ious => $value_ious) {
+                           if ( count($value_ious->iou->expenses) <= 0 ){
+                                if ( isset($array[$value_cases->case_number])){
+                                    $array[$value_cases->case_number]['total_pending_iou'] =  $array[$value_cases->case_number]['total_pending_iou']  + 1;
+                                }else{
+                                     $array[$value_cases->case_number] = array(
+                                        "total_pending_iou" => 1,
+                                        "case_number" => $value_cases->case_number,
+                                        "id" => $value_cases->id,
+                                        "case_number" => $value_cases->case_number,
+                                        "created_at" => date("d-M-Y", strtotime($value_cases->created_at)),
+                                        "created_by" => $value_cases->created
+                                     );
+                                }
+                           } 
+                       }
                     }
                 }
             }

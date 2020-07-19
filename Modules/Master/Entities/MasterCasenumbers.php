@@ -39,9 +39,18 @@ class MasterCasenumbers extends Model
         foreach ($this->adjusters as $key => $value) {
             foreach ($value->ious as $key_ious => $value_ious) {
                 $array_status['total'] = $array_status['total'] + 1;
+                if ( count($value_ious->iou->expenses) > 0 ){
+                    $array_status['expenses_complete'] = $array_status['expenses_complete'] + 1;
+                 }else{
+                    $array_status['in_progress'] = $array_status['in_progress'] + 1;
+                 }
             }
         }
 
         return $array_status;
+    }
+
+    public function invoice(){
+        return $this->belongsTo("Modules\CaseNumbers\Entities\Invoices","invoice_number");
     }
 }
