@@ -17,6 +17,8 @@ use App\Approvals;
 use App\ApprovalDetails;
 use App\ApprovalHistories;
 use Modules\Master\Entities\MasterCasenumbers;
+use Modules\Master\Entities\MasterPositions;
+use Illuminate\Support\Facades\Storage;
 
 class ApprovalController extends Controller
 {
@@ -30,36 +32,8 @@ class ApprovalController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-        $list_approval = array();
-
-        $i = 0 ;
-        foreach ($user->approval_detail as $key => $value) {
-            $master_document = MasterDocument::find($value->approval->document_type);
-            switch (strtolower(trim($master_document->document))) {
-                case 'iou':
-                    $approval_data = IouLists::find($value->approval->document_id);
-                    if ( $value->approval_by == $user->id && $value->status == 1 ){
-                        $list_approval[$i] = array(
-                            "title" => $approval_data->title,
-                            "document_type" => strtolower(trim($master_document->document)),
-                            "created_at" => date("d-M-Y",strtotime($approval_data->created_at)),
-                            "created_by" => $approval_data->created->adjusters->name,
-                            "status" => $approval_data->status['label'],
-                            "document_id" => $approval_data->id,
-                            "approval_id" => $value->id
-                        );
-                        $i++;
-                    }
-                    $start = "approval/index";
-                    break;
-                case 'expenses':
-                    $approval_data = CaseExpenses::find($value->document_id);
-                    break;
-            }
-
-        }
-
-        return view('approval::approval.index',compact("user","config_sidebar","adjuster_data","list_approval","start"));
+        $start = 0 ;
+        return view('approval::approval.index',compact("user","config_sidebar","adjuster_data","start"));
     }
 
     
@@ -74,7 +48,7 @@ class ApprovalController extends Controller
             "0" => array( "label" => "Not Finish", "class" => "label label-info", "status" => 0 ),
             "1" => array( "label" => "Waiting for Approval", "class" => "label label-warning", "status" => 1  ),
             "2" => array( "label" => "Reject", "class" => "label label-danger", "status" => 2  ),
-            "3" => array( "label" => "Approval", "class" => "label label-info", "status" => 3  ),
+            "3" => array( "label" => "Approval", "class" => "label label-success", "status" => 3  ),
             "4" => array( "label" => "Expired", "class" => "label label-danger", "status" => 4  )
         );
 
@@ -94,7 +68,11 @@ class ApprovalController extends Controller
                 }
                 return view("approval::iou.show",compact("user","config_sidebar","adjuster_data","iou_data","approval_histories","approval_detail","array_status"));
                 break;
-            
+            case "expenses":
+                $case_expenses = CaseExpenses::find($id);
+                $iou_id = $case_expenses->iou_lists->iou->id;
+
+                return redirect("/approval/iou/show/".$iou_id);
             default:
                 # code...
                 break;
@@ -238,7 +216,7 @@ class ApprovalController extends Controller
                 "0" => array( "label" => "Not Finish", "class" => "label label-info", "status" => 0 ),
                 "1" => array( "label" => "Waiting for Approval", "class" => "label label-warning", "status" => 1  ),
                 "2" => array( "label" => "Reject", "class" => "label label-danger", "status" => 2  ),
-                "3" => array( "label" => "Approval", "class" => "label label-info", "status" => 3  ),
+                "3" => array( "label" => "Approval", "class" => "label label-success", "status" => 3  ),
                 "4" => array( "label" => "Expired", "class" => "label label-danger", "status" => 4  )
             );
             $start = "approval/iou/team";
@@ -261,5 +239,90 @@ class ApprovalController extends Controller
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
         $casenumber = MasterCasenumbers::find($request->id);
         return view("approval::invoice.show",compact("user","config_sidebar","adjuster_data","casenumber"));
+    }
+
+    public function request_approval(Request $request){
+        $checklist = $request->checklist;
+        $position = MasterPositions::get();
+        $master_document = MasterDocument::find($request->document_type);
+        $approval_id = $request->approval_id;
+        $redirect = array(
+            "1" => "adjuster/iou/show/",
+            "2" => "adjuster/iou/show/"
+        );
+        $approval_id = "";
+        $array_document_id = array();
+        if ( isset($request->checklist)){
+            foreach ($request->checklist as $key => $value) {
+                array_push($array_document_id, $value);
+            }
+        }else{
+            array_push($array_document_id, $request->document_id);
+        }
+
+        if ( count($array_document_id) > 0 ) {
+            foreach ($array_document_id as $key_checklist => $value_checklist) {
+                foreach ($master_document->approvals as $key => $value) {
+                    foreach ($value->jabatan_approvals->jabatan->adjusters as $key_adjusters => $value_adjusters) {
+                        if ( $key == 0 && $key_adjusters == 0 ){
+                            $approval = new Approvals;
+                            $approval->document_type = $master_document->id;
+                            $approval->document_id = $value_checklist;
+                            $approval->status = 1;
+                            $approval->approval_by = $value_adjusters->user_detail->id;
+                            $approval->created_at = date("Y-m-d H:i:s");
+                            $approval->created_by = Auth::user()->id;
+                            $approval->save();
+                        }
+
+                        $approval_detail = new ApprovalDetails;
+                        $approval_detail->approval_id = $approval->id;
+                        $approval_detail->status = 1;
+                        $approval_detail->approval_by = $value_adjusters->user_detail->id;
+                        $approval_detail->created_at = date("Y-m-d H:i:s");
+                        $approval_detail->created_by = Auth::user()->id;
+                        $approval_detail->level = $value->level;
+                        $approval_detail->save();
+                    }
+                }
+            }
+        }
+        
+        if ( $request->document_type == 1 ){
+            $data['status'] = "0";
+            echo json_encode($data);
+        }else{
+            return redirect($redirect[$master_document->id].$request->document_id);
+        }
+    }
+
+    public function download($id){
+        $case_expenses = CaseExpenses::find($id);
+        $receipt = $case_expenses->receipt;
+        return Storage::download($receipt);
+    }
+
+    public function expenses_approval($id){
+        $case_expenses = CaseExpenses::find($id);
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
+        $start = 0 ;
+        $array_status = array(
+            "0" => array( "label" => "Not Finish", "class" => "label label-info", "status" => 0 ),
+            "1" => array( "label" => "Waiting for Approval", "class" => "label label-warning", "status" => 1  ),
+            "2" => array( "label" => "Reject", "class" => "label label-danger", "status" => 2  ),
+            "3" => array( "label" => "Approval", "class" => "label label-success", "status" => 3  ),
+            "4" => array( "label" => "Expired", "class" => "label label-danger", "status" => 4  )
+        );
+
+        $approval_detail = "";
+        foreach ($case_expenses->list_approva->details as $key => $value) {
+            if ( $value->approval_by == $user->id ){
+                $approval_detail = $value->id;
+            }
+        }
+        $approval_detail = ApprovalDetails::find($approval_detail);
+        return view('approval::iou.expenses',compact("user","config_sidebar","adjuster_data","start","case_expenses","array_status","approval_detail"));
     }
 }

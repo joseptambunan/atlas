@@ -33,54 +33,119 @@
       });
 
     $("#ammount").number(true);
-   });
+    $("#ammount_expenses").number(true);
+    
+    $("#btn_expenses").click(function(){
+      saveExpenses();
+    });
+
+  });
 
 	
 
-    function removeData(id){
-      if ( confirm("Are you sure to delete this data ")){
-        var request = $.ajax({
-          url : "{{ url('/')}}/adjuster/iou/delete",
-          data : {
-            id : id
-          },
-          dataType:"json",
-          type : "post"
-        });
+  function removeData(id){
+    if ( confirm("Are you sure to delete this data ")){
+      var request = $.ajax({
+        url : "{{ url('/')}}/adjuster/iou/delete",
+        data : {
+          id : id
+        },
+        dataType:"json",
+        type : "post"
+      });
 
-        request.done(function(data){
-          if ( data.status == 0 ){
-            alert("Data has been deleted");
-          }
+      request.done(function(data){
+        if ( data.status == 0 ){
+          alert("Data has been deleted");
+        }
 
-          window.location.reload();
-        })
-      }else{
-        return false;
-      }
+        window.location.reload();
+      })
+    }else{
+      return false;
+    }
+  }
+
+  function requestApproval(id, approval_id){
+    if ( confirm("Are you sure to request approve ? ")){
+      var request = $.ajax({
+        url : "{{ url('/')}}/approval/request_approval",
+        dataType : "json",
+        data : {
+          document_id : id,
+          approval_id : approval_id,
+          document_type : 1
+        },
+        type : "post"
+      });
+
+      request.done(function(data){
+        if ( data.status == 0 ){
+          alert("IOU has been send");
+        }
+        window.location.reload();
+      });
+    }else{
+      return false;
+    }
+  }
+
+  function removeDataExpenses(id){
+    if ( confirm("Are you sure to remove this data")){
+      var request = $.ajax({
+        url : "{{url('/')}}/adjuster/case/remove_expenses",
+        data : {
+          id : id
+        },
+        type : "post",
+        dataType : "json"
+      });
+
+      request.done(function(data){
+        if ( data.status == "0"){
+          alert("Data has been deleted");
+        }
+
+        window.location.reload();
+      })
+    }else{
+      return false;
+    }
+  }
+
+  function saveExpenses(){
+    var data = new FormData();
+    //Form data
+    var form_data = $('#upload_expenses').serializeArray();
+    $.each(form_data, function (key, input) {
+        data.append(input.name, input.value);
+    });
+
+    //File data
+    var file_data = $('input[name="receipt"]')[0].files;
+
+    for (var i = 0; i < file_data.length; i++) {
+        data.append("receipt", file_data[i]);
     }
 
-    function requestApproval(id, approval_id){
-      if ( confirm("Are you sure to request approve ? ")){
-        var request = $.ajax({
-          url : "{{ url('/')}}/adjuster/iou/approval",
-          dataType : "json",
-          data : {
-            id : id,
-            approval_id : approval_id
-          },
-          type : "post"
-        });
 
-        request.done(function(data){
-          if ( data.status == 0 ){
-            alert("IOU has been send");
-          }
-          window.location.reload();
-        });
-      }else{
-        return false;
+    var request = $.ajax({
+      url : "{{url('/')}}/adjuster/case/expenses",
+      dataType : "json",
+      data :data,
+      type : "post",
+            enctype: 'multipart/form-data',
+            contentType : false,
+            processData: false
+    });
+
+    request.done(function(data){
+      if ( data.status == "0"){
+        alert("Expenses has been created");
       }
-    }
+
+      window.location.reload();
+    });
+  }
    
 </script>

@@ -70,4 +70,47 @@ class IouLists extends Model
             return false;
         }
     }
+
+    public function getTotalExpensesAttribute(){
+        $total = 0;
+
+        foreach ($this->cases as $key => $value) {
+            foreach ($value->expenses as $key_expenses => $value_expenses) {
+                $total = $total +  $value_expenses->ammount;
+            }
+        }
+
+        return $total;
+    }
+
+    public function getExpensesApprovalAttribute(){
+        $array = array();
+        $data['total_approval'] = 0;
+        $data['total_expenses'] = 0;
+
+        if (count($this->cases) > 0 ){
+            foreach ($this->cases as $key => $value) {
+                if ( count($value->expenses) > 0 ){
+                    $data['total_expenses'] += count($value->expenses);
+                    $start_approval = 0;
+                    foreach ($value->expenses as $key_expenses => $value_expenses) {
+                        if ( $value_expenses->status['status'] == 3 ){
+                            $array[] = array(
+                                "id" => $value_expenses->id,
+                                "type" => $value_expenses->type,
+                                "ammount" => $value_expenses->ammount,
+                                "description" => $value_expenses->description,
+                                "created_at" => date("d-M-Y", strtotime($value_expenses->created_at))
+                            );
+                            $start_approval++;
+                        }
+                    }
+                    $data['total_approval'] = $start_approval + $data['total_approval'];
+                }
+            }
+        }
+
+        $data['detail'] = $array;
+        return $data;
+    }
 }

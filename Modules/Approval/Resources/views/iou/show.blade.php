@@ -86,7 +86,7 @@
                   <span class="{{$array_status[$approval_detail->status]['class']}}">{{$array_status[$approval_detail->status]['label']}}</span>
                   @endif
 
-                  <a class="btn btn-warning" href="{{ url('/')}}/{{$start}}">Back</a>
+                  <a class="btn btn-warning" href="{{ url('/')}}/approval/index">Back</a>
 
                 </div>
               </form>
@@ -126,6 +126,7 @@
                                     <td>Rp. {{ number_format($value->ammount) }}</td>
                                     <td>{{ $value->description}}</td>
                                   </tr>
+                              @php $i++; @endphp
                               @endforeach
                           </tbody>
                         </table>
@@ -133,7 +134,54 @@
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
                         <h4>Expenses List</h4>
-                       
+                        <h4>Total Expenses : Rp. {{ number_format($iou_data->total_expenses)}}</h4>
+                        <table id="example4" class="table table-bordered table-hover">
+                          <thead class="header_background">
+                              <tr>
+                                <td>No.</td>
+                                <td>Case Number</td>
+                                <td>Type</td>
+                                <td>Ammount</td>
+                                <td>Description</td>
+                                <td>Status</td>
+                                <td>Action</td>
+                                <td>Approve</td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @php $i=0; @endphp
+                              @foreach ( $iou_data->cases as $key => $value )
+                                @foreach ( $value->expenses as $key_expenses => $value_expenses )
+                                <tr>
+                                  <td>
+                                    {{ $i + 1 }}
+                                    <input type="hidden" id="ref_case_{{$value_expenses->id}}" value="{{ $value->adjuster_casenumber->case->case_number }}">
+                                    <input type="hidden" id="ref_type_{{$value_expenses->id}}" value="{{ $value_expenses->type }}">
+                                    <input type="hidden" id="ref_ammount_{{$value_expenses->id}}" value="{{ $value_expenses->ammount }}">
+                                    <input type="hidden" id="ref_desc_{{$value_expenses->id}}" value="{{ $value_expenses->description }}">
+                                    <input type="hidden" id="ref_receipt_{{$value_expenses->id}}" value="{{ $value_expenses->receipt }}">
+                                    <input type="hidden" id="ref_approval_{{$value_expenses->id}}" value="{{ $value_expenses->approval_data(4)['approval_detail_id'] }}">
+                                  </td>
+                                  <td>{{ $value->adjuster_casenumber->case->case_number}}</td>
+                                  <td>{{ $value_expenses->type}}</td>
+                                  <td>{{ number_format($value_expenses->ammount)}}</td>
+                                  <td>{{ $value_expenses->description}}</td>
+                                  <td><span class="{{ $value_expenses->status_approval($user->id)['class']}}">{{ $value_expenses->status_approval($user->id)['label']}}</span></td>
+                                  <td>
+                                      <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-info" onClick="viewDetail('{{$value_expenses->id}}')">View Detail</button>
+                                    
+                                  </td>
+                                  <td>
+                                    @if ( $value_expenses->status_approval($user->id)['status'] != 0 )
+                                    <a href="{{url('/')}}/approval/expenses/approval/{{$value_expenses->id}}" class="btn btn-success">Detail Approval</a>
+                                    @endif
+                                  </td>
+                                </tr>
+                                @php $i++; @endphp
+                                @endforeach
+                              @endforeach
+                            </tbody>
+                        </table>
                       </div>
                       <div class="tab-pane" id="tab_3">
                         <h4>Approval History</h4>
@@ -208,6 +256,50 @@
     <!-- /.modal-content -->
   </div>
   <!-- /.modal-dialog -->
+
+  </div>
+  <!-- /.modal -->
+  <div class="modal fade" id="modal-info">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Detail Expenses</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Case Number</label>
+            <input type="hidden" id="expenses_approval_id" name="expenses_approval_id">
+            <input type="text" class="form-control" id="expenses_name" name="expenses_name" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" class="form-control" id="expenses_type" name="expenses_type" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Ammount</label>
+            <input type="text" class="form-control" id="expenses_ammount" name="expenses_ammount" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" cols="30" rows="6" name="expenses_description" id="expenses_description" disabled></textarea>
+          </div>
+          <div class="form-group">
+            <label>Receipt</label>
+            <a href="{{ url('/')}}/approval/download/" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
+          </div>
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea class="form-control" cols="30" rows="6" name="reason" id="reason"></textarea>
+          </div>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 </div>
 <!-- /.modal -->
 

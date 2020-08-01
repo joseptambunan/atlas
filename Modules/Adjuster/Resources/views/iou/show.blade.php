@@ -143,6 +143,7 @@
                                       @endif
                                     </td>
                                   </tr>
+                                @php $i++; @endphp
                               @endforeach
                           </tbody>
                         </table>
@@ -150,7 +151,47 @@
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
                         <h4>Expenses List</h4>
-                       
+                        <form method="post" name="form1" action="{{ url('/')}}/approval/request_approval">
+                          {{ csrf_field() }}
+                          <input type="hidden" name="document_id" value="{{ $iou_data->id}}">
+                          <input type="hidden" name="document_type" value="2">
+                          <button type="submit" class="btn btn-success">Request Approve</button>
+                          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-detail">Create Expenses</button>
+                          <table id="example4" class="table table-bordered table-hover">
+                            <thead class="header_background">
+                              <tr>
+                                <td>No.</td>
+                                <td>Type</td>
+                                <td>Ammount</td>
+                                <td>Description</td>
+                                <td>Status</td>
+                                <td>Action</td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @php $i=0; @endphp
+                              @foreach ( $iou_data->cases as $key => $value )
+                                @foreach ( $value->expenses as $key_expenses => $value_expenses )
+                                <tr>
+                                  <td>{{ $i + 1 }}</td>
+                                  <td>{{ $value_expenses->type}}</td>
+                                  <td>{{ number_format($value_expenses->ammount)}}</td>
+                                  <td>{{ $value_expenses->description}}</td>
+                                  <td><span class="{{ $value_expenses->status['class']}}">{{ $value_expenses->status['label']}}</span></td>
+                                  <td>
+                                    @if ( $value_expenses->status['status'] == 0 || $value_expenses->status['status'] == 2 )
+                                    <input type="checkbox" name="checklist[]" value="{{ $value_expenses->id}}">
+                                    <button class="btn btn-sm btn-danger" onClick="removeDataExpenses('{{ $value_expenses->id}}')">Remove Detail</button>
+                                    @endif
+                                  </td>
+                                </tr>
+                                @php $i++; @endphp
+                                @endforeach
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </form>
+
                       </div>
                       <div class="tab-pane" id="tab_3">
                         <h4>Approval History</h4>
@@ -237,7 +278,60 @@
     <!-- /.modal-dialog -->
   </div>
   <!-- /.modal -->
-
+  <form method="post" enctype="multipart/form-data" id="upload_expenses">
+    {{ csrf_field() }}
+    <div class="modal fade" id="modal-detail">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Detail Expenses</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Case</label>
+              <select name="iou_list_id" id="iou_list_id" class="form-control" required>
+                @foreach ( $iou_data->cases as $key => $value )
+                  @if ( $value->adjuster_casenumber->case->invoice_number == "" )
+                    <option value="{{ $value->id}}">{{ $value->adjuster_casenumber->case->title}}</option>
+                  @else
+                    @if ( $value->adjuster_casenumber->case->invoice->updated_by == "")
+                      <option value="{{ $value->id}}">{{ $value->adjuster_casenumber->case->title}}</option>
+                    @endif
+                  @endif
+                @endforeach
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <input type="text" name="type_expenses" id="type_expenses" class="form-control" autocomplete="off" required> 
+            </div>
+            <div class="form-group">
+              <label>Ammount</label>
+              <input type="text" name="ammount_expenses" id="ammount_expenses" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" name="description" id="description" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Receipt</label>
+              <input type="file" name="receipt" id="receipt" class="form-control">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="btn_expenses">Save changes</button>
+            <span id="loading" style="display: none;">Loading...</span>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+  </form>
 </div>
 <!-- ./wrapper -->
 @include("adjuster::iou.footer");

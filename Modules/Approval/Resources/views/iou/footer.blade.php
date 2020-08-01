@@ -35,7 +35,7 @@
    });
 
   function setApprove(id){
-    if ( confirm("Are you sure to approve this IOU")){
+    if ( confirm("Are you sure to approve this document")){
       var request = $.ajax({
         url : "{{ url('/')}}/approval/submit/",
         dataType : "json",
@@ -49,7 +49,7 @@
 
       request.done(function(data){
         if ( data.status == "0"){
-          alert("IOU Has been Approved by You");
+          alert("This Document Has been Approved by You");
         }
 
         window.location.reload();
@@ -59,5 +59,40 @@
     }
   }	
 
-    
+  function viewDetail(id){
+    $("#expenses_name").val($("#ref_case_"+id).val());
+    $("#expenses_type").val($("#ref_type_"+id).val());
+    $("#expenses_ammount").val($("#ref_ammount_"+id).val());
+    $("#expenses_description").val($("#ref_desc_"+id).val());
+    $("#expenses_receipt").attr("href","{{ url('/')}}/approval/download/" + id);
+    $("#expenses_approval_id").val($("#ref_approval_"+id).val());
+  }
+
+  function approveReject(status){
+    if ( status == 2 ){
+      if ( $("#expenses_description").val() == "" ){
+        alert("Please give the reason before reject");
+        return false;
+      }
+    }
+
+    var request = $.ajax({
+      url : "{{ url('/')}}/approval/submit",
+      dataType : "json",
+      data : {
+        approval_id : $("#expenses_approval_id").val(),
+        status : status,
+        description : $("#reason").val()
+      },
+      type : "post"
+    });
+
+    request.done(function(data){
+      if ( data.status == 0 ){
+        alert("Data has been updated");
+      }
+
+      window.location.reload();
+    })
+  }
 </script>

@@ -9,6 +9,7 @@ use App\Approvals;
 use App\ApprovalDetails;
 use Modules\Master\Entities\MasterCaseNumbers;
 use Modules\CaseNumbers\Entities\Invoices;
+use Modules\Adjuster\Entities\CaseExpenses;
 
 class MasterAdjusters extends Model
 {
@@ -23,24 +24,23 @@ class MasterAdjusters extends Model
     }
 
     public function ious(){
-    	return $this->hasMany("Modules\Adjuster\Entities\IouLists","adjuster_id")->where("deleted_at",NULL);
+    	return $this->hasMany("Modules\Adjuster\Entities\IouLists","adjuster_id")->where("deleted_at",NULL)->orderBy("updated_at","desc");
     }
 
     public function user_detail(){
         return $this->hasOne("App\User","adjuster_id");
     }
 
-     public function getIouNotCompleteAttribute(){
+    public function getIouNotCompleteAttribute(){
         $array = array();
         $i = 0;
         $config_iou = MasterConfigs::where("name","submit_expenses")->get()->first()->value;
         foreach ($this->ious as $key => $value) {
             if ( count($value->status) > 0 ){
-                if ( $value->status['status'] == 3 ){
-                    if ( count($value->expenses) <= 0 ){
+                if ($value->status['status'] == 3 ){
+                    $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
 
-                        $remaining = round (( strtotime("now") - strtotime($value->updated_at)) / 86400);
-                       
+                    if ( ($value->expenses_approval['total_approval'] != $value->expenses_approval['total_expenses']) || count($value->expenses) <= 0 ){    
                         if ( $remaining > (0.8 * $config_iou)) {
                                $array[$i] = array(
                                 "title" => $value->title,
@@ -50,7 +50,10 @@ class MasterAdjusters extends Model
                                 "status" => $value->status['label'],
                                 "created" => $value->created->adjusters->name,
                                 "id" => $value->id,
-                                "client" => $value->client
+                                "client" => $value->client,
+                                "cases" => $value->cases,
+                                "total_expenses" => $value->expenses_approval['total_expenses'],
+                                "total_approval" => $value->expenses_approval['total_approval']
                             );
                             $i++;
                         }
@@ -65,7 +68,7 @@ class MasterAdjusters extends Model
     public function getToDoAttribute(){
         $arary_todolist = array(
             "approval" => array(
-                "total" => count($this->user_detail->approval_detail),
+                "total" => count($this->list_approval),
                 "label" => "Request Approve",
                 "class" => "label label-warning",
                 "link" => "/approval/index"
@@ -93,6 +96,12 @@ class MasterAdjusters extends Model
                 "label" => "Pending Invoice",
                 "class" => "label label-danger",
                 "link" => "/approval/invoice/index"
+            ),
+            "confirm_invoice" => array(
+                "total" => count($this->confirm_invoice),
+                "label" => "Invoice to be confirm",
+                "class" => "label label-danger",
+                "link" => "/adjuster/invoice"
             )
         );
 
@@ -109,28 +118,28 @@ class MasterAdjusters extends Model
 
         if ( count($detail_jabatan->approval) > 0 ){
             foreach ($masterIou as $key => $value) {
-               if ( count($value->status) > 0 ){
-                    if ( $value->status['status'] == 3 ){
-                        if ( count($value->expenses) <= 0 ){
-                            
-                            $remaining = round (( strtotime("now") - strtotime($value->updated_at)) / 86400);
-                       
+                if ( count($value->status) > 0 ){
+                    if ($value->status['status'] == 3 ){
+                        $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
+
+                        if ( $value->expenses_approval['total_approval'] != $value->expenses_approval['total_expenses'] || ( count($value->expenses) <= 0) ){    
                             if ( $remaining > (0.8 * $config_iou)) {
                                    $array[$i] = array(
                                     "title" => $value->title,
-                                    "client" => $value->client,
                                     "created_at" => $value->created_at,
-                                    "created_by" => $value->created->adjusters->name,
                                     "ammount" => $value->total,
                                     "remaining" => round($remaining),
                                     "status" => $value->status['label'],
-                                    "id" => $value->id
+                                    "created_by" => $value->created->adjusters->name,
+                                    "id" => $value->id,
+                                    "client" => $value->client,
+                                    "cases" => $value->cases
                                 );
                                 $i++;
                             }
                         }
                     }
-               }
+                }
             }
         }
 
@@ -189,34 +198,73 @@ class MasterAdjusters extends Model
 
     public function getPendingInvoiceAttribute(){
         $array = array();
-
+        return $array;
         $detail_jabatan = $this->position;
         if ( count($detail_jabatan->approval) > 0 ){
             $invoice = Invoices::get();
             foreach ($invoice as $key => $value) {
                 foreach ($value->cases as $key_cases => $value_cases) {
-                    foreach ($value_cases->adjusters as $key_adjusters => $value_adjusters) {
-                       foreach ($value_adjusters->ious as $key_ious => $value_ious) {
-                           if ( count($value_ious->iou->expenses) <= 0 ){
-                                if ( isset($array[$value_cases->case_number])){
-                                    $array[$value_cases->case_number]['total_pending_iou'] =  $array[$value_cases->case_number]['total_pending_iou']  + 1;
-                                }else{
-                                     $array[$value_cases->case_number] = array(
-                                        "total_pending_iou" => 1,
-                                        "case_number" => $value_cases->case_number,
-                                        "id" => $value_cases->id,
-                                        "case_number" => $value_cases->case_number,
-                                        "created_at" => date("d-M-Y", strtotime($value_cases->created_at)),
-                                        "created_by" => $value_cases->created
-                                     );
-                                }
-                           } 
-                       }
+                    foreach ($value_cases->expenses as $key_expenses => $value_expenses) {
+                        
                     }
                 }
             }
         }
 
         return $array;
+    }
+
+    public function getConfirmInvoiceAttribute(){
+        $array = array();
+        $i=0;
+        foreach ($this->cases as $key => $value) {
+            if ( $value->case->invoice_number != "" ){
+                if ( $value->case->invoice->updated_by == "" ){
+                    $array[$i] = array(
+                        "id" => $value->case->id,
+                        "title" => $value->case->title,
+                        "created_at" => $value->case->created_at
+                    );
+                    $i++;
+                }
+            }
+        }
+
+        return $array;
+    }
+
+    public function getListApprovalAttribute(){
+        $array_approval = array();
+        $title = "";
+        $array_filter = array();
+
+        foreach ($this->user_detail->approval_detail as $key => $value) {
+            if ( $value->status == 1){
+                $document_type = trim(strtolower($value->approval->document->document));
+                if ( $document_type == "iou"){
+                    $title = IouLists::find($value->approval->document_id)->title;
+                }elseif ( $document_type == "expenses"){
+                    $expenses = CaseExpenses::find($value->approval->document_id);
+                    $title =" Expenses from ".$expenses->iou_lists->iou->title;
+                }
+
+                if ( !isset($array_filter[strtolower(trim($title))])){
+                    $array_approval[] = array(
+                        "id" => $value->id,
+                        "document_type" => strtolower(trim($value->approval->document->document)),
+                        "document_id" => $value->approval->document_id,
+                        "title" => $title,
+                        "created_at" => date("d-M-Y", strtotime($value->created_at)),
+                        "created_by" => $value->created->adjusters->name,
+                        "status" => "waiting for approval",
+                        "approval_id" => $value->id
+                    );
+                    $array_filter[strtolower(trim($title))] = array();
+                }
+            }
+        }
+
+
+        return $array_approval;
     }
 }

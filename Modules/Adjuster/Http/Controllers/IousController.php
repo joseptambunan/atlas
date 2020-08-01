@@ -31,8 +31,8 @@ class IousController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-
-        return view('adjuster::iou.index',compact("user","config_sidebar","adjuster_data"));
+        $i = 0;
+        return view('adjuster::iou.index',compact("user","config_sidebar","adjuster_data","i"));
     }
 
     /**

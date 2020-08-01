@@ -60,7 +60,7 @@
             <div class="tab-content">
               <div class="active tab-pane" id="activity">
                 <a href="{{ url('/')}}/adjuster/iou/add" class="btn btn-primary">Request IOU</a>
-                <a href="#" class="btn btn-info">Create Expenses</a>
+                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default">Create Expenses</a>
                 <center><h5>IOU List</h5></center>
                 <table class="table table-bordered table-hover">
                   <thead class="header_background">
@@ -69,7 +69,8 @@
                       <td>Case Number</td>
                       <td>Title</td>
                       <td>Status</td>
-                      <td>Total</td>
+                      <td>Total IOU</td>
+                      <td>Total Expenses</td>
                       <td>Detail</td>
                     </tr>
                   </thead>
@@ -89,6 +90,7 @@
                           <td>{{ $value->title }}</td>
                           <td><span class="{{ $value->status['class']}}">{{ $value->status['label'] }}</span></td>
                           <td>Rp. {{ number_format($value->total)}}</td>
+                          <td>Rp. {{ number_format($value->total_expenses)}}</td>
                           <td><a class="btn btn-info" href="{{ url('/')}}/adjuster/iou/show/{{$value->id }}">Detail</a></td>
                         </tr>
                       @endif
@@ -189,8 +191,61 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
+  <form method="post" enctype="multipart/form-data" id="upload_expenses">
+    {{ csrf_field() }}
+    <div class="modal fade" id="modal-default">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Detail Expenses</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>IOU</label>
+              <select name="iou_number" id="iou_number" class="form-control" required>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Case</label>
+              <select name="iou_list_id" id="iou_list_id" class="form-control" required>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <input type="text" name="type_expenses" id="type_expenses" class="form-control" autocomplete="off" required> 
+            </div>
+            <div class="form-group">
+              <label>Ammount</label>
+              <input type="text" name="ammount_expenses" id="ammount_expenses" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" name="description" id="description" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Receipt</label>
+              <input type="file" name="receipt" id="receipt" class="form-control">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="btn_expenses">Save changes</button>
+            <span id="loading" style="display: none;">Loading...</span>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+  </form>
 </div>
 <!-- ./wrapper -->
 @include("adjuster::footer")
+<script type="text/javascript">
+  $("#ammount_expenses").number(true);
+</script>
 </body>
 </html>

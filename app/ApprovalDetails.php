@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 class ApprovalDetails extends Model
 {
@@ -27,4 +28,10 @@ class ApprovalDetails extends Model
     public function approval(){
         return $this->belongsTo("App\Approvals");
     }
+
+    public function getCreatedAttribute(){
+        $user = User::find($this->created_by);
+        return $user;
+    }
+
 }

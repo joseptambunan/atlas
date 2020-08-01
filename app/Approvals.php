@@ -12,6 +12,6 @@ class Approvals extends Model
     }
 
     public function document(){
-    	return $this->belongsTo("Modules\Master\Entities\MasterDocument");
+    	return $this->belongsTo("Modules\Master\Entities\MasterDocument","document_type");
     }
 }

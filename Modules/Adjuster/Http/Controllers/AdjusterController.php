@@ -10,6 +10,9 @@ use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Config;
 use Modules\Master\Entities\MasterAdjusters;
+use Modules\Master\Entities\MasterCaseNumbers;
+use Modules\Adjuster\Entities\IouCases;
+use Modules\CaseNumbers\Entities\Invoices;
 
 class AdjusterController extends Controller
 {
@@ -53,6 +56,8 @@ class AdjusterController extends Controller
         $data['status'] = 0;
         $data['total'] = 0;
         $html = "";
+        $html_iou = "";
+        $html_case = "";
 
         $adjuster_data = MasterAdjusters::find($request->adjuster_id);
         foreach ($adjuster_data->to_do as $key => $value) {
@@ -69,6 +74,39 @@ class AdjusterController extends Controller
             $data['html'] = "<ul class='todo-list'>". $html. "</ul>";
         }
 
+        $html_case .= "<select name='iou_list_id' id='iou_list_id' class='form-control' required>";
+        $html_iou .= "<select name='iou_number' id='iou_number' class='form-control' required>";
+        if ( count($adjuster_data->ious) > 0 ){
+            foreach ($adjuster_data->ious as $key => $value) {
+                $html_iou .= "<option value='".$value->id."'>".$value->title."</option>";
+                foreach ($value->cases as $key_cases => $value_cases) {
+                    $html_case .= "<option value='".$value_cases->id."'>".$value_cases->adjuster_casenumber->case->title."</option>";
+                }
+            }
+        }else{
+            $html_iou .= "<option>No Active IOU</option>";
+        }
+        $html_iou .= "</select>";
+        $html_case .= "</select>";
+        
+        $data['html_iou'] = $html_iou;
+        $data['html_case'] = $html_case;
+        echo json_encode($data);
+    }
+
+    public function invoice(){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
+        return view('adjuster::invoice',compact("user","config_sidebar","adjuster_data"));
+    }
+
+    public function finish_invoice(Request $request){
+        $invoice = Invoices::find($request->id);
+        $invoice->updated_by = Auth::user()->id;
+        $invoice->save();   
+
+        $data['status'] = 0;
         echo json_encode($data);
     }
 }

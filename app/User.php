@@ -46,7 +46,7 @@ class User extends Authenticatable
     }
 
     public function approval_detail(){
-        return $this->hasMany("App\ApprovalDetails","approval_by");
+        return $this->hasMany("App\ApprovalDetails","approval_by")->where("status",1);
     }
 
 }

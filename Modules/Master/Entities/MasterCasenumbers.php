@@ -17,7 +17,7 @@ class MasterCasenumbers extends Model
     	return $this->hasMany("Modules\CaseNumbers\Entities\AdjusterCasenumbers","case_number_id");
     }
 
-    public function expenses(){
+    public function case_expenses(){
     	return $this->hasMany("Modules\Adjuster\Entities\CaseExpenses");
     }
 
@@ -53,4 +53,5 @@ class MasterCasenumbers extends Model
     public function invoice(){
         return $this->belongsTo("Modules\CaseNumbers\Entities\Invoices","invoice_number");
     }
+
 }

@@ -70,7 +70,14 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  
+                  @if ( $casenumber->invoice_number != "" )
+                    @if ( $casenumber->invoice->updated_by == "")
+                      <p>This case have Invoice Number. Please confirm to finish this case</p>
+                      <button type="button" class="btn btn-success" onClick="finishCase('{{ $casenumber->invoice->id }}')">Finish</button>
+                    @else
+                      <label class="label label-info">Finish by Adjuster</label>
+                    @endif
+                  @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
               </form>
@@ -93,6 +100,7 @@
                             <th>No.</th>
                             <th>Type</th>
                             <th>Ammount</th>
+                            <th>Description</th>
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
@@ -101,15 +109,20 @@
                           </tr>
                           </thead>
                           <tbody>
-                            @foreach ( $casenumber->expenses as $key => $value )
+                            @php $i=0; @endphp
+                            @foreach ( $casenumber->case_expenses as $key => $value )
                             <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td>{{ $i+1 }}</td>
+                              <td>{{ $value->type }}</td>
+                              <td>{{ $value->ammount }}</td>
+                              <td>{{ $value->description }}</td>
+                              <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
+                              <td>{{ $value->created->adjusters->name }}</td>
+                              <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
+                              <td>{{ $value->iou_lists->iou->title }}</td>
+                              <td><a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a></td>
                             </tr>
+                            @php $i++; @endphp
                             @endforeach
                           </tbody>
                         </table>
@@ -266,6 +279,29 @@
       request.done(function(data){
         if ( data.status == "0"){
           alert("Invoice has been created");
+        }
+
+        window.location.reload();
+      })
+    }else{
+      return false;
+    }
+   }
+
+   function finishCase(id){
+    if ( confirm("Are you sure to finish this case ? ")){
+      var request = $.ajax({
+        url : "{{ url('/')}}/adjuster/invoice/finish",
+        dataType : "json",
+        data : {
+          id : id
+        },
+        type : "post"
+      });
+
+      request.done(function(data){
+        if ( data.status == "0"){
+          alert("Case has been finish");
         }
 
         window.location.reload();

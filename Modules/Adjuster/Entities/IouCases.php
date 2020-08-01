@@ -15,4 +15,9 @@ class IouCases extends Model
     public function iou(){
     	return $this->belongsTo("Modules\Adjuster\Entities\IouLists","iou_lists_id");
     }
+
+    public function expenses(){
+    	return $this->hasMany("Modules\Adjuster\Entities\CaseExpenses","iou_lists_id");
+    }
+
 }
