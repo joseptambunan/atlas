@@ -37,7 +37,7 @@
   function setApprove(id){
     if ( confirm("Are you sure to approve this document")){
       var request = $.ajax({
-        url : "{{ url('/')}}/approval/submit/",
+        url : "{{ url('/')}}/approval/submit",
         dataType : "json",
         data :{
           approval_id : id,

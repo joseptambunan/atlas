@@ -81,7 +81,7 @@
                 <div class="box-footer">
                   <span class="{{ $array_status[$approval_detail->approval->status]['class']}}">{{ $array_status[$approval_detail->approval->status]['label']}}</span>
                   @if ( $approval_detail->status == 1)
-                  <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}')">
+                  <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}');">
                     Approve
                   </button>
                   <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-default">
