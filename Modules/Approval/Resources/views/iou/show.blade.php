@@ -160,7 +160,7 @@
                                     <input type="hidden" id="ref_ammount_{{$value_expenses->id}}" value="{{ $value_expenses->ammount }}">
                                     <input type="hidden" id="ref_desc_{{$value_expenses->id}}" value="{{ $value_expenses->description }}">
                                     <input type="hidden" id="ref_receipt_{{$value_expenses->id}}" value="{{ $value_expenses->receipt }}">
-                                    <input type="hidden" id="ref_approval_{{$value_expenses->id}}" value="{{ $value_expenses->approval_data(4)['approval_detail_id'] }}">
+                                    <input type="hidden" id="ref_approval_{{$value_expenses->id}}" value="{{ $value_expenses->approval_data($user->id)['approval_detail_id'] }}">
                                   </td>
                                   <td>{{ $value->adjuster_casenumber->case->case_number}}</td>
                                   <td>{{ $value_expenses->type}}</td>

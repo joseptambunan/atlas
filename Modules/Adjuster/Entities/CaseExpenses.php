@@ -30,6 +30,8 @@ class CaseExpenses extends Model
                     return $array_status[$value->status];
                 }
             }
+
+            return $array_status[$approval->status];
     	}
     }
 

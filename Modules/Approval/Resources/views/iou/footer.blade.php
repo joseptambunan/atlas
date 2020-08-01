@@ -70,7 +70,7 @@
 
   function approveReject(status){
     if ( status == 2 ){
-      if ( $("#expenses_description").val() == "" ){
+      if ( $("#reason").val() == "" ){
         alert("Please give the reason before reject");
         return false;
       }

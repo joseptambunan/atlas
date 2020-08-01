@@ -172,7 +172,7 @@ class ApprovalController extends Controller
         $data['status'] = 0;
         echo json_encode($data);
 
-        if ( $request->status == 2 ){
+        if ( $request->status == 2 && $approval->document_type == 1 ){
             return redirect("/approval/show/iou/".$approval->document_id.'/'.$approval_detail->id);
         }
     }

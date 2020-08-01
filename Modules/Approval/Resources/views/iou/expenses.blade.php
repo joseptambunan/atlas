@@ -33,6 +33,7 @@
             <div class="box-body">
               <div class="col-md-12">
                 <a class="btn btn-warning" href="{{ url('/')}}/approval/iou/show/{{ $case_expenses->iou_lists->iou->id}}">Back</a>
+                <input type="hidden" id="expenses_approval_id" value="{{ $approval_detail->id }}">
                 <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}')">
                     Approve
                   </button>

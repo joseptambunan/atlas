@@ -70,4 +70,41 @@ class CasesController extends Controller
         $data['status'] = 0;
         echo json_encode($data);
     }
+
+    public function revisi_expenses(Request $request){
+
+        $case_expenses = CaseExpenses::find($request->expenses_id);
+        $path = "";
+        if ( $request->file('receipt_revisi') != ""){
+            $path = Storage::putFile('cases/'.$case_expenses->iou_lists->adjuster_casenumber->case->id, $request->file('receipt_revisi'));
+        }
+
+
+        $update_cases =  CaseExpenses::find($request->expenses_id);
+        $update_cases->type = $request->type_revisi;
+        $update_cases->ammount = str_replace(",","",$request->ammount_revisi);
+        $update_cases->description = $request->desc_revisi;
+        $update_cases->updated_at = date("Y-m-d H:i:s");
+        $update_cases->updated_by = Auth::user()->id;
+        $update_cases->receipt = $path;
+        $update_cases->save();
+
+        $approval = $case_expenses->list_approva;
+        foreach ($approval->details as $key => $value) {
+            $approval_detail = ApprovalDetails::find($value->id);
+            $approval_detail->status = 1;
+            $approval_detail->updated_at = date("Y-m-d H:i:s");
+            $approval_detail->updated_by = Auth::user()->id;
+            $approval_detail->save();
+        }
+
+        $update_approval = Approvals::find($approval->id);
+        $update_approval->status = 1;
+        $update_approval->updated_by = Auth::user()->id;
+        $update_approval->updated_at = date("Y-m-d H:i:s");
+        $update_approval->save();
+
+        $data['status'] = 0;
+        echo json_encode($data);
+    }
 }

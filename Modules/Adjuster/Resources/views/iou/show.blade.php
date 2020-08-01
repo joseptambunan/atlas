@@ -93,8 +93,7 @@
                   @if ( $check_approval == "" )
                     <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}','{{ $approval_id}}')">Request Approval</button>
                     <button type="submit" class="btn btn-primary">Update</button>
-                  @else
-                    <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
+                  
                   @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
@@ -173,15 +172,25 @@
                               @foreach ( $iou_data->cases as $key => $value )
                                 @foreach ( $value->expenses as $key_expenses => $value_expenses )
                                 <tr>
-                                  <td>{{ $i + 1 }}</td>
+                                  <td>
+                                    {{ $i + 1 }}
+                                    <input type="hidden" id="reference_id_{{$value_expenses->id}}" value="{{ $value_expenses->id}}">
+                                    <input type="hidden" id="reference_type_{{$value_expenses->id}}" value="{{ $value_expenses->type}}">
+                                    <input type="hidden" id="reference_ammount_{{$value_expenses->id}}" value="{{ $value_expenses->ammount}}">
+                                    <input type="hidden" id="reference_desc_{{$value_expenses->id}}" value="{{ $value_expenses->description}}">
+                                  </td>
                                   <td>{{ $value_expenses->type}}</td>
                                   <td>{{ number_format($value_expenses->ammount)}}</td>
                                   <td>{{ $value_expenses->description}}</td>
-                                  <td><span class="{{ $value_expenses->status['class']}}">{{ $value_expenses->status['label']}}</span></td>
+                                  <td><span class="{{ $value_expenses->status_approval($user->id)['class']}}">{{ $value_expenses->status_approval($user->id)['label']}}</span></td>
                                   <td>
-                                    @if ( $value_expenses->status['status'] == 0 || $value_expenses->status['status'] == 2 )
+                                    @if ( $value_expenses->status_approval($user->id)['status'] == 0 )
                                     <input type="checkbox" name="checklist[]" value="{{ $value_expenses->id}}">
                                     <button class="btn btn-sm btn-danger" onClick="removeDataExpenses('{{ $value_expenses->id}}')">Remove Detail</button>
+                                    @endif
+
+                                    @if ( $value_expenses->status_approval($user->id)['status'] == 2 )
+                                    <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modal-revisi" onClick="setRevisi('{{$value_expenses->id}}')" type="button">Revisi</button>
                                     @endif
                                   </td>
                                 </tr>
@@ -332,6 +341,51 @@
     </div>
     <!-- /.modal -->
   </form>
+
+
+  <form method="post" enctype="multipart/form-data" id="revisi_expenses">
+  <div class="modal fade" id="modal-revisi">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Input Detail</h4>
+        </div>
+        <div class="modal-body">
+            {{ csrf_field() }}
+            <input type="hidden" name="expenses_id" id="expenses_id">
+            <div class="box-body">
+              <div class="form-group">
+                <label>Type</label>
+                <input type="text" class="form-control" id="type_revisi" name="type_revisi" autocomplete="off" required>
+              </div>
+              <div class="form-group">
+                <label>Ammount</label>
+                <input type="text" class="form-control" id="ammount_revisi" name="ammount_revisi" autocomplete="off" required>
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <input type="text" class="form-control" id="desc_revisi" name="desc_revisi" autocomplete="off" required>
+              </div>
+              <div class="form-group">
+                <label>Receipt</label>
+                <input type="file" class="form-control" id="receipt_revisi" name="receipt_revisi" autocomplete="off" required>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="btn_revisi_expenses">Save changes</button>
+          <span id="loading_revisi" style="display: none;">Loading...</span>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  </form>
+  <!-- /.modal -->
 </div>
 <!-- ./wrapper -->
 @include("adjuster::iou.footer");

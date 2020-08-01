@@ -34,9 +34,18 @@
 
     $("#ammount").number(true);
     $("#ammount_expenses").number(true);
+    $("#ammount_revisi").number(true);
     
     $("#btn_expenses").click(function(){
+      $("#btn_expenses").hide();
+      $("#loading").show();
       saveExpenses();
+    });
+
+    $("#btn_revisi_expenses").click(function(){
+      $("#btn_revisi_expenses").hide();
+      $("#loading_revisi").show();
+      revExpenses();
     });
 
   });
@@ -137,6 +146,48 @@
             enctype: 'multipart/form-data',
             contentType : false,
             processData: false
+    });
+
+    request.done(function(data){
+      if ( data.status == "0"){
+        alert("Expenses has been created");
+      }
+
+      window.location.reload();
+    });
+  }
+
+  function setRevisi(id){
+    $("#expenses_id").val($("#reference_id_" + id).val());
+    $("#type_revisi").val($("#reference_type_" + id).val());
+    $("#ammount_revisi").val($("#reference_ammount_" + id).val());
+    $("#desc_revisi").val($("#reference_desc_" + id).val());
+  }
+
+  function revExpenses(){
+    var data = new FormData();
+    //Form data
+    var form_data = $('#revisi_expenses').serializeArray();
+    $.each(form_data, function (key, input) {
+        data.append(input.name, input.value);
+    });
+
+    //File data
+    var file_data = $('input[name="receipt"]')[0].files;
+
+    for (var i = 0; i < file_data.length; i++) {
+        data.append("receipt", file_data[i]);
+    }
+
+
+    var request = $.ajax({
+      url : "{{url('/')}}/adjuster/case/revisi_expenses",
+      dataType : "json",
+      data :data,
+      type : "post",
+      enctype: 'multipart/form-data',
+      contentType : false,
+      processData: false
     });
 
     request.done(function(data){
