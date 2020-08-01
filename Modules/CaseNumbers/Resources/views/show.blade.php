@@ -105,7 +105,7 @@
                           </tr>
                           </thead>
                           <tbody>
-                            @foreach ( $casenumber->expenses as $key => $value )
+                            @foreach ( $casenumber->case_expenses as $key => $value )
                             <tr>
                               <td></td>
                               <td></td>

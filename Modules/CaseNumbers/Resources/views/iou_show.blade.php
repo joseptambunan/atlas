@@ -60,6 +60,10 @@
                     <input type="text" class="form-control" name="location" value="{{$iou_data->location}}" disabled>
                   </div>
                   <div class="col-md-6">
+                    <label>Reference</label>
+                    <input type="text" class="form-control" name="location" value="{{$iou_data->document_number}}" disabled>
+                  </div>
+                  <div class="col-md-6">
                     <label>Periode Date</label><br/>
                     {{ date("d-M-Y", strtotime($iou_data->starttime))}} - {{ date("d-M-Y", strtotime($iou_data->endtime))}}<br/>
                   </div>

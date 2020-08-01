@@ -66,10 +66,10 @@
                   <div class="form-group">
                     <label>Periode Date</label><br/>
                     <div class="col-xs-6">
-                      <input type="text" class="form-control pull-right" id="datepicker_start" name="datepicker_start">
+                      <input type="text" class="form-control pull-right" id="datepicker_start" name="datepicker_start" autocomplete="off">
                     </div>
                     <div class="col-xs-6">
-                      <input type="text" class="form-control pull-right" id="datepicker_end" name="datepicker_end">
+                      <input type="text" class="form-control pull-right" id="datepicker_end" name="datepicker_end" autocomplete="off">
                     </div>
                   </div>
                 </div>

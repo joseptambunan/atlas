@@ -100,7 +100,7 @@ class IousController extends Controller
         $check_approval_id = Approvals::where("document_type",1)->where("document_id",$iou_data->id)->get();
         if ( count($check_approval_id) > 0 ){
             $approval = Approvals::find($check_approval_id->first()->id);
-            $approval_id = $check_approval_id->first()->id;
+            $approval_id = $approval->id;
             foreach ($approval->details as $key => $value) {
                 $approval_histories[] = array(
                     "name" => $value->user_detail->adjusters->name,

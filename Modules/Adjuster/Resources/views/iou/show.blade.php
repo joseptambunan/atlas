@@ -27,7 +27,7 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Detail Case</h3>
+              <h3 class="box-title">Detail IOU</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -68,9 +68,14 @@
                     <input type="text" class="form-control" name="location" value="{{$iou_data->location}}">
                   </div>
                   <div class="col-md-6">
+                    <label>Reference</label>
+                    <input type="text" class="form-control" name="location" value="{{$iou_data->document_number}}" disabled>
+                  </div>
+                  <div class="col-md-6">
                     <label>Periode Date</label><br/>
                     {{ date("d-M-Y", strtotime($iou_data->starttime))}} - {{ date("d-M-Y", strtotime($iou_data->endtime))}}<br/>
                   </div>
+                  @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
                   <div class="col-md-6">
                     <div class="col-xs-6">
                       <input type="text" class="form-control pull-right" id="datepicker_start" name="datepicker_start">
@@ -79,22 +84,21 @@
                       <input type="text" class="form-control pull-right" id="datepicker_end" name="datepicker_end">
                     </div>
                   </div>
+                  @endif
                   <div class="col-md-6">
                     <label>Total</label>
                     <h4>Rp. {{ number_format($iou_data->total)}}</h4>
-                    @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 3)
-                      <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
-                    @endif
+                    
                   </div>
                 </div>
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  @if ( $check_approval == "" )
+                  @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
                     <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}','{{ $approval_id}}')">Request Approval</button>
                     <button type="submit" class="btn btn-primary">Update</button>
-                  
                   @endif
+                  <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
               </form>
@@ -115,7 +119,7 @@
                           @endforeach
                         </ul>
                         <h4>Planned Expenses Detail</h4> 
-                        @if ( $check_approval == "" )
+                        @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
                           <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">Add Detail</button>
                         @endif
                         <table id="example4" class="table table-bordered table-hover">
@@ -150,12 +154,15 @@
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
                         <h4>Expenses List</h4>
+                        <h4>Total Expenses : Rp.{{ number_format($iou_data->total_expenses)}}</h4>
                         <form method="post" name="form1" action="{{ url('/')}}/approval/request_approval">
                           {{ csrf_field() }}
                           <input type="hidden" name="document_id" value="{{ $iou_data->id}}">
                           <input type="hidden" name="document_type" value="2">
+                          @if ( $iou_data->status['status'] == 3 )
                           <button type="submit" class="btn btn-success">Request Approve</button>
                           <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-detail">Create Expenses</button>
+                          @endif
                           <table id="example4" class="table table-bordered table-hover">
                             <thead class="header_background">
                               <tr>

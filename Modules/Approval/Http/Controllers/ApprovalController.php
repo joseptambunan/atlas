@@ -112,8 +112,6 @@ class ApprovalController extends Controller
         $document_type = strtolower($master_document->document);
 
         if ( $request->status == 2 ){
-
-
             $approval = Approvals::find($approval_detail->approval->id);
             $approval->status = $request->status;
             $approval->approval_at = date("Y-m-d H:i:s");
@@ -151,13 +149,6 @@ class ApprovalController extends Controller
                 $approval_histories->created_by = Auth::user()->id;
                 $approval_histories->save();
 
-                $approval = Approvals::find($approval_detail->approval->id);
-                $approval->status = 1;
-                $approval->approval_at = date("Y-m-d H:i:s");
-                $approval->updated_at = date("Y-m-d H:i:s");
-                $approval->updated_by = Auth::user()->id;
-                $approval->description = "";
-                $approval->save();
             }
 
             if ( $document_type == "iou"){
@@ -245,12 +236,15 @@ class ApprovalController extends Controller
         $checklist = $request->checklist;
         $position = MasterPositions::get();
         $master_document = MasterDocument::find($request->document_type);
-        $approval_id = $request->approval_id;
         $redirect = array(
             "1" => "adjuster/iou/show/",
             "2" => "adjuster/iou/show/"
         );
         $approval_id = "";
+        if ( isset($request->approval_id) && ($request->approval_id != "" )){
+            $approval_id = $request->approval_id;
+        }
+
         $array_document_id = array();
         if ( isset($request->checklist)){
             foreach ($request->checklist as $key => $value) {
@@ -260,12 +254,17 @@ class ApprovalController extends Controller
             array_push($array_document_id, $request->document_id);
         }
 
+
         if ( count($array_document_id) > 0 ) {
             foreach ($array_document_id as $key_checklist => $value_checklist) {
                 foreach ($master_document->approvals as $key => $value) {
                     foreach ($value->jabatan_approvals->jabatan->adjusters as $key_adjusters => $value_adjusters) {
                         if ( $key == 0 && $key_adjusters == 0 ){
-                            $approval = new Approvals;
+                            if ( $approval_id != ""){
+                                $approval = Approvals::find($approval_id);
+                            }else{
+                                $approval = new Approvals;
+                            }   
                             $approval->document_type = $master_document->id;
                             $approval->document_id = $value_checklist;
                             $approval->status = 1;
@@ -275,14 +274,24 @@ class ApprovalController extends Controller
                             $approval->save();
                         }
 
-                        $approval_detail = new ApprovalDetails;
-                        $approval_detail->approval_id = $approval->id;
-                        $approval_detail->status = 1;
-                        $approval_detail->approval_by = $value_adjusters->user_detail->id;
-                        $approval_detail->created_at = date("Y-m-d H:i:s");
-                        $approval_detail->created_by = Auth::user()->id;
-                        $approval_detail->level = $value->level;
-                        $approval_detail->save();
+                        if ( count($approval->details) <= 0 ){
+                            $approval_detail = new ApprovalDetails;
+                            $approval_detail->approval_id = $approval->id;
+                            $approval_detail->status = 1;
+                            $approval_detail->approval_by = $value_adjusters->user_detail->id;
+                            $approval_detail->created_at = date("Y-m-d H:i:s");
+                            $approval_detail->created_by = Auth::user()->id;
+                            $approval_detail->level = $value->level;
+                            $approval_detail->save();
+                        }else{
+                            foreach ($approval->details as $key_detail => $value_detail) {
+                                $approval_detail = ApprovalDetails::find($value_detail->id);
+                                $approval_detail->status = 1;
+                                $approval_detail->updated_at = date("Y-m-d H:i:s");
+                                $approval_detail->updated_by = Auth::user()->id;
+                                $approval_detail->save();
+                            }
+                        }
                     }
                 }
             }

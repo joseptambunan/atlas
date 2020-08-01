@@ -155,7 +155,7 @@ class MasterAdjusters extends Model
         foreach ($this->ious as $key => $value) {
             if ( $value->status['status'] == 1 || $value->status['status'] == 4 ){
                 if ( $value->deleted_by == "" ){
-                    $remaining = round (( strtotime("now") - strtotime($value->updated_at)) / 86400);
+                    $remaining = round (( strtotime("now") - strtotime($value->created_at)) / 86400);
                     if ( $remaining > $expired_day ) {
                         $iou_data = IouLists::find($value->id);
                         if ( $iou_data->deleted_at == "" ){

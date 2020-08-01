@@ -27,7 +27,7 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Detail Case</h3>
+              <h3 class="box-title">Detail IOU</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -64,6 +64,10 @@
                     <input type="text" class="form-control" name="location" value="{{$iou_data->location}}">
                   </div>
                   <div class="col-md-6">
+                    <label>Reference</label>
+                    <input type="text" class="form-control" name="location" value="{{$iou_data->document_number}}" disabled>
+                  </div>
+                  <div class="col-md-6">
                     <label>Periode Date</label><br/>
                     {{ date("d-M-Y", strtotime($iou_data->starttime))}} - {{ date("d-M-Y", strtotime($iou_data->endtime))}}<br/>
                   </div>
@@ -75,6 +79,7 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
+                  <span class="{{ $array_status[$approval_detail->approval->status]['class']}}">{{ $array_status[$approval_detail->approval->status]['label']}}</span>
                   @if ( $approval_detail->status == 1)
                   <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}')">
                     Approve
@@ -82,8 +87,7 @@
                   <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-default">
                     Reject
                   </button>
-                  @else
-                  <span class="{{$array_status[$approval_detail->status]['class']}}">{{$array_status[$approval_detail->status]['label']}}</span>
+                 
                   @endif
 
                   <a class="btn btn-warning" href="{{ url('/')}}/approval/index">Back</a>
