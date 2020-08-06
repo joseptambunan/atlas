@@ -313,7 +313,9 @@
                     <option value="{{ $value->id}}">{{ $value->adjuster_casenumber->case->title}}</option>
                   @else
                     @if ( $value->adjuster_casenumber->case->invoice->updated_by == "")
+                      @if ( $value->adjuster_casenumber->updated_by == "")
                       <option value="{{ $value->id}}">{{ $value->adjuster_casenumber->case->title}}</option>
+                      @endif
                     @endif
                   @endif
                 @endforeach

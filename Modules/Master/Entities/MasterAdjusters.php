@@ -198,14 +198,21 @@ class MasterAdjusters extends Model
 
     public function getPendingInvoiceAttribute(){
         $array = array();
-        return $array;
+        $i=0;
         $detail_jabatan = $this->position;
         if ( count($detail_jabatan->approval) > 0 ){
             $invoice = Invoices::get();
             foreach ($invoice as $key => $value) {
                 foreach ($value->cases as $key_cases => $value_cases) {
-                    foreach ($value_cases->expenses as $key_expenses => $value_expenses) {
-                        
+                    if ( $value_cases->updated_by == "" ){
+                        $array[$i] = array(
+                            "id" => $value_cases->id,
+                            "case_number" => $value_cases->case_number,
+                            "title" => $value_cases->title,
+                            "created_at" => $value_cases->created_at,
+                            "created_by" => $value_cases->created
+                        );
+                        $i++;
                     }
                 }
             }

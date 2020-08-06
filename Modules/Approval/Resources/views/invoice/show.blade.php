@@ -91,6 +91,7 @@
                             <th>No.</th>
                             <th>Type</th>
                             <th>Ammount</th>
+                            <th>Description</th>
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
@@ -98,16 +99,21 @@
                             <th>Detail</th>
                           </tr>
                           </thead>
-                          <tbody>
-                            @foreach ( $casenumber->expenses as $key => $value )
+                            <tbody>
+                            @php $i=0; @endphp
+                            @foreach ( $casenumber->case_expenses as $key => $value )
                             <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td>{{ $i+1 }}</td>
+                              <td>{{ $value->type }}</td>
+                              <td>{{ $value->ammount }}</td>
+                              <td>{{ $value->description }}</td>
+                              <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
+                              <td>{{ $value->created->adjusters->name }}</td>
+                              <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
+                              <td>{{ $value->iou_lists->iou->title }}</td>
+                              <td><a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a></td>
                             </tr>
+                            @php $i++; @endphp
                             @endforeach
                           </tbody>
                         </table>
@@ -153,7 +159,7 @@
                         <ul>
                         @foreach ( $casenumber->adjusters as $key => $value )
                           @if ( $value->deleted_at == "")
-                          <li>{{ $value->adjuster->name }}</li>
+                          <li>{{ $value->adjuster->name }} @if ( $value->updated_by != "" ) <strong>Finish at {{ date("d-M-Y",strtotime($value->updated_at)) }} @endif</strong></li>
                           @endif
                         @endforeach
                         </ul>

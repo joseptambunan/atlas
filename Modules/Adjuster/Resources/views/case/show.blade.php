@@ -6,6 +6,7 @@
   @include("master::adjuster.header")
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
+<input type="hidden" name="expenses" id="expenses" value="{{$expenses}}">
 <div class="wrapper">
 
   @include ("master::adjuster.navbar")
@@ -154,7 +155,7 @@
                                   <td>{{ $value_ious->iou->created->adjusters->name }}</td>
                                   <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
                                   <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
-                                  <td><a href="{{ url('/')}}/casenumber/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
+                                  <td><a href="{{ url('/')}}/adjuster/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
                                 </tr>
                                 @php $i++; @endphp
                                 @endif
@@ -289,6 +290,11 @@
    }
 
    function finishCase(id){
+    if ( $("#expenses").val() == 0 ){
+      alert("You expenses not exist or not approve. Please check before");
+      return false;
+    }
+
     if ( confirm("Are you sure to finish this case ? ")){
       var request = $.ajax({
         url : "{{ url('/')}}/adjuster/invoice/finish",
@@ -302,6 +308,8 @@
       request.done(function(data){
         if ( data.status == "0"){
           alert("Case has been finish");
+        }else{
+          alert("You expenses not exist. Please check before");
         }
 
         window.location.reload();

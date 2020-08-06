@@ -38,7 +38,6 @@
                   <th>No.</th>
                   <th>Case Number</th>
                   <th>Created at</th>
-                  <th>Created by</th>
                   <th>Detail</th>
                 </tr>
                 </thead>
@@ -50,8 +49,7 @@
                       <td>{{ $i + 1 }}</td>
                       <td>{{ $value['case_number'] }}</td>
                       <td>{{ $value['created_at']}}</td>
-                      <td>{{ $value['created_by']}}</td>
-                      <td><a class="btn btn-warning" href="{{ url('/')}}/approval/invoice/show/{{$value['id']}}">Detail</a></td>
+                      <td><a class="btn btn-success" href="{{ url('/')}}/approval/invoice/show/{{$value['id']}}">Detail</a></td>
                     </tr>
                     @php $i++ @endphp
                   @endforeach

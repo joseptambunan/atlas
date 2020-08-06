@@ -128,7 +128,11 @@ class AdjusterController extends Controller
             }
         }
 
-        $data['status'] = 0;
+        if ( $expenses <= 0 ){
+            $data['status'] = 1;
+        }else{
+            $data['status'] = 0;   
+        }
         echo json_encode($data);
     }
 }

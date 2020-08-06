@@ -123,6 +123,13 @@
   }
 
   function saveExpenses(){
+    if ( $("#iou_list_id").val() == null || $("#iou_list_id").val() == "" || $("#type_expenses").val() == "" || $("#ammount_expenses").val() == "" ) {
+      alert("Pleace complete data");
+      $("#btn_expenses").show();
+      $("#loading").hide();
+      return false;
+    }
+
     var data = new FormData();
     //Form data
     var form_data = $('#upload_expenses').serializeArray();

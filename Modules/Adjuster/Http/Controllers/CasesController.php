@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Config;
-use Modules\Master\Entities\MasterCaseNumbers;
+use Modules\Master\Entities\MasterCasenumbers;
 use Modules\Master\Entities\MasterAdjusters;
 use Modules\Adjuster\Entities\IouCases;
 use Modules\Adjuster\Entities\CaseExpenses;
@@ -32,15 +32,26 @@ class CasesController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-        $casenumber = MasterCaseNumbers::find($id);
+        $casenumber = MasterCasenumbers::find($id);
         $finish_status = "";
 
         foreach ($casenumber->adjusters as $key => $value) {
             if ( $value->adjuster_id == $adjuster_data->id){
-                $finish_status = "Finish";
+                if ( $value->updated_by != ""){
+                    $finish_status = "Finish";
+                }
             }
         }
-        return view('adjuster::case.show',compact("user","config_sidebar","adjuster_data","casenumber","finish_status"));
+
+        $expenses = 0;
+        foreach ($casenumber->case_expenses as $key_expenses => $value_expenses) {
+            if ( $value_expenses->created_by == $user->id ){
+                if ( $value_expenses->status['status'] == 3 ){
+                    $expenses++;
+                }
+            }
+        }
+        return view('adjuster::case.show',compact("user","config_sidebar","adjuster_data","casenumber","finish_status","expenses"));
     }
 
     public function save_expenses(Request $request){
