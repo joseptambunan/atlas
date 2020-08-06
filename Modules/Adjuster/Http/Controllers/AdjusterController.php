@@ -107,6 +107,7 @@ class AdjusterController extends Controller
         $invoice = Invoices::find($request->id);
         $start_flag = 0;
         $start_count = 0;
+        $expenses = 0;
         foreach ($invoice->cases as $key => $value) {
             $start_flag = count($value->adjusters);
             foreach ($value->adjusters as $key_adjuster => $value_adjuster) {
@@ -128,11 +129,7 @@ class AdjusterController extends Controller
             }
         }
 
-        if ( $expenses <= 0 ){
-            $data['status'] = 1;
-        }else{
-            $data['status'] = 0;   
-        }
+        $data['status'] = 0;
         echo json_encode($data);
     }
 }

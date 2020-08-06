@@ -115,7 +115,7 @@
                   <tbody>
                     @php $i=0; @endphp
                     @foreach ( $adjuster_data->cases as $key => $value )
-                      @if ( $value->case->invoice->updated_by == "")
+                      @if ( $value->deleted_at == "")
                       <tr>
                         <td>{{ $i + 1 }}</td>
                         <td>{{ $value->case->case_number }}</td>

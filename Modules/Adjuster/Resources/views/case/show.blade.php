@@ -71,11 +71,13 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
+                  @if ( isset($casenumber->invoice))
                     @if ( $finish_status == "" )
                       <p>This case have Invoice Number. Please confirm to finish this case</p>
                       <button type="button" class="btn btn-success" onClick="finishCase('{{ $casenumber->invoice->id }}')">Finish</button>
                     @else
                       <label class="label label-info">Finish by Adjuster</label>
+                    @endif
                   @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
