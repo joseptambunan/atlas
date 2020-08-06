@@ -30,6 +30,35 @@
               <h3 class="box-title">Master Case Number</h3>
             </div>
             <!-- /.box-header -->
+
+            <div class="box-body">
+              <form method="post" action="{{ url('/')}}/casenumbers/search/case">
+              {{ csrf_field() }}
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Search Case</label>
+                </div>
+                <div class="form-group">
+                  <label>Search By </label>
+                  <select class="form-control" name="search_by">
+                    <option value="client">Client</option>
+                    <option value="title">Title</option>
+                    <option value="adjusters">Adjuster</option>
+                    <option value="case">Case Number</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Keyword</label>
+                  <input type="text" class="form-control" name="keyword" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-success" type="submit">Search</button>
+                  <a href="{{ url('/')}}/casenumbers/iou/" class="btn btn-warning">Reset</a>
+                </div>
+              </div>
+              </form>
+            </div>
+
             <div class="box-body">
               <div class="col-md-12">
                 <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>

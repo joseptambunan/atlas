@@ -33,7 +33,14 @@ class CasesController extends Controller
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
         $casenumber = MasterCaseNumbers::find($id);
-        return view('adjuster::case.show',compact("user","config_sidebar","adjuster_data","casenumber"));
+        $finish_status = "";
+
+        foreach ($casenumber->adjusters as $key => $value) {
+            if ( $value->adjuster_id == $adjuster_data->id){
+                $finish_status = "Finish";
+            }
+        }
+        return view('adjuster::case.show',compact("user","config_sidebar","adjuster_data","casenumber","finish_status"));
     }
 
     public function save_expenses(Request $request){

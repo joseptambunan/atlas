@@ -267,4 +267,5 @@ class MasterAdjusters extends Model
 
         return $array_approval;
     }
+
 }

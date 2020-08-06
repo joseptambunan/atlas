@@ -291,7 +291,7 @@
           </div>
           <div class="form-group">
             <label>Receipt</label>
-            <a href="{{ url('/')}}/approval/download/" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
+            <a href="#" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
           </div>
           <div class="form-group">
             <label>Reason</label>

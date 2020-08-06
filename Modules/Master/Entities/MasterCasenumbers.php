@@ -4,6 +4,7 @@ namespace Modules\Master\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class MasterCasenumbers extends Model
 {
@@ -52,6 +53,26 @@ class MasterCasenumbers extends Model
 
     public function invoice(){
         return $this->belongsTo("Modules\CaseNumbers\Entities\Invoices","invoice_number");
+    }
+
+    public function getTotalExpensesAttribute(){
+        $total = 0;
+        foreach ($this->case_expenses as $key => $value) {
+            $total = $total + $value->ammount;
+        }
+
+        return $total;
+    }
+
+    public function getTotalIouPlannedAttribute(){
+        $total = 0;
+        foreach ($this->adjusters as $key => $value) {
+            foreach ($value->ious as $key_ious => $value_ious) {
+                $total = $total + $value_ious->iou->total;
+            }
+        }
+
+        return $total;
     }
 
 }

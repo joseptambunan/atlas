@@ -64,7 +64,12 @@
     $("#expenses_type").val($("#ref_type_"+id).val());
     $("#expenses_ammount").val($("#ref_ammount_"+id).val());
     $("#expenses_description").val($("#ref_desc_"+id).val());
-    $("#expenses_receipt").attr("href","{{ url('/')}}/approval/download/" + id);
+    if ( $("#ref_receipt_" + id).val() != ""){
+      $("#expenses_receipt").attr("href","{{ url('/')}}/approval/download/" + id); 
+    }else{
+      $("#expenses_receipt").removeAttr("href");
+      $("#expenses_receipt").attr("href","#");
+    }
     $("#expenses_approval_id").val($("#ref_approval_"+id).val());
   }
 

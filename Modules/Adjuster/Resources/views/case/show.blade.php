@@ -70,13 +70,11 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  @if ( $casenumber->invoice_number != "" )
-                    @if ( $casenumber->invoice->updated_by == "")
+                    @if ( $finish_status == "" )
                       <p>This case have Invoice Number. Please confirm to finish this case</p>
                       <button type="button" class="btn btn-success" onClick="finishCase('{{ $casenumber->invoice->id }}')">Finish</button>
                     @else
                       <label class="label label-info">Finish by Adjuster</label>
-                    @endif
                   @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
@@ -94,6 +92,7 @@
                       <div class="tab-pane active" id="tab_1">
 
                         <h4>Expenses List</h4>
+                        <h4>Total : Rp. {{ number_format($casenumber->total_expenses)}}</h4>
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
                           <tr>
@@ -130,6 +129,7 @@
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
                         <h4>IOU List</h4>
+                        <h4>Total IOU: Rp. {{ number_format($casenumber->total_iou_planned)}}</h4>
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
                           <tr>
@@ -168,7 +168,7 @@
                         <ul>
                         @foreach ( $casenumber->adjusters as $key => $value )
                           @if ( $value->deleted_at == "")
-                          <li>{{ $value->adjuster->name }}</li>
+                          <li>{{ $value->adjuster->name }} @if ( $value->updated_by != "" ) <i>Finish at</i> {{ date('d-M-Y', strtotime($value->updated_at))}} @endif</li>
                           @endif
                         @endforeach
                         </ul>

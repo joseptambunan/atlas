@@ -15,6 +15,8 @@ use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
 use Modules\Adjuster\Entities\IouLists;
 use App\Approvals;
 use Modules\CaseNumbers\Entities\Invoices;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Export;
 
 class CaseNumbersController extends Controller
 {
@@ -193,6 +195,110 @@ class CaseNumbersController extends Controller
 
         return redirect("casenumbers/iou/show/".$iou_data->id);
 
+    }
+
+    public function search(Request $request){
+        $search_by = $request->search_by;
+        $keyword = $request->keyword;
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $master_iou = array();
+
+        switch ( $search_by ){
+            case 'client':
+                $master_iou = IouLists::where("client",'like','%'.$keyword.'%')->get();
+            break;
+
+            case 'title':
+                $master_iou = IouLists::where("title",'like','%'.$keyword.'%')->get();
+            break;
+
+            case 'adjusters':
+                $check_user = MasterAdjusters::where("name",'like','%'.$keyword.'%')->get();
+                if ( count($check_user) > 0 ){
+                    $adjuster = MasterAdjusters::find($check_user->first()->id);
+                    $master_iou = IouLists::where("created_by",$adjuster->user_detail->id)->get();
+                }
+            break;
+
+            case 'case':
+                $check_case = MasterCasenumbers::where("title",'like','%'.$keyword.'%')->get();
+                if ( count($check_case) > 0 ){
+                    $iou_id = array();
+                    $data_case = MasterCasenumbers::find($check_case->first()->id);
+                    foreach ($data_case->adjusters as $key => $value) {
+                        foreach ($value->ious as $key_ious => $value_ious) {
+                            array_push ($iou_id, $value_ious->iou_lists_id);
+                        }
+                    }
+
+                    $master_iou = IouLists::whereIn("id",$iou_id)->get();
+                }
+            break;
+        }
+
+        return view("casenumbers::iou",compact("user","config_sidebar","master_iou"));
+
+    }
+
+    public function search_case(Request $request){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $master_casenumbers = array();
+        $search_by = $request->search_by;
+        $keyword = $request->keyword;
+
+        switch ( $search_by ){
+            case 'client':
+                $array_id = array();
+                $master_iou = IouLists::where("client",'like','%'.$keyword.'%')->get();
+                if ( count($master_iou) > 0 ){
+                    foreach ($master_iou as $key => $value) {
+                        $iou_list = IouLists::find($value->id);
+                        foreach ($iou_list->cases as $key_cases => $value_cases) {
+                            array_push($array_id, $value_cases->iou_lists_id);
+                        }
+                    }
+                }
+                $master_casenumbers = MasterCasenumbers::whereIn("id",$array_id)->get();
+            break;
+
+            case 'title':
+                $master_casenumbers = MasterCasenumbers::where("title",'like','%'.$keyword.'%')->get();
+            break;
+
+            case 'adjusters':
+                $array_id = array();
+                $check_user = MasterAdjusters::where("name",'like','%'.$keyword.'%')->get();
+                if ( count($check_user) > 0 ){
+                    $adjuster = MasterAdjusters::find($check_user->first()->id);
+                    foreach ($adjuster->cases as $key => $value) {
+                        array_push($array_id, $value->case_number_id);
+                    }
+                }
+
+                $master_casenumbers = MasterCasenumbers::whereIn("id",$array_id)->get();
+            break;
+
+            case 'case':
+                $master_casenumbers = MasterCasenumbers::where("case_number",'like','%'.$keyword.'%')->get();
+            break;
+        }
+
+        $total_iou = 0;
+        $iou_list = IouLists::where("document_number",NULL)->get();
+        foreach ($iou_list as $key => $value) {
+            if ( $value->status['status'] == 3 ){
+                $total_iou  += 1;
+            }
+        }
+
+        return view('casenumbers::index',compact("user","config_sidebar","master_casenumbers","total_iou"));
+    }
+
+    public function download($id){
+        $master_casenumbers = MasterCasenumbers::find($id);
+        return Excel::download(new Export($master_casenumbers->id), $master_casenumbers->case_number.'.xlsx');
     }
 
 }

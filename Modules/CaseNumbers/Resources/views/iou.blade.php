@@ -31,6 +31,35 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+              <form method="post" action="{{ url('/')}}/casenumbers/search/iou">
+              {{ csrf_field() }}
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Search IOU</label>
+                </div>
+                <div class="form-group">
+                  <label>Search By </label>
+                  <select class="form-control" name="search_by">
+                    <option value="client">Client</option>
+                    <option value="title">Title</option>
+                    <option value="adjusters">Adjuster</option>
+                    <option value="case">Case Name</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Keyword</label>
+                  <input type="text" class="form-control" name="keyword" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-warning" type="submit">Search</button>
+                  <a href="{{ url('/')}}/casenumbers/iou/" class="btn btn-success">Reset</a>
+                </div>
+              </div>
+              </form>
+            </div>
+
+            <div class="box-body">
+
               <table id="example4" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>

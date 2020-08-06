@@ -13,6 +13,7 @@ use Modules\Master\Entities\MasterAdjusters;
 use Modules\Master\Entities\MasterCaseNumbers;
 use Modules\Adjuster\Entities\IouCases;
 use Modules\CaseNumbers\Entities\Invoices;
+use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
 
 class AdjusterController extends Controller
 {
@@ -102,9 +103,30 @@ class AdjusterController extends Controller
     }
 
     public function finish_invoice(Request $request){
+        $user = User::find(Auth::user()->id);
         $invoice = Invoices::find($request->id);
-        $invoice->updated_by = Auth::user()->id;
-        $invoice->save();   
+        $start_flag = 0;
+        $start_count = 0;
+        foreach ($invoice->cases as $key => $value) {
+            $start_flag = count($value->adjusters);
+            foreach ($value->adjusters as $key_adjuster => $value_adjuster) {
+                if ( $value_adjuster->adjuster_id == $user->adjuster_id){
+                    $start_count++;
+                    $adjuster_casenumber = AdjusterCasenumbers::find($value_adjuster->id);
+                    $adjuster_casenumber->updated_by = $user->id;
+                    $adjuster_casenumber->updated_at = date("Y-m-d H:i:s");
+                    $adjuster_casenumber->save();
+                }
+            }
+        }
+
+        if ( $start_flag > 0 ){
+            if ( $start_flag == $start_count ){
+                $invoice = Invoices::find($request->id);
+                $invoice->updated_by = Auth::user()->id;
+                $invoice->save();   
+            }
+        }
 
         $data['status'] = 0;
         echo json_encode($data);

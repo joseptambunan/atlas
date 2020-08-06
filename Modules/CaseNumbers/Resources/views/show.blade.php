@@ -70,12 +70,15 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  <button type="submit" class="btn btn-primary">Update</button>
-                  @if ( ($casenumber->total_iou['total']) > 0 )
+                  @if ( $casenumber->invoice_number == "")
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn {{$class[$status]['button']}}" onClick="cancelthiscase('{{$casenumber->id}}','{{ $status}}');">Update to {{ $status }} this case</button>
+                  @endif
+                  @if ( ($casenumber->total_iou['total']) > 0 && $casenumber->invoice_number == "" )
                    <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#modal-default">Create Invoice</button>
                   @endif
-                  <button type="button" class="btn {{$class[$status]['button']}}" onClick="cancelthiscase('{{$casenumber->id}}','{{ $status}}');">Update to {{ $status }} this case</button>
                   <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/">Back</a>
+                  <a class="btn btn-info" href="{{ url('/')}}/casenumbers/download/{{$casenumber->id}}">Download as Excel</a>
                 </div>
               </form>
             
@@ -91,6 +94,7 @@
                       <div class="tab-pane active" id="tab_1">
 
                         <h4>Expenses List</h4>
+                        <h4>Total Expenses : Rp.{{ number_format($casenumber->total_expenses)}}</h4>
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
                           <tr>
@@ -102,17 +106,25 @@
                             <th>Status Approval</th>
                             <th>IOU Reference</th>
                             <th>Detail</th>
+                            <th>Receipt</th>
                           </tr>
                           </thead>
                           <tbody>
                             @foreach ( $casenumber->case_expenses as $key => $value )
                             <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td>{{ $key + 1 }}</td>
+                              <td>{{ $value->type }}</td>
+                              <td>Rp.{{ number_format($value->ammount) }}</td>
+                              <td>{{ date('d-M-Y', strtotime($value->created_at))}}</td>
+                              <td>{{ $value->created->adjusters->name }}</td>
+                              <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
+                              <td><a href="{{url('/')}}/casenumbers/iou/show/{{ $value->iou_lists->iou->id }}" target="_blank" class="btn btn-info">{{ $value->iou_lists->iou->title }}</a></td>
+                              <td><button  class="btn btn-primary" data-toggle="modal" data-target="#modal-detail" onClick="viewDetail('{{$value->id}}')">View Detail</button></td>
+                              <td>
+                                @if ( $value->receipt != "" )
+                                  <a href="{{ url('/')}}/approval/download/{{$value->id}}">Download Receipt</a>
+                                @endif
+                              </td>
                             </tr>
                             @endforeach
                           </tbody>
@@ -127,6 +139,7 @@
                             <th>No.</th>
                             <th>Type</th>
                             <th>Ammount</th>
+                            <th>Total Expenses</th>
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
@@ -142,6 +155,7 @@
                                   <td>{{ $i + 1 }}</td>
                                   <td>{{ $value_ious->iou->type_of_survey }}</td>
                                   <td>Rp. {{ number_format($value_ious->iou->total) }}</td>
+                                  <td>Rp. {{ number_format($value_ious->iou->total_expenses) }}</td>
                                   <td>{{ $value_ious->iou->created->adjusters->name }}</td>
                                   <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
                                   <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
@@ -159,11 +173,13 @@
                         <ul>
                         @foreach ( $casenumber->adjusters as $key => $value )
                           @if ( $value->deleted_at == "")
-                          <li>{{ $value->adjuster->name }}</li>
+                            <li> {{ $value->adjuster->name }} @if ( $value->updated_by ) <i>Finish at</i> {{ date('d-M-Y', strtotime($value->updated_at))}} @endif </li>
                           @endif
                         @endforeach
                         </ul>
+                        @if ( $casenumber->invoice_number == "")
                         <a href="{{ url('/')}}/casenumbers/adjuster/all/{{$casenumber->id}}" class="btn btn-success">Add Adjuster</a>
+                        @endif
                       </div>
                     </div>
                     <!-- /.tab-content -->
@@ -203,6 +219,45 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" onClick="submitInvoice()">Save</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+  <div class="modal fade" id="modal-detail">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Default Modal</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" class="form-control" id="expenses_type" name="expenses_type" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Ammount</label>
+            <input type="text" class="form-control" id="expenses_ammount" name="expenses_ammount" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" cols="30" rows="6" name="expenses_description" id="expenses_description" disabled></textarea>
+          </div>
+          <div class="form-group">
+            <label>Receipt</label>
+            <a href="{{ url('/')}}/approval/download/" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
+          </div>
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea class="form-control" cols="30" rows="6" name="reason" id="reason"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -278,6 +333,7 @@
       return false;
     }
    }
+
 </script>
 </body>
 </html>
