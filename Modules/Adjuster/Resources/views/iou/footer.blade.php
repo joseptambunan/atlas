@@ -205,5 +205,12 @@
       window.location.reload();
     });
   }
+
+  $("#case_id").change(function(){
+    var division = ($(this).children('option:selected').attr('data-attribute-division'));
+    var insurance = ($(this).children('option:selected').attr('data-attribute-insurance'));
+    $("#division_id").val(division);
+    $("#insurance_id").val(insurance);
+  });
    
 </script>

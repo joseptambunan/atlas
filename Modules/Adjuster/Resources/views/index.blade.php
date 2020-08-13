@@ -61,6 +61,7 @@
               <div class="active tab-pane" id="activity">
                 <a href="{{ url('/')}}/adjuster/iou/add" class="btn btn-primary">Request IOU</a>
                 <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default">Create Expenses</a>
+                <span style="font-size: 14px;font-weight: bolder;">Balance : Rp. {{ number_format($limit_balance->value - $iou_not_complete ) }}</span>
                 <center><h5>IOU List</h5></center>
                 <table class="table table-bordered table-hover">
                   <thead class="header_background">

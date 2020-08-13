@@ -113,4 +113,12 @@ class IouLists extends Model
         $data['detail'] = $array;
         return $data;
     }
+
+    public function client_name(){
+        return $this->belongsTo("Modules\Master\Entities\MasterInsurance","client");
+    }
+
+    public function division_name(){
+        return $this->belongsTo("Modules\Master\Entities\MasterDivision","division");
+    }
 }

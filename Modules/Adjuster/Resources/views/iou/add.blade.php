@@ -37,9 +37,9 @@
                 <div class="box-body">
                   <div class="form-group">
                     <label>Case Number</label>
-                    <select class="form-control select2" multiple="multiple" style="width: 100%;" name="case_id[]">
+                    <select class="form-control select2" multiple="multiple" style="width: 100%;" name="case_id[]" id="case_id">
                       @foreach ( $adjuster_data->cases as $key => $value )
-                      <option value="{{ $value->id}}">{{ $value->case->case_number}}</option>
+                      <option value="{{ $value->id}}" data-attribute-insurance="{{$value->case->insurance_id}}" data-attribute-division="{{ $value->case->division_id}}">{{ $value->case->case_number}}</option>
                       @endforeach
                     </select>
                   </div>
@@ -48,16 +48,28 @@
                     <input type="text" class="form-control" id="title" name="title" autocomplete="off" required>
                   </div>
                   <div class="form-group">
-                    <label>Client</label>
-                    <input type="text" class="form-control" id="client" name="client" autocomplete="off" required>
+                    <label>Insurance Client</label>
+                    <select class="form-control" name="client" id="insurance_id">
+                      @foreach ( $master_insurance as $key => $value )
+                      <option value="{{ $value->id}}" class="insurance insurance_{{$value->id}}">{{ $value->insurance_name }}</option>
+                      @endforeach
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Division</label>
-                    <input type="text" class="form-control" id="division" name="division" autocomplete="off" required>
+                    <select class="form-control" name="division" id="division_id">
+                      @foreach ( $master_division as $key => $value )
+                      <option value="{{ $value->id}}" class="division division_{{$value->id}}">{{ $value->division_name }}</option>
+                      @endforeach
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Type of Survey</label>
-                    <input type="text" class="form-control" id="tos" name="tos" autocomplete="off" required>
+                    <select class="form-control" name="tos">
+                      <option value="meeting">Meeting</option>
+                      <option value="survey">Survey</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Location</label>

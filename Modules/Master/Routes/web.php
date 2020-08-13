@@ -35,4 +35,10 @@ Route::prefix('master')->group(function() {
    	Route::post('/adjusters/create','AdjustersController@create'); 
    	Route::get('/adjusters/show/{id}','AdjustersController@show');
    	Route::post('/adjusters/update','AdjustersController@update');
+
+    Route::get('/insurance','InsuranceController@index');
+    Route::post('/insurance/create','InsuranceController@store');
+
+    Route::get('/division','DivisionController@index');
+    Route::post('/division/store','DivisionController@store');
 });

@@ -17,6 +17,8 @@ use App\Approvals;
 use Modules\CaseNumbers\Entities\Invoices;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Export;
+use Modules\Master\Entities\MasterInsurance;
+use Modules\Master\Entities\MasterDivision;
 
 class CaseNumbersController extends Controller
 {
@@ -46,7 +48,9 @@ class CaseNumbersController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $master_adjuster = MasterAdjusters::get();
-        return view('casenumbers::add',compact("user","config_sidebar","master_adjuster"));
+        $master_insurance = MasterInsurance::get();
+        $master_division = MasterDivision::get();
+        return view('casenumbers::add',compact("user","config_sidebar","master_adjuster","master_insurance","master_division"));
     }
 
     public function create(Request $request){
@@ -55,6 +59,8 @@ class CaseNumbersController extends Controller
         $casenumber->title = $request->title;
         $casenumber->created_at = date("Y-m-d H:i:s");
         $casenumber->created_by = Auth::user()->id;
+        $casenumber->insurance_id = $request->insurance;
+        $casenumber->division_id = $request->division;
         $casenumber->save();
 
         return redirect("/casenumbers/show/".$casenumber->id);
@@ -65,6 +71,8 @@ class CaseNumbersController extends Controller
         $config_sidebar = Config::get('sidebar');
         $casenumber = MasterCasenumbers::find($request->id);
         $adjuster_list = MasterAdjusters::get();
+        $master_insurance = MasterInsurance::get();
+        $master_division = MasterDivision::get();
 
         $status = 'offline';
         if ( $casenumber->deleted_at != ""){
@@ -79,7 +87,7 @@ class CaseNumbersController extends Controller
                 "button" => "btn-danger"
             )
         );
-        return view('casenumbers::show',compact("user","config_sidebar","casenumber","status","class","adjuster_list"));
+        return view('casenumbers::show',compact("user","config_sidebar","casenumber","status","class","adjuster_list","master_insurance","master_division"));
 
     }
 

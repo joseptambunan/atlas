@@ -18,6 +18,8 @@ use Modules\Master\Entities\MasterDocument;
 use Modules\Master\Entities\MasterApprovals;
 use App\ApprovalDetails;
 use App\ApprovalHistories;
+use Modules\Master\Entities\MasterInsurance;
+use Modules\Master\Entities\MasterDivision;
 
 class IousController extends Controller
 {
@@ -44,7 +46,9 @@ class IousController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-        return view('adjuster::iou.add',compact("user","config_sidebar","adjuster_data"));
+        $master_insurance = MasterInsurance::get();
+        $master_division = MasterDivision::get();
+        return view('adjuster::iou.add',compact("user","config_sidebar","adjuster_data","master_insurance","master_division"));
     }
 
     /**

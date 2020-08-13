@@ -44,6 +44,22 @@
                     <input type="text" class="form-control" id="title" name="title" value="{{ $casenumber->title }}" autocomplete="off" required>
                   </div>
                   <div class="form-group">
+                    <label>Insurance Client</label>
+                    <select class="form-control select2" name="insurance">
+                      @foreach ( $master_insurance as $key => $value )
+                      <option value="{{ $value->id}}">{{ $value->insurance_name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Division</label>
+                    <select class="form-control" name="division">
+                      @foreach ( $master_division as $key => $value )
+                      <option value="{{ $value->id}}">{{ $value->division_name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="form-group">
                     
                     <div class="col-md-6">
                       Status : 

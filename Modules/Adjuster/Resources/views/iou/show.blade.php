@@ -45,7 +45,7 @@
                   </div>
                   <div class="col-md-6">
                     <label>Case Number</label>
-                    <select class="form-control select2" multiple="multiple" style="width: 100%;" name="case_id[]">
+                    <select class="form-control select2" id="case_number_id" multiple="multiple" style="width: 100%;" name="case_id[]">
                       @foreach ( $adjuster_data->cases as $key => $value )
                       <option value="{{ $value->id}}">{{ $value->case->case_number}}</option>
                       @endforeach
@@ -53,11 +53,11 @@
                   </div>
                   <div class="col-md-6">
                     <label>Client</label>
-                    <input type="text" class="form-control" name="client" value="{{$iou_data->client}}">
+                    <input type="text" class="form-control" name="client" value="{{$iou_data->client_name->insurance_name}}">
                   </div>
                   <div class="col-md-6">
                     <label>Division</label>
-                    <input type="text" class="form-control" name="division" value="{{$iou_data->division}}">
+                    <input type="text" class="form-control" name="division" value="{{$iou_data->division_name->division_name}}">
                   </div>
                   <div class="col-md-6">
                     <label>Type of Survey</label>
@@ -71,17 +71,11 @@
                     <label>Reference</label>
                     <input type="text" class="form-control" name="location" value="{{$iou_data->document_number}}" disabled>
                   </div>
-                  <div class="col-md-6">
-                    <label>Periode Date</label><br/>
-                    {{ date("d-M-Y", strtotime($iou_data->starttime))}} - {{ date("d-M-Y", strtotime($iou_data->endtime))}}<br/>
-                  </div>
                   @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
                   <div class="col-md-6">
-                    <div class="col-xs-6">
-                      <input type="text" class="form-control pull-right" id="datepicker_start" name="datepicker_start">
-                    </div>
-                    <div class="col-xs-6">
-                      <input type="text" class="form-control pull-right" id="datepicker_end" name="datepicker_end">
+                      <label>Periode Date</label><br/>
+                      <input type="text" class="form-control pull-left" id="datepicker_start" name="datepicker_start" style="width: 30%;" autocomplete="off" value="{{ date('d-M-Y', strtotime($iou_data->starttime))}}"> 
+                      <input type="text" class="form-control pull-left" id="datepicker_end" name="datepicker_end" style="width: 30%;" autocomplete="off" value="{{ date('d-M-Y', strtotime($iou_data->endtime))}}">
                     </div>
                   </div>
                   @endif
@@ -89,6 +83,14 @@
                     <label>Total</label>
                     <h4>Rp. {{ number_format($iou_data->total)}}</h4>
                     
+                  </div>
+                  <div class="col-md-6">
+                    <label>Case Number</label>
+                    <ul>
+                      @foreach ( $iou_data->cases as $key => $value )
+                      <li>{{ $value->adjuster_casenumber->case->case_number}}</li>
+                      @endforeach
+                    </ul>
                   </div>
                 </div>
                 <!-- /.box-body -->

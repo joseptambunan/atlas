@@ -14,6 +14,7 @@ use Modules\Master\Entities\MasterCaseNumbers;
 use Modules\Adjuster\Entities\IouCases;
 use Modules\CaseNumbers\Entities\Invoices;
 use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
+use Modules\Master\Entities\MasterConfigs;
 
 class AdjusterController extends Controller
 {
@@ -26,7 +27,12 @@ class AdjusterController extends Controller
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-        return view('adjuster::index',compact("user","config_sidebar","adjuster_data"));
+        $limit_balance = MasterConfigs::where("name","limit_balance")->get()->first();
+        $iou_not_complete = 0;
+        foreach ($adjuster_data->iou_not_complete as $key => $value) {
+            $iou_not_complete = $iou_not_complete + $value['ammount'];
+        }
+        return view('adjuster::index',compact("user","config_sidebar","adjuster_data","limit_balance","iou_not_complete"));
     }
 
     public function update(Request $request){

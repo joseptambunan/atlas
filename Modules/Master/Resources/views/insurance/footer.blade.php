@@ -15,8 +15,6 @@
 <!-- AdminLTE for demo purposes -->
 <script src="{{ url('/')}}/assets/dist/js/demo.js"></script>
 <!-- page script -->
-<!-- Select2 -->
-<script src="{{ url('/')}}/assets/bower_components/select2/dist/js/select2.full.min.js"></script>
 <script>
   $(function () {
     $('#example1').DataTable()
@@ -28,7 +26,6 @@
       'info'        : true,
       'autoWidth'   : false
     });
-
     $('#example3').DataTable({
       'paging'      : true,
       'lengthChange': false,
@@ -36,19 +33,11 @@
       'ordering'    : true,
       'info'        : true,
       'autoWidth'   : false
-    });
+    })
+  });
 
-    $.ajaxSetup({
-      headers: {
-          'X-CSRF-Token': $('input[name=_token]').val()
-      }
-    });
-
-    getTodo();
-    $('.select2').select2();
-  })
-
-  function getTodo(){
-    console.log("adssa");
+  function viewDetail(id,insurance_name){
+    $("#insurance_id").val(id);
+    $("#insurance").val(insurance_name);
   }
 </script>

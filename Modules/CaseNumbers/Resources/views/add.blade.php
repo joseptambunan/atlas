@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   @include("master::adjuster.header")
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{{url('/')}}/assets/bower_components/select2/dist/css/select2.min.css">
+  
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -42,6 +45,22 @@
                     <label>Title</label>
                     <input type="text" class="form-control" id="title" name="title" autocomplete="off" required>
                   </div>
+                  <div class="form-group">
+                    <label>Insurance Client</label>
+                    <select class="form-control select2" name="insurance">
+                      @foreach ( $master_insurance as $key => $value )
+                      <option value="{{ $value->id}}">{{ $value->insurance_name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Division</label>
+                    <select class="form-control" name="division">
+                      @foreach ( $master_division as $key => $value )
+                      <option value="{{ $value->id}}">{{ $value->division_name }}</option>
+                      @endforeach
+                    </select>
+                  </div>
                 </div>
                 <!-- /.box-body -->
 
@@ -70,7 +89,7 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
-@include("master::document.footer");
+@include("casenumbers::footer");
 <script type="text/javascript">
    $('#example4').DataTable({
       'paging'      : true,
