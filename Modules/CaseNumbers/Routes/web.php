@@ -32,4 +32,11 @@ Route::prefix('casenumbers')->group(function() {
     Route::post('/search/case','CaseNumbersController@search_case');
 
     Route::get('/download/{id}','CaseNumbersController@download');
+    Route::post('/update_return','CaseNumbersController@update_return');
+
+    Route::get('/expenses/add','CaseNumbersController@add_expenses');
+    Route::post('/expenses/store','CaseNumbersController@save_expenses');
+    Route::post('/expenses/update','CaseNumbersController@update_expenses');
+
+    Route::get('/testemail','CaseNumbersController@testemail');
 });

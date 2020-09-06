@@ -112,14 +112,11 @@
                               <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
                               <td>
                                 @if ( $value->iou_lists_id != "" )
-                                {{ $value->iou_lists->iou->title }}
+                                <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">
+                                {{ $value->iou_lists->iou->title }} </a>
                                 @endif
                               </td>
-                              <td>
-                                @if ( $value->iou_lists_id != "" )
-                                <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a>
-                                @endif
-                              </td>
+                              <td><a href="{{url('/')}}/approval/expenses/approval/{{$value->id}}">Detail Expenses</a></td>
                             </tr>
                             @php $i++; @endphp
                             @endforeach

@@ -59,7 +59,9 @@
             </ul>
             <div class="tab-content">
               <div class="active tab-pane" id="activity">
-                <a href="{{ url('/')}}/adjuster/iou/add" class="btn btn-primary">Request IOU</a>
+                @if ( ( $limit_balance->value - $iou_not_complete ) > 0 )
+                  <a href="{{ url('/')}}/adjuster/iou/add" class="btn btn-primary">Request IOU</a>
+                @endif
                 <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default">Create Expenses</a>
                 <span style="font-size: 14px;font-weight: bolder;">Balance : Rp. {{ number_format($limit_balance->value - $iou_not_complete ) }}</span>
                 <center><h5>IOU List</h5></center>
@@ -206,11 +208,15 @@
             <div class="form-group">
               <label>IOU</label>
               <select name="iou_number" id="iou_number" class="form-control" required>
+                <option value="">&nbsp;</option>
               </select>
             </div>
             <div class="form-group">
               <label>Case</label>
               <select name="iou_list_id" id="iou_list_id" class="form-control" required>
+              @foreach ( $adjuster_data->cases as $key => $value )
+                <option value="{{ $value->case->id}}">{{ $value->case->case_number }}</option>
+              @endforeach
               </select>
             </div>
             <div class="form-group">

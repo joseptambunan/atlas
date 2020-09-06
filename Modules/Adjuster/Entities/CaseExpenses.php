@@ -25,13 +25,15 @@ class CaseExpenses extends Model
     		return $array_status[0];
     	}else{
     		$approval = Approvals::find($check_approval->first()->id);
-            foreach ($approval->details as $key => $value) {
+            if ( $approval->created_by == $user_id){
+                return $array_status[$approval->status];
+            }
+            /*foreach ($approval->details as $key => $value) {
                 if ( $value->approval_by == $user_id){
                     return $array_status[$value->status];
                 }
-            }
-
-            return $array_status[$approval->status];
+            }*/
+            return $array_status[1];
     	}
     }
 
@@ -89,5 +91,9 @@ class CaseExpenses extends Model
             $approval = Approvals::find($check_approval->first()->id);
             return $array_status[$approval->status];
         }
+    }
+
+    public function master_casenumbers(){
+        return $this->belongsTo("Modules\Master\Entities\MasterCasenumbers");
     }
 }

@@ -252,7 +252,8 @@ class MasterAdjusters extends Model
                     $title = IouLists::find($value->approval->document_id)->title;
                 }elseif ( $document_type == "expenses"){
                     $expenses = CaseExpenses::find($value->approval->document_id);
-                    $title =" Expenses from ".$expenses->iou_lists->iou->title;
+                    $title =" Expenses from ".$expenses->master_casenumbers->case_number;
+                    
                 }
 
                 if ( !isset($array_filter[strtolower(trim($title))])){
@@ -273,6 +274,14 @@ class MasterAdjusters extends Model
 
 
         return $array_approval;
+    }
+
+    public function getBalanceIouAttribute(){
+        $total = 0;
+        foreach ($this->iou_not_complete as $key => $value) {
+            $total = $total- + $value['ammount'];
+        }
+        return $total;
     }
 
 }

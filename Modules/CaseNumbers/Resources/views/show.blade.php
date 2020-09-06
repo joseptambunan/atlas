@@ -45,9 +45,13 @@
                   </div>
                   <div class="form-group">
                     <label>Insurance Client</label>
-                    <select class="form-control select2" name="insurance">
+                    <select class="form-control" name="insurance">
                       @foreach ( $master_insurance as $key => $value )
-                      <option value="{{ $value->id}}">{{ $value->insurance_name }}</option>
+                        @if ( $casenumber->insurance_id == $value->id )
+                          <option value="{{ $value->id}}" selected>{{ $value->insurance_name }}</option>
+                        @else
+                          <option value="{{ $value->id}}">{{ $value->insurance_name }}</option>
+                        @endif
                       @endforeach
                     </select>
                   </div>
@@ -55,10 +59,33 @@
                     <label>Division</label>
                     <select class="form-control" name="division">
                       @foreach ( $master_division as $key => $value )
-                      <option value="{{ $value->id}}">{{ $value->division_name }}</option>
+                        @if ( $casenumber->insurance_id == $value->id )
+                          <option value="{{ $value->id}}" selected>{{ $value->division_name }}</option>
+                        @else
+                          <option value="{{ $value->id}}">{{ $value->division_name }}</option>
+                        @endif
                       @endforeach
                     </select>
                   </div>
+                  <div class="form-group">
+                    <label>Total IOU Planned</label>
+                    <input type="text" class="form-control" id="total_iou_planned" name="total_iou_planned" value="{{ number_format($casenumber->total_iou_planned) }}" autocomplete="off" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Total Expenses</label>
+                    <input type="text" class="form-control" id="total_expenses" name="total_expenses" value="{{ number_format($casenumber->total_expenses) }}" autocomplete="off" required>
+                  </div>
+                  @if ( $casenumber->invoice)
+                  <div class="form-group">
+                    <label>Invoice Number</label>
+                    <input type="text" class="form-control" id="invoice_number" name="invoice_number" value="{{ $casenumber->invoice->invoice_number }}" autocomplete="off" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Bukti Pengembalian</label>
+                    <input type="text" class="form-control" id="description" name="description" value="{{ $casenumber->description }}" autocomplete="off" required>
+                  </div>
+                  @endif
+
                   <div class="form-group">
                     
                     <div class="col-md-6">
@@ -95,6 +122,9 @@
                   @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/">Back</a>
                   <a class="btn btn-info" href="{{ url('/')}}/casenumbers/download/{{$casenumber->id}}">Download as Excel</a>
+                  @if ( $casenumber->invoice)
+                   <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#modal-pengembalian">Input Return</button>
+                  @endif
                 </div>
               </form>
             
@@ -120,22 +150,36 @@
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
+                            <th>Action</th>
                             <th>IOU Reference</th>
-                            <th>Detail</th>
                             <th>Receipt</th>
                           </tr>
                           </thead>
                           <tbody>
                             @foreach ( $casenumber->case_expenses as $key => $value )
                             <tr>
-                              <td>{{ $key + 1 }}</td>
+                              <td>
+                                {{ $key + 1 }}
+                                <input type="hidden" id="reference_id_{{$value->id}}" value="{{ $value->id}}">
+                                <input type="hidden" id="reference_type_{{$value->id}}" value="{{ $value->type}}">
+                                <input type="hidden" id="reference_ammount_{{$value->id}}" value="{{ $value->ammount}}">
+                                <input type="hidden" id="reference_desc_{{$value->id}}" value="{{ $value->description}}">
+                              </td>
                               <td>{{ $value->type }}</td>
                               <td>Rp.{{ number_format($value->ammount) }}</td>
                               <td>{{ date('d-M-Y', strtotime($value->created_at))}}</td>
                               <td>{{ $value->created->adjusters->name }}</td>
                               <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                              <td><a href="{{url('/')}}/casenumbers/iou/show/{{ $value->iou_lists->iou->id }}" target="_blank" class="btn btn-info">{{ $value->iou_lists->iou->title }}</a></td>
-                              <td><button  class="btn btn-primary" data-toggle="modal" data-target="#modal-detail" onClick="viewDetail('{{$value->id}}')">View Detail</button></td>
+                              <td>
+                                @if ( $value->status['status'] == "2" || $value->status['status'] == "0" )
+                                <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modal-revisi" onClick="setRevisi('{{$value->id}}')" type="button">Revisi</button>
+                                @endif
+                              </td>
+                              <td>
+                                @if ( $value->iou_lists_id != "")
+                                  <a href="{{url('/')}}/casenumbers/iou/show/{{ $value->iou_lists->iou->id }}" target="_blank" class="btn btn-info">{{ $value->iou_lists->iou->title }}</a>
+                                @endif
+                              </td>
                               <td>
                                 @if ( $value->receipt != "" )
                                   <a href="{{ url('/')}}/approval/download/{{$value->id}}">Download Receipt</a>
@@ -166,18 +210,20 @@
                             @php $i=0; @endphp
                             @foreach ( $casenumber->adjusters as $key => $value )
                               @foreach ( $value->ious as $key_iou => $value_ious )
-                                @if ( $value_ious->iou->deleted_at == "")
-                                <tr>
-                                  <td>{{ $i + 1 }}</td>
-                                  <td>{{ $value_ious->iou->type_of_survey }}</td>
-                                  <td>Rp. {{ number_format($value_ious->iou->total) }}</td>
-                                  <td>Rp. {{ number_format($value_ious->iou->total_expenses) }}</td>
-                                  <td>{{ $value_ious->iou->created->adjusters->name }}</td>
-                                  <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
-                                  <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
-                                  <td><a href="{{ url('/')}}/casenumbers/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
-                                </tr>
-                                @php $i++; @endphp
+                                @if ( $value_ious->iou )
+                                  @if ( $value_ious->iou->deleted_at == "")
+                                  <tr>
+                                    <td>{{ $i + 1 }}</td>
+                                    <td>{{ $value_ious->iou->type_of_survey }}</td>
+                                    <td>Rp. {{ number_format($value_ious->iou->total) }}</td>
+                                    <td>Rp. {{ number_format($value_ious->iou->total_expenses) }}</td>
+                                    <td>{{ $value_ious->iou->created->adjusters->name }}</td>
+                                    <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
+                                    <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
+                                    <td><a href="{{ url('/')}}/casenumbers/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
+                                  </tr>
+                                  @php $i++; @endphp
+                                  @endif
                                 @endif
                               @endforeach
                             @endforeach
@@ -281,75 +327,70 @@
     <!-- /.modal-dialog -->
   </div>
   <!-- /.modal -->
+
+  <div class="modal fade" id="modal-pengembalian">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Pengembalian</h4>
+        </div>
+        <div class="modal-body">
+          <label>Bukti Pengembalian</label>
+          <input type="text" class="form-control" id="pengembalian" name="pengembalian" value="" autocomplete="off" required />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onClick="submitPengembalian()">Save</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+
+   <form method="post" enctype="multipart/form-data" action="{{url('/')}}/casenumbers/expenses/update">
+  <div class="modal fade" id="modal-revisi">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Input Detail</h4>
+        </div>
+        <div class="modal-body">
+            {{ csrf_field() }}
+            <input type="hidden" name="expenses_id" id="expenses_id">
+            <div class="box-body">
+              <div class="form-group">
+                <label>Type</label>
+                <input type="text" class="form-control" id="type_revisi" name="type_revisi" autocomplete="off" required>
+              </div>
+              <div class="form-group">
+                <label>Ammount</label>
+                <input type="text" class="form-control" id="ammount_revisi" name="ammount_revisi" autocomplete="off" required>
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <input type="text" class="form-control" id="desc_revisi" name="desc_revisi" autocomplete="off" required>
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="btn_revisi_expenses">Save changes</button>
+          <span id="loading_revisi" style="display: none;">Loading...</span>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  </form>
 </div>
 <!-- ./wrapper -->
-@include("master::document.footer");
-<script type="text/javascript">
-   $( document ).ready(function() {
-      $.ajaxSetup({
-          headers: {
-              'X-CSRF-Token': $('input[name=_token]').val()
-          }
-        });
-    });
+@include("casenumbers::footer");
 
-   $('#example4').DataTable({
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false
-    });
-
-   function cancelthiscase(id,status){
-    if ( confirm("Are you sure to update this case ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/casenumbers/delete",
-        dataType : "json",
-        data : {
-          id : id,
-          status: status
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == 0 ){
-          alert("Case has been updated");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
-
-   function submitInvoice(){
-    if ( confirm("Are you sure to create invoice ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/casenumbers/invoice/create",
-        dataType : "json",
-        data :{
-          invoice_number : $("#invoice_number").val(),
-          case_id : $("#casenumber_id").val()
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == "0"){
-          alert("Invoice has been created");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
-
-</script>
 </body>
 </html>

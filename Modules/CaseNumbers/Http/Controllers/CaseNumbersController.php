@@ -6,19 +6,25 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Config;
 use Modules\Master\Entities\MasterCasenumbers;
 use Modules\Master\Entities\MasterAdjusters;
 use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
 use Modules\Adjuster\Entities\IouLists;
-use App\Approvals;
 use Modules\CaseNumbers\Entities\Invoices;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Export;
 use Modules\Master\Entities\MasterInsurance;
 use Modules\Master\Entities\MasterDivision;
+use Modules\Adjuster\Entities\CaseExpenses;
+use Illuminate\Support\Facades\Storage;
+use Modules\Master\Entities\MasterDocument;
+use Illuminate\Support\Facades\Mail;
+use App\User;
+use App\Approvals;
+use App\ApprovalDetails;
+use App\Export;
+use App\Jobs\SendEmailCase;
 
 class CaseNumbersController extends Controller
 {
@@ -32,7 +38,7 @@ class CaseNumbersController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
-        $master_casenumbers = MasterCasenumbers::where("invoice_number",NULL)->orderBy('invoice_number', 'DESC')->get();
+        $master_casenumbers = MasterCasenumbers::orderBy('created_at', 'DESC')->get();
 
         $total_iou = 0;
         $iou_list = IouLists::where("document_number",NULL)->get();
@@ -116,18 +122,22 @@ class CaseNumbersController extends Controller
 
     public function saveadjusters(Request $request){
 
+        $case_number = MasterCasenumbers::find($request->casenumber_id);
         if ( count($request->adjuster) <= 0 ){
             return redirect("/casenumbers/adjuster/all/".$request->casenumber_id);
         }
 
         foreach ($request->adjuster as $key => $value) {
-           $adjuster_case = new AdjusterCasenumbers;
-           $adjuster_case->adjuster_id = $value;
-           $adjuster_case->case_number_id = $request->casenumber_id;
-           $adjuster_case->created_by = Auth::user()->id;
-           $adjuster_case->created_at = date("Y-m-d H:i:s");
-           $adjuster_case->save();
+            $adjuster_case = new AdjusterCasenumbers;
+            $adjuster_case->adjuster_id = $value;
+            $adjuster_case->case_number_id = $request->casenumber_id;
+            $adjuster_case->created_by = Auth::user()->id;
+            $adjuster_case->created_at = date("Y-m-d H:i:s");
+            $adjuster_case->save();
+            $adjuster = AdjusterCasenumbers::find($adjuster_case->id);
+            SendEmailCase::dispatch($adjuster);
         }
+
 
         return redirect("/casenumbers/adjuster/all/".$request->casenumber_id);
     }
@@ -307,6 +317,108 @@ class CaseNumbersController extends Controller
     public function download($id){
         $master_casenumbers = MasterCasenumbers::find($id);
         return Excel::download(new Export($master_casenumbers->id), $master_casenumbers->case_number.'.xlsx');
+    }
+
+    public function update_return(Request $request){
+        $master_casenumbers = MasterCasenumbers::find($request->id);
+        $master_casenumbers->description = $request->pengembalian;
+        $master_casenumbers->deleted_by = Auth::user()->id;
+        $master_casenumbers->deleted_at = date('Y-m-d H:i:s');
+        $master_casenumbers->save();
+
+        $data['status'] = 0;
+        echo json_encode($data);
+    }
+
+    public function add_expenses(Request $request){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $master_casenumbers = MasterCasenumbers::where("deleted_at",NULL)->orderBy('created_at', 'DESC')->get();
+        return view('casenumbers::expenses',compact("user","config_sidebar","master_casenumbers"));
+    }
+
+    public function save_expenses(Request $request){
+
+        $master_document = MasterDocument::find(2);
+        $array_expenses = $request->expenses;
+        $array_case = $request->case;
+        $path = "";
+        foreach ($array_expenses as $key => $value) {
+            if ( $value != "" ){
+                if ( isset($array_case[$key])){
+                    if ( $request->file('receipt') != ""){
+                        $path = Storage::putFile('cases/'.$array_case[$key], $request->file('receipt'));
+                    }
+
+                    $expenses = new CaseExpenses;
+                    $expenses->type = $request->type_expenses;
+                    $expenses->ammount = str_replace(",", "", $value);
+                    $expenses->description = $request->description;
+                    $expenses->master_casenumbers_id = $array_case[$key];
+                    $expenses->receipt = $path;
+                    $expenses->created_at = date("Y-m-d H:i:s");
+                    $expenses->created_by = Auth::user()->id;
+                    $expenses->save();
+
+                    foreach ($master_document->approvals as $key => $value) {
+                        foreach ($value->jabatan_approvals->jabatan->adjusters as $key_adjusters => $value_adjusters) {
+                            if ( $key == 0 && $key_adjusters == 0 ){
+                                $approval = new Approvals;
+                                $approval->document_type = $master_document->id;
+                                $approval->document_id = $expenses->id;
+                                $approval->status = 1;
+                                $approval->approval_by = $value_adjusters->user_detail->id;
+                                $approval->created_at = date("Y-m-d H:i:s");
+                                $approval->created_by = Auth::user()->id;
+                                $approval->save();
+                            }
+
+                            if ( count($approval->details) <= 0 ){
+                                $approval_detail = new ApprovalDetails;
+                                $approval_detail->approval_id = $approval->id;
+                                $approval_detail->status = 1;
+                                $approval_detail->approval_by = $value_adjusters->user_detail->id;
+                                $approval_detail->created_at = date("Y-m-d H:i:s");
+                                $approval_detail->created_by = Auth::user()->id;
+                                $approval_detail->level = $value->level;
+                                $approval_detail->save();
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return redirect("casenumbers/index");
+    }
+
+    public function update_expenses(Request $request){
+
+        $case_expenses = CaseExpenses::find($request->expenses_id);
+        $case_expenses->type = $request->type_revisi;
+        $case_expenses->ammount = str_replace(",", "", $request->ammount_revisi);
+        $case_expenses->description = $request->desc_revisi;
+        $case_expenses->updated_by = Auth::user()->id;
+        $case_expenses->updated_at = date("Y-m-d H:i:s");
+        $case_expenses->save();
+
+        $check_approval = Approvals::where("document_type",2)->where("document_id",$case_expenses->id)->get();
+        if ( count($check_approval) > 0 ){
+            $approval = Approvals::find($check_approval->first()->id);
+            $approval->status = 1;
+            $approval->updated_at = date("Y-m-d H:i:s");
+            $approval->updated_by = Auth::user()->id;
+            $approval->save();
+
+            foreach ($approval->details as $key => $value) {
+                $approval_detail = ApprovalDetails::find($value->id);
+                $approval_detail->status = 1;
+                $approval_detail->save();
+            }
+        }
+    
+        return redirect("casenumbers/show/".$case_expenses->master_casenumbers_id);
     }
 
 }

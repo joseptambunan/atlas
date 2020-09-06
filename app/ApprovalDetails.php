@@ -34,4 +34,14 @@ class ApprovalDetails extends Model
         return $user;
     }
 
+    public function getDetailApprovalAttribute(){
+        $detail = array(
+            "document_type" => $this->approval->detail_document['document_type'],
+            "document_title" => $this->approval->detail_document['document_title'],
+            "document_author" => $this->created->adjusters->name,
+        );
+
+        return $detail;
+    }
+
 }

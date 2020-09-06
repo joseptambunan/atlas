@@ -19,6 +19,8 @@ use App\ApprovalHistories;
 use Modules\Master\Entities\MasterCasenumbers;
 use Modules\Master\Entities\MasterPositions;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\SendEmailApproval;
+use App\Jobs\SendEmailResultApproval;
 
 class ApprovalController extends Controller
 {
@@ -70,9 +72,9 @@ class ApprovalController extends Controller
                 break;
             case "expenses":
                 $case_expenses = CaseExpenses::find($id);
-                $iou_id = $case_expenses->iou_lists->iou->id;
+                $iou_id = $case_expenses->master_casenumbers_id;
 
-                return redirect("/approval/iou/show/".$iou_id);
+                return redirect("/approval/case/show/".$iou_id);
             default:
                 # code...
                 break;
@@ -127,6 +129,8 @@ class ApprovalController extends Controller
                 $iou_list->save();
             }
 
+            $approval_ = Approvals::find($approval->id);
+            SendEmailResultApproval::dispatch($approval_);
         }else{
             if ( $highest_level == $approval_detail->level ){
                 $approval = Approvals::find($approval_detail->approval->id);
@@ -136,7 +140,8 @@ class ApprovalController extends Controller
                 $approval->updated_by = Auth::user()->id;
                 $approval->description = $request->description;
                 $approval->save();
-
+                $approval_ = Approvals::find($approval->id);
+                SendEmailResultApproval::dispatch($approval_);
 
             }else{
                 $approval_histories = new ApprovalHistories;
@@ -292,6 +297,9 @@ class ApprovalController extends Controller
                                 $approval_detail->save();
                             }
                         }
+
+                        $approval_detail_ = ApprovalDetails::find($approval_detail->id);
+                        SendEmailApproval::dispatch($approval_detail_);
                     }
                 }
             }
@@ -333,5 +341,14 @@ class ApprovalController extends Controller
         }
         $approval_detail = ApprovalDetails::find($approval_detail);
         return view('approval::iou.expenses',compact("user","config_sidebar","adjuster_data","start","case_expenses","array_status","approval_detail"));
+    }
+
+    public function case_show($id){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
+        $casenumber = MasterCasenumbers::find($id);
+        return view("approval::case.show",compact("user","config_sidebar","adjuster_data","casenumber"));
+
     }
 }

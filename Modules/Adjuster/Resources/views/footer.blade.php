@@ -25,7 +25,8 @@
 			$("#btn_expenses").hide();
 			$("#loading").show();
 			saveExpenses();
-		})
+		});
+
 	});
 
 	function loadTodoList(){
@@ -44,7 +45,6 @@
 			if ( data.status == 0 ){
 				$("#box_todo_list").html(data.html);
 				$("#iou_number").html(data.html_iou);
-				$("#iou_list_id").html(data.html_case);
 			}
 		});
 	}
@@ -82,5 +82,26 @@
 
 			window.location.reload();
 		});
+	}
+
+	function loadIouCases(){
+		var request = $.ajax({
+			url : "{{url('/')}}/adjuster/loadcases",
+			dataType : "json",
+			data :{
+				id : $("#iou_number").val()
+			},
+			type : "post"
+		});
+
+		request.done(function(data){
+			if ( data.status == 0 ){
+				$("#iou_list_id").html(data.html);
+			}else{
+				alert("Case Not Found");
+				window.location.reload();
+			}
+
+		})
 	}
 </script>

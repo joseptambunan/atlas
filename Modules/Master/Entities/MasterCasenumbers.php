@@ -26,6 +26,10 @@ class MasterCasenumbers extends Model
         $data['label'] = "In Progress";
         $data['class']  = "label label-info";
 
+        if ( $this->deleted_at != "" && isset($this->invoice)){
+            $data['label'] = "Finish";
+            $data['class'] = "label label-success";
+        }
         return $data;
     }
 
@@ -40,11 +44,15 @@ class MasterCasenumbers extends Model
         foreach ($this->adjusters as $key => $value) {
             foreach ($value->ious as $key_ious => $value_ious) {
                 $array_status['total'] = $array_status['total'] + 1;
-                if ( count($value_ious->iou->expenses) > 0 ){
-                    $array_status['expenses_complete'] = $array_status['expenses_complete'] + 1;
-                 }else{
-                    $array_status['in_progress'] = $array_status['in_progress'] + 1;
-                 }
+                if ( isset($value_ious->iou)) {
+                    if ( isset($value_ious->iou->expenses) ){
+                        if ( count($value_ious->iou->expenses) > 0 ){
+                            $array_status['expenses_complete'] = $array_status['expenses_complete'] + 1;
+                        }else{
+                            $array_status['in_progress'] = $array_status['in_progress'] + 1;
+                        }
+                    }
+                }
             }
         }
 
@@ -68,11 +76,17 @@ class MasterCasenumbers extends Model
         $total = 0;
         foreach ($this->adjusters as $key => $value) {
             foreach ($value->ious as $key_ious => $value_ious) {
-                $total = $total + $value_ious->iou->total;
+                if ( isset($value_ious->iou )){
+                    $total = $total + $value_ious->iou->total;
+                }
             }
         }
 
         return $total;
+    }
+
+    public function insurance(){
+        return $this->belongsTo("Modules\Master\Entities\MasterInsurance");
     }
 
 }

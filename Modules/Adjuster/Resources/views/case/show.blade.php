@@ -79,6 +79,9 @@
                       <label class="label label-info">Finish by Adjuster</label>
                     @endif
                   @endif
+                  @if ( $casenumber->deleted_at == "" && $finish_status == "")
+                    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default">Create Expenses</a>
+                  @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
               </form>
@@ -93,41 +96,67 @@
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="tab_1">
-
-                        <h4>Expenses List</h4>
-                        <h4>Total : Rp. {{ number_format($casenumber->total_expenses)}}</h4>
-                        <table id="example4" class="table table-bordered table-hover">
-                          <thead class="header_background">
-                          <tr>
-                            <th>No.</th>
-                            <th>Type</th>
-                            <th>Ammount</th>
-                            <th>Description</th>
-                            <th>Created at</th>
-                            <th>Created by</th>
-                            <th>Status Approval</th>
-                            <th>IOU Reference</th>
-                            <th>Detail</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                            @php $i=0; @endphp
-                            @foreach ( $casenumber->case_expenses as $key => $value )
+                        <form action="{{url('/')}}/adjuster/case/approval" method="post" name="form1">
+                          {{ csrf_field() }}
+                          <input type="hidden" name="case_show" value="{{ $casenumber->id}}">
+                          <button type="submit" class="btn btn-success">Request Approve</button>
+                          <h4>Expenses List</h4>
+                          <h4>Total : Rp. {{ number_format($casenumber->total_expenses)}}</h4>
+                          <table id="example4" class="table table-bordered table-hover">
+                            <thead class="header_background">
                             <tr>
-                              <td>{{ $i+1 }}</td>
-                              <td>{{ $value->type }}</td>
-                              <td>{{ $value->ammount }}</td>
-                              <td>{{ $value->description }}</td>
-                              <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
-                              <td>{{ $value->created->adjusters->name }}</td>
-                              <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                              <td>{{ $value->iou_lists->iou->title }}</td>
-                              <td><a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a></td>
+                              <th>No.</th>
+                              <th>Type</th>
+                              <th>Ammount</th>
+                              <th>Description</th>
+                              <th>Created at</th>
+                              <th>Created by</th>
+                              <th>Request Approve</th>
+                              <th>Status Approval</th>
+                              <th>IOU Reference</th>
+                              <th>Detail</th>
                             </tr>
-                            @php $i++; @endphp
-                            @endforeach
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              @php $i=0; @endphp
+                              @foreach ( $casenumber->case_expenses as $key => $value )
+                              <tr>
+                                <td>{{ $i+1 }}</td>
+                                <td>{{ $value->type }}</td>
+                                <td>{{ $value->ammount }}</td>
+                                <td>{{ $value->description }}</td>
+                                <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
+                                <td>{{ $value->created->adjusters->name }}</td>
+                                <td>
+                                  @if ( $value->status_approval($user->id)['status'] == 0 || $value->status_approval($user->id)['status'] == 2 )
+                                  <input type="checkbox" name="checklist[]" value="{{ $value->id}}">
+                                  @endif
+                                </td>
+                                <td><span class="{{ $value->status_approval($user->id)['class']}}">{{ $value->status_approval($user->id)['label']}}</span></td>
+                                <td>
+                                  @if ( $value->iou_lists_id != "")
+                                    {{ $value->iou_lists->iou->title }}
+                                  @endif
+                                </td>
+                                <td>
+                                   @if ( $value->iou_lists_id != "")
+                                  <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a>
+                                  @endif
+
+                                  @if ( $value->status_approval($user->id)['status'] == 0 )
+                                      <button class="btn btn-sm btn-danger" onClick="removeDataExpenses('{{ $value->id}}')">Remove Detail</button>
+                                  @endif
+
+                                  @if ( $value->status_approval($user->id)['status'] == 2 )
+                                      <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modal-revisi" onClick="setRevisi('{{$value->id}}')" type="button">Revisi</button>
+                                  @endif
+                                </td>
+                              </tr>
+                              @php $i++; @endphp
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </form>
                       </div>
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
@@ -200,31 +229,54 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
-  <div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Invoice</h4>
+  <form method="post" enctype="multipart/form-data" id="upload_expenses">
+    {{ csrf_field() }}
+    <input type="hidden" name="iou_list_id" id="iou_list_id" value="{{ $casenumber->id}}">
+    <div class="modal fade" id="modal-default">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Detail Expenses</h4>
+          </div>
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label>Type</label>
+              <input type="text" name="type_expenses" id="type_expenses" class="form-control" autocomplete="off" required> 
+            </div>
+            <div class="form-group">
+              <label>Ammount</label>
+              <input type="text" name="ammount_expenses" id="ammount_expenses" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" name="description" id="description" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Receipt</label>
+              <input type="file" name="receipt" id="receipt" class="form-control">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="btn_expenses">Save changes</button>
+            <span id="loading" style="display: none;">Loading...</span>
+          </div>
         </div>
-        <div class="modal-body">
-          <label>Invoice Number</label>
-          <input type="text" class="form-control" id="invoice_number" name="invoice_number" value="" autocomplete="off" required />
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onClick="submitInvoice()">Save</button>
-        </div>
+        <!-- /.modal-content -->
       </div>
-      <!-- /.modal-content -->
+      <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal-dialog -->
-  </div>
+    <!-- /.modal -->
+  </form>
   <!-- /.modal -->
 </div>
 <!-- ./wrapper -->
 @include("master::document.footer");
+<!-- bootstrap datepicker -->
+<script src="{{url('/')}}/assets/plugins/customd-jquery-number-c19aa59/jquery.number.min.js"></script>
 <script type="text/javascript">
    $( document ).ready(function() {
       $.ajaxSetup({
@@ -232,6 +284,14 @@
               'X-CSRF-Token': $('input[name=_token]').val()
           }
         });
+
+      $("#btn_expenses").click(function(){
+        $("#btn_expenses").hide();
+        $("#loading").show();
+        saveExpenses();
+      });
+
+      $("#ammount_expenses").number(true);
     });
 
    $('#example4').DataTable({
@@ -319,6 +379,41 @@
     }else{
       return false;
     }
+   }
+
+   function saveExpenses(){
+    var data = new FormData();
+    //Form data
+    var form_data = $('#upload_expenses').serializeArray();
+    $.each(form_data, function (key, input) {
+        data.append(input.name, input.value);
+    });
+
+    //File data
+    var file_data = $('input[name="receipt"]')[0].files;
+
+    for (var i = 0; i < file_data.length; i++) {
+        data.append("receipt", file_data[i]);
+    }
+
+
+    var request = $.ajax({
+      url : "{{url('/')}}/adjuster/case/expenses",
+      dataType : "json",
+      data :data,
+      type : "post",
+            enctype: 'multipart/form-data',
+            contentType : false,
+            processData: false
+    });
+
+    request.done(function(data){
+      if ( data.status == "0"){
+        alert("Expenses has been created");
+      }
+
+      window.location.reload();
+    });
    }
 </script>
 </body>

@@ -78,7 +78,7 @@
   function requestApproval(id, approval_id){
     if ( confirm("Are you sure to request approve ? ")){
       var request = $.ajax({
-        url : "{{ url('/')}}/approval/request_approval",
+        url : "{{ url('/')}}/adjuster/iou/request_approval",
         dataType : "json",
         data : {
           document_id : id,

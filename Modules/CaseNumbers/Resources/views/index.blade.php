@@ -61,6 +61,7 @@
 
             <div class="box-body">
               <div class="col-md-12">
+                <a class="btn btn-info" type="submit" href="{{ url('/')}}/casenumbers/expenses/add">Add Expenses</a>
                 <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>
                 <a href="{{ url('/')}}/casenumbers/iou" class="btn btn-warning">Go to IOU</a>
                 <h4>Total IOU need to process : <strong>{{ $total_iou }}</strong> IOU </h4> 

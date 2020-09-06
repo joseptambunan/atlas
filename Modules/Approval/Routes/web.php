@@ -26,4 +26,6 @@ Route::prefix('approval')->group(function() {
     Route::post('/request_approval','ApprovalController@request_approval');
     Route::get('/expenses/approval/{id}','ApprovalController@expenses_approval');
 
+    Route::get('/case/show/{id}','ApprovalController@case_show');
+
 });

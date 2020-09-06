@@ -19,6 +19,7 @@ use Modules\Master\Entities\MasterDocument;
 use App\Approvals;
 use App\ApprovalDetails;
 use App\User;
+use App\Jobs\SendEmailApproval;
 
 class CasesController extends Controller
 {
@@ -55,15 +56,38 @@ class CasesController extends Controller
     }
 
     public function save_expenses(Request $request){
-        $iou_case = IouCases::find($request->iou_list_id);
+
+        $iou_case_id = NULL;
+
+        if ( $request->iou_number != "" ){
+
+            $iou_list = IouLists::find($request->iou_number);
+            $iou_list->updated_at = date("Y-m-d H:i:s");
+            $iou_list->updated_by = Auth::user()->id;
+            $iou_list->save();
+
+            $iou_list_ = IouLists::find($request->iou_number);
+            foreach ($iou_list_->cases as $key => $value) {
+                if ( $value->adjuster_casenumber){
+                    if ( $value->adjuster_casenumber->case_number_id == $request->iou_list_id){
+                        $iou_case_id = $value->id;
+                        $case_id = $request->iou_list_id;
+                    }
+                }
+            }
+
+        }else{
+            $case_id = $request->iou_list_id;
+        }
+
         $path = "";
         if ( $request->file('receipt') != ""){
-            $path = Storage::putFile('cases/'.$iou_case->adjuster_casenumber->case->id, $request->file('receipt'));
+            $path = Storage::putFile('cases/'.$case_id, $request->file('receipt'));
         }
 
         $case_expenses = new CaseExpenses;
-        $case_expenses->iou_lists_id = $iou_case->id;
-        $case_expenses->master_casenumbers_id = $iou_case->adjuster_casenumber->case->id;
+        $case_expenses->iou_lists_id = $iou_case_id;
+        $case_expenses->master_casenumbers_id = $case_id;
         $case_expenses->type = $request->type_expenses;
         $case_expenses->ammount = str_replace(",","",$request->ammount_expenses);
         $case_expenses->description = $request->description;
@@ -72,10 +96,6 @@ class CasesController extends Controller
         $case_expenses->receipt = $path;
         $case_expenses->save();
 
-        $iou_list = IouLists::find($iou_case->iou->id);
-        $iou_list->updated_at = date("Y-m-d H:i:s");
-        $iou_list->updated_by = Auth::user()->id;
-        $iou_list->save();
             
         $data['status'] = 0;
         echo json_encode($data);
@@ -124,5 +144,36 @@ class CasesController extends Controller
 
         $data['status'] = 0;
         echo json_encode($data);
+    }
+
+    public function loadcases(Request $request){
+        $iou_list = IouLists::find($request->id);
+
+        $html_case .= "<select name='iou_list_id' id='iou_list_id' class='form-control' required>";
+        foreach ($iou_list->cases as $key_cases => $value_cases) {
+            $html_case .= "<option value='".$value_cases->id."'>".$value_cases->adjuster_casenumber->case->title."</option>";
+        }
+        $html_case .= "</select>";
+
+        $data['status'] = 0;
+        $data['html_case'] = $html_case;
+        echo json_encode($data);
+    }
+
+    public function request_approval(Request $request){
+
+        $approval = new Approvals;
+        if ( isset($request->checklist)){
+            foreach ($request->checklist as $key => $value) {
+                $status_approval = CaseExpenses::find($value);
+                $is_exist = false;
+                if ( $status_approval['status'] > 0 ){
+                    $is_exist = true;
+                }
+                $approval->request_approval(2, $value, $is_exist, Auth::user()->id);
+            }
+        }
+
+        return redirect("adjuster/case/show/".$request->case_show);
     }
 }

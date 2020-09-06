@@ -85,13 +85,16 @@ class AdjusterController extends Controller
         $html_iou .= "<select name='iou_number' id='iou_number' class='form-control' required>";
         if ( count($adjuster_data->ious) > 0 ){
             foreach ($adjuster_data->ious as $key => $value) {
-                $html_iou .= "<option value='".$value->id."'>".$value->title."</option>";
+                $html_iou .= "<option value='".$value->id."' class='iou'>".$value->title."</option>";
                 foreach ($value->cases as $key_cases => $value_cases) {
-                    $html_case .= "<option value='".$value_cases->id."'>".$value_cases->adjuster_casenumber->case->title."</option>";
+                    $html_case .= "<option value='".$value_cases->id."' class='iou_cases'>".$value_cases->adjuster_casenumber->case->title."</option>";
                 }
             }
         }else{
-            $html_iou .= "<option>No Active IOU</option>";
+            $html_iou .= "<option value=''>No Active IOU</option>";
+            foreach ($adjuster_data->cases as $key => $value) {
+                $html_iou .= "<option value='".$value->id."'>".$value->case_number."</option>";
+            }
         }
         $html_iou .= "</select>";
         $html_case .= "</select>";

@@ -51,8 +51,9 @@
                   <input type="text" class="form-control" name="keyword" autocomplete="off" required>
                 </div>
                 <div class="form-group">
-                  <button class="btn btn-warning" type="submit">Search</button>
-                  <a href="{{ url('/')}}/casenumbers/iou/" class="btn btn-success">Reset</a>
+                  <button class="btn btn-success" type="submit">Search</button>
+                  <a href="{{ url('/')}}/casenumbers/iou/" class="btn btn-info">Reset</a>
+                  <a href="{{ url('/')}}/casenumbers/index/" class="btn btn-warning">Back</a>
                 </div>
               </div>
               </form>

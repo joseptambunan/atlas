@@ -82,7 +82,12 @@
                   <div class="col-md-6">
                     <label>Total</label>
                     <h4>Rp. {{ number_format($iou_data->total)}}</h4>
-                    
+                    <label>Balance</label>
+                    @if ( $balance > 0 )
+                      <span style="color:blue;font-weight: bolder;">Rp. {{ number_format($balance)}}</span>
+                    @else
+                       <span style="color:red;font-weight: bolder;">Rp. {{ number_format($balance)}}</span>
+                    @endif
                   </div>
                   <div class="col-md-6">
                     <label>Case Number</label>
@@ -97,7 +102,9 @@
 
                 <div class="box-footer">
                   @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
-                    <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}','{{ $approval_id}}')">Request Approval</button>
+                    @if ( $balance > 0 )
+                      <button type="button" class="btn btn-info" onClick="requestApproval('{{$iou_data->id}}','{{ $approval_id}}')">Request Approval</button>
+                    @endif
                     <button type="submit" class="btn btn-primary">Update</button>
                   @endif
                   <span class="{{ $iou_data->status['class']}}">{{ $iou_data->status['label']}}</span>
@@ -122,7 +129,9 @@
                         </ul>
                         <h4>Planned Expenses Detail</h4> 
                         @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
-                          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">Add Detail</button>
+                          @if ( $balance > 0 )
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-default">Add Detail</button>
+                          @endif
                         @endif
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
@@ -157,7 +166,7 @@
                       <div class="tab-pane" id="tab_2">
                         <h4>Expenses List</h4>
                         <h4>Total Expenses : Rp.{{ number_format($iou_data->total_expenses)}}</h4>
-                        <form method="post" name="form1" action="{{ url('/')}}/approval/request_approval">
+                        <form method="post" name="form1" action="{{ url('/')}}/adjuster/iou/expenses/request_approval">
                           {{ csrf_field() }}
                           <input type="hidden" name="document_id" value="{{ $iou_data->id}}">
                           <input type="hidden" name="document_type" value="2">

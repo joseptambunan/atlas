@@ -32,7 +32,7 @@
             <!-- /.box-header -->
             <div class="box-body">
               <div class="col-md-12">
-                <a class="btn btn-warning" href="{{ url('/')}}/approval/iou/show/{{ $case_expenses->iou_lists->iou->id}}">Back</a>
+                <a class="btn btn-warning" href="{{ url('/')}}/approval/case/show/{{ $case_expenses->master_casenumbers_id}}">Back</a>
                 <input type="hidden" id="expenses_approval_id" value="{{ $approval_detail->id }}">
                 <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}')">
                     Approve
@@ -40,7 +40,7 @@
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-default">
                   Reject
                 </button>
-                <p>IOU : {{ $case_expenses->iou_lists->iou->title }}</p>
+                @if ( $case_expenses->iou_lists_id != "" ) <p>IOU : {{ $case_expenses->iou_lists->iou->title }}</p>@endif
                 <p>Ammount : {{ $case_expenses->ammount }}</p>
                 <p>Desc : {{ $case_expenses->description}} </p>
                 <table id="example4" class="table table-bordered table-hover">
