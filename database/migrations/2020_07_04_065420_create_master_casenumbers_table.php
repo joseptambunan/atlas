@@ -20,6 +20,7 @@ class CreateMasterCasenumbersTable extends Migration
             $table->integer("insurance_id")->nullable();
             $table->text("title")->nullable();
             $table->integer("invoice_number")->nullable();
+            $table->text("description")->nullable();
             $table->timestamps();
             $table->integer("created_by")->nullable();
             $table->integer("updated_by")->nullable();
