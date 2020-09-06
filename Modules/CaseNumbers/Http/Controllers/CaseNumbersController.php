@@ -324,6 +324,7 @@ class CaseNumbersController extends Controller
         $master_casenumbers->description = $request->pengembalian;
         $master_casenumbers->deleted_by = Auth::user()->id;
         $master_casenumbers->deleted_at = date('Y-m-d H:i:s');
+        $master_casenumbers->updated_by = Auth::user()->id;
         $master_casenumbers->save();
 
         $data['status'] = 0;

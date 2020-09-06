@@ -76,6 +76,11 @@ class CasesController extends Controller
                 }
             }
 
+        }elseif ( $request->iou_list_id != "" ){
+            
+            $iou_case = IouCases::find($request->iou_list_id);
+            $iou_case_id = $iou_case->id;
+            $case_id = $iou_case->adjuster_casenumber->case->id;
         }else{
             $case_id = $request->iou_list_id;
         }
