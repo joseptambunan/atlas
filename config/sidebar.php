@@ -4,7 +4,9 @@
 			'Document' => '/master/document',
 			'Jabatan' => '/master/position',
 			'Modules' => '/master/modules',
-			'Staff' => '/master/adjusters'
+			'Staff' => '/master/adjusters',
+			'Insurance' => '/master/insurance',
+			'Division' => '/master/division'
 		],
 		'setting' => [
 			'User' => '/setting/user',
@@ -12,8 +14,7 @@
 		],
 		'casenumbers' => [
 			'List' => '/casenumbers/index',
-			'IOU' => '/casenumbers/iou',
-			'History' => '#'
+			'IOU' => '/casenumbers/iou'
 		],
 		'iou' => [
 			'CaseList' => '/iou/caselist',
@@ -21,8 +22,7 @@
 		],
 		'adjuster' => [
 			'Home' => '/adjuster/index',
-			'IOU' => '/adjuster/iou/',
-			'History' => '#'
+			'IOU' => '/adjuster/iou/index'
 		],
 		'approval' => [
 			'List' => '/approval/index',
