@@ -39,11 +39,15 @@ class ApprovalController extends Controller
     }
 
     
-    public function show($type,$id,$approval_id){
+    public function show($type,$id,$approval_id = ""){
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-        $approval_detail = ApprovalDetails::find($approval_id);
+        
+        if ( $approval_id != ""){
+            $approval_detail = ApprovalDetails::find($approval_id);
+        }
+        
         $approval = "";
 
         $array_status = array(

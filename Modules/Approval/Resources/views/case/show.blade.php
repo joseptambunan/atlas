@@ -103,7 +103,15 @@
                             @php $i=0; @endphp
                             @foreach ( $casenumber->case_expenses as $key => $value )
                             <tr>
-                              <td>{{ $i+1 }}</td>
+                              <td>
+                                {{ $i+1 }}
+                                <input type="hidden" id="ref_case_{{$value->id}}" value="{{ $casenumber->case_number }}">
+                                <input type="hidden" id="ref_type_{{$value->id}}" value="{{ $value->type }}">
+                                <input type="hidden" id="ref_ammount_{{$value->id}}" value="{{ $value->ammount }}">
+                                <input type="hidden" id="ref_desc_{{$value->id}}" value="{{ $value->description }}">
+                                <input type="hidden" id="ref_receipt_{{$value->id}}" value="{{ $value->receipt }}">
+                                <input type="hidden" id="ref_approval_{{$value->id}}" value="{{ $value->approval_data($user->id)['approval_detail_id'] }}">
+                              </td>
                               <td>{{ $value->type }}</td>
                               <td>{{ $value->ammount }}</td>
                               <td>{{ $value->description }}</td>
@@ -112,11 +120,14 @@
                               <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
                               <td>
                                 @if ( $value->iou_lists_id != "" )
-                                <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">
+                                <a href="{{ url('/')}}/approval/iou/show/{{ $value->iou_lists->iou->id }}/{{$approval_id}}" class="btn btn-primary">
                                 {{ $value->iou_lists->iou->title }} </a>
                                 @endif
                               </td>
-                              <td><a href="{{url('/')}}/approval/expenses/approval/{{$value->id}}">Detail Expenses</a></td>
+                              <td>
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-info" onClick="viewDetail('{{$value->id}}')">View Detail</button>
+                                <a href="{{url('/')}}/approval/expenses/approval/{{$value->id}}">Approve</a>
+                              </td>
                             </tr>
                             @php $i++; @endphp
                             @endforeach
@@ -195,6 +206,48 @@
   <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
   <div class="control-sidebar-bg"></div>
+  <!-- /.modal -->
+  <div class="modal fade" id="modal-info">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Detail Expenses</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Case Number</label>
+            <input type="hidden" id="expenses_approval_id" name="expenses_approval_id">
+            <input type="text" class="form-control" id="expenses_name" name="expenses_name" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" class="form-control" id="expenses_type" name="expenses_type" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Ammount</label>
+            <input type="text" class="form-control" id="expenses_ammount" name="expenses_ammount" value="" disabled>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" cols="30" rows="6" name="expenses_description" id="expenses_description" disabled></textarea>
+          </div>
+          <div class="form-group">
+            <label>Receipt</label>
+            <a href="#" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
+          </div>
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea class="form-control" cols="30" rows="6" name="reason" id="reason"></textarea>
+          </div>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
   
 </div>
 <!-- ./wrapper -->
@@ -217,7 +270,19 @@
       'autoWidth'   : false
     });
 
-   
+   function viewDetail(id){
+    $("#expenses_name").val($("#ref_case_"+id).val());
+    $("#expenses_type").val($("#ref_type_"+id).val());
+    $("#expenses_ammount").val($("#ref_ammount_"+id).val());
+    $("#expenses_description").val($("#ref_desc_"+id).val());
+    if ( $("#ref_receipt_" + id).val() != ""){
+      $("#expenses_receipt").attr("href","{{ url('/')}}/approval/download/" + id); 
+    }else{
+      $("#expenses_receipt").removeAttr("href");
+      $("#expenses_receipt").attr("href","#");
+    }
+    $("#expenses_approval_id").val($("#ref_approval_"+id).val());
+  }
 </script>
 </body>
 </html>

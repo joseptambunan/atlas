@@ -48,7 +48,7 @@
                     <tr>
                       <td>{{ $key + 1 }}</td>
                       <td>{{ $value->name}}</td>
-                      <td><a class="btn btn-info" href="{{ url('/')}}/master/document/show/{{$value->id}}">Detail</a></td>
+                      <td><a class="btn btn-info" href="{{ url('/')}}/master/adjusters/show/{{$value->id}}">Detail</a></td>
                     </tr>
                   @endforeach
                 </tbody>

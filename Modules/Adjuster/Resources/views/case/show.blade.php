@@ -120,38 +120,40 @@
                             <tbody>
                               @php $i=0; @endphp
                               @foreach ( $casenumber->case_expenses as $key => $value )
-                              <tr>
-                                <td>{{ $i+1 }}</td>
-                                <td>{{ $value->type }}</td>
-                                <td>{{ $value->ammount }}</td>
-                                <td>{{ $value->description }}</td>
-                                <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
-                                <td>{{ $value->created->adjusters->name }}</td>
-                                <td>
-                                  @if ( $value->status_approval($user->id)['status'] == 0 || $value->status_approval($user->id)['status'] == 2 )
-                                  <input type="checkbox" name="checklist[]" value="{{ $value->id}}">
-                                  @endif
-                                </td>
-                                <td><span class="{{ $value->status_approval($user->id)['class']}}">{{ $value->status_approval($user->id)['label']}}</span></td>
-                                <td>
-                                  @if ( $value->iou_lists_id != "")
-                                    {{ $value->iou_lists->iou->title }}
-                                  @endif
-                                </td>
-                                <td>
-                                   @if ( $value->iou_lists_id != "")
-                                  <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a>
-                                  @endif
+                              @if ( $value->created_by == $user->id)
+                                <tr>
+                                  <td>{{ $i+1 }}</td>
+                                  <td>{{ $value->type }}</td>
+                                  <td>{{ $value->ammount }}</td>
+                                  <td>{{ $value->description }}</td>
+                                  <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
+                                  <td>{{ $value->created->adjusters->name }}</td>
+                                  <td>
+                                    @if ( $value->status_approval($user->id)['status'] == 0 || $value->status_approval($user->id)['status'] == 2 )
+                                    <input type="checkbox" name="checklist[]" value="{{ $value->id}}">
+                                    @endif
+                                  </td>
+                                  <td><span class="{{ $value->status_approval($user->id)['class']}}">{{ $value->status_approval($user->id)['label']}}</span></td>
+                                  <td>
+                                    @if ( $value->iou_lists_id != "")
+                                      {{ $value->iou_lists->iou->title }}
+                                    @endif
+                                  </td>
+                                  <td>
+                                     @if ( $value->iou_lists_id != "")
+                                    <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a>
+                                    @endif
 
-                                  @if ( $value->status_approval($user->id)['status'] == 0 )
-                                      <button class="btn btn-sm btn-danger" onClick="removeDataExpenses('{{ $value->id}}')">Remove Detail</button>
-                                  @endif
+                                    @if ( $value->status_approval($user->id)['status'] == 0 )
+                                        <button class="btn btn-sm btn-danger" onClick="removeDataExpenses('{{ $value->id}}')">Remove Detail</button>
+                                    @endif
 
-                                  @if ( $value->status_approval($user->id)['status'] == 2 )
-                                      <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modal-revisi" onClick="setRevisi('{{$value->id}}')" type="button">Revisi</button>
-                                  @endif
-                                </td>
-                              </tr>
+                                    @if ( $value->status_approval($user->id)['status'] == 2 )
+                                        <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modal-revisi" onClick="setRevisi('{{$value->id}}')" type="button">Revisi</button>
+                                    @endif
+                                  </td>
+                                </tr>
+                              @endif
                               @php $i++; @endphp
                               @endforeach
                             </tbody>
