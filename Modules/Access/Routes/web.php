@@ -22,4 +22,6 @@ Route::prefix('access')->group(function() {
 	Route::post('/submit/reset','AccessController@submitreset');
 	Route::get('/reset/success','AccessController@successreset');
 	Route::get('/reset/fail','AccessController@failreset');
+	Route::get('/profile','AccessController@profile')->middleware("auth");
+	Route::post('/profile/update','AccessController@update_profile')->middleware("auth");
 });

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use App\User;
 use Modules\Master\Entities\MasterAdjusters;
 use Modules\Master\Entities\MasterPositions;
+use App\Jobs\SendEmailUser;
 
 class AdjustersController extends Controller
 {
@@ -59,12 +60,14 @@ class AdjustersController extends Controller
         $user = new User;
         $user->name = $request->email;
         $user->email = $request->email;
-        $user->password = bcrypt($randomString);
+        $user->password = crypt($randomString,'$6$rounds=5000$saltatkas$'); 
         $user->created_at = date("Y-m-d H:i:s");
         $user->created_by = Auth::user()->id;
         $user->adjuster_id = $adjuster->id;
         $user->save();
-        
+
+        $user_ = User::find($user->id);
+        SendEmailUser::dispatch($user_, $randomString);
         return redirect("master/adjusters/show/".$adjuster->id);
     }
 

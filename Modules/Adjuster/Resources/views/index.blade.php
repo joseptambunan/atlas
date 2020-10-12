@@ -74,6 +74,7 @@
                       <td>Status</td>
                       <td>Total IOU</td>
                       <td>Total Expenses</td>
+                      <td>Tranfer</td>
                       <td>Detail</td>
                     </tr>
                   </thead>
@@ -94,6 +95,11 @@
                           <td><span class="{{ $value->status['class']}}">{{ $value->status['label'] }}</span></td>
                           <td>Rp. {{ number_format($value->total)}}</td>
                           <td>Rp. {{ number_format($value->total_expenses)}}</td>
+                          <td>
+                            @if ( $value->document_upload_at != "")
+                            {{ date("d/M/Y", strtotime($value->document_upload_at))}}
+                            @endif
+                          </td>
                           <td><a class="btn btn-info" href="{{ url('/')}}/adjuster/iou/show/{{$value->id }}">Detail</a></td>
                         </tr>
                       @endif
@@ -156,21 +162,11 @@
                       <input type="text" class="form-control" id="phone" name="phone" value="{{ $adjuster_data->phone}}" required>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="inputName" class="col-sm-2 control-label">Password</label>
-                    <div class="col-sm-10">
-                      <input type="password" class="form-control" id="password" name="password" value="">
-                    </div>
-                  </div>
+                  
                   <div class="form-group">
                     <label for="inputExperience" class="col-sm-2 control-label">Jabatan</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="jabtan" name="jabtan" value="{{ $adjuster_data->position->position_name}}">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                      <button type="submit" class="btn btn-danger">Submit</button>
+                      <input type="text" class="form-control" value="{{ $adjuster_data->position->position_name}}" disabled>
                     </div>
                   </div>
                 </form>
@@ -224,7 +220,7 @@
               <input type="text" name="type_expenses" id="type_expenses" class="form-control" autocomplete="off" required> 
             </div>
             <div class="form-group">
-              <label>Ammount</label>
+              <label>Amount</label>
               <input type="text" name="ammount_expenses" id="ammount_expenses" class="form-control" autocomplete="off" required>
             </div>
             <div class="form-group">

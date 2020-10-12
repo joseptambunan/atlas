@@ -4,9 +4,6 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   @include("master::adjuster.header")
-  <!-- Select2 -->
-  <link rel="stylesheet" href="{{url('/')}}/assets/bower_components/select2/dist/css/select2.min.css">
-  
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -27,39 +24,36 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-xs-6">
+        <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">Add Case</h3>
+              <h3 class="box-title">Master Staff</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/casenumbers/create">
+              <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/access/profile/update">
+                <input type="hidden" name="user_id" value="{{ $user->id}}">
                 {{ csrf_field() }}
                 <div class="box-body">
                   <div class="form-group">
-                    <label>Casenumber</label>
-                    <input type="text" class="form-control" id="casenumber" name="casenumber" autocomplete="off" required>
+                    <label>Name</label>
+                    <input type="text" class="form-control" id="name" name="name" autocomplete="off" value="{{ $user->adjusters->name}}" required>
                   </div>
                   <div class="form-group">
-                    <label>Tertanggung</label>
-                    <input type="text" class="form-control" id="title" name="title" autocomplete="off" required>
+                    <label>NIK</label>
+                    <input type="text" class="form-control" id="nik" name="nik" autocomplete="off" value="{{ $user->adjusters->nik}}" required>
                   </div>
                   <div class="form-group">
-                    <label>Insurance Client</label>
-                    <select class="form-control select2" name="insurance">
-                      @foreach ( $master_insurance as $key => $value )
-                      <option value="{{ $value->id}}">{{ $value->insurance_name }}</option>
-                      @endforeach
-                    </select>
+                    <label>Email</label>
+                    <input type="email" class="form-control" id="email" name="email" autocomplete="off" value="{{ $user->adjusters->email}}" required>
                   </div>
                   <div class="form-group">
-                    <label>Division</label>
-                    <select class="form-control" name="division">
-                      @foreach ( $master_division as $key => $value )
-                      <option value="{{ $value->id}}">{{ $value->division_name }}</option>
-                      @endforeach
-                    </select>
+                    <label>Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" autocomplete="off" value="{{ $user->adjusters->phone}}" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="pass" name="pass" autocomplete="off">
                   </div>
                 </div>
                 <!-- /.box-body -->
@@ -89,7 +83,7 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
-@include("casenumbers::footer");
+@include("master::document.footer");
 <script type="text/javascript">
    $('#example4').DataTable({
       'paging'      : true,

@@ -60,11 +60,11 @@ class CaseExpenses extends Model
                 if ( $value->approval_by == $user_id ) {
                     $array['approval_id'] = $approval->id;
                     $array['approval_detail_id'] = $value->id;
+                    return $array;
                 }
             }
         }
 
-        return $array;
     }
 
     public function getListApprovaAttribute(){
@@ -96,4 +96,24 @@ class CaseExpenses extends Model
     public function master_casenumbers(){
         return $this->belongsTo("Modules\Master\Entities\MasterCasenumbers");
     }
+
+    public function status_approval_self($user_id, $approval_id){
+        $array_status = array(
+            "0" => array( "label" => "Not Finish", "class" => "label label-info", "status" => 0 ),
+            "1" => array( "label" => "Waiting for Approval", "class" => "label label-warning", "status" => 1  ),
+            "2" => array( "label" => "Reject", "class" => "label label-danger", "status" => 2  ),
+            "3" => array( "label" => "Approval", "class" => "label label-success", "status" => 3  ),
+            "4" => array( "label" => "Expired", "class" => "label label-danger", "status" => 4  )
+        );
+        if ( $approval_id != "" ){
+            $approval = Approvals::find($approval_id);
+            foreach ($approval->details as $key => $value) {
+                if ( $value->approval_by == $user_id ){
+                    return $array_status[$value->status];
+                }
+            }
+        }
+        return $array_status[0];
+    }
+
 }

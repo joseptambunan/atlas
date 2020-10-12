@@ -21,6 +21,7 @@
           </ul>
         </li>
         @endforeach
+        <li><a href="{{ url('/')}}/access/profile"><i class="fa fa-circle-o"></i> Profile </a></li>
         <li><a href="{{ url('/')}}/access/logout"><i class="fa fa-circle-o"></i> Logout </a></li>
       </ul>
     </section>

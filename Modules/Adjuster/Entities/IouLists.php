@@ -121,4 +121,9 @@ class IouLists extends Model
     public function division_name(){
         return $this->belongsTo("Modules\Master\Entities\MasterDivision","division");
     }
+
+    public function getUserTransferAttribute(){
+        $user = User::find($this->document_upload_by);
+        return $user;
+    }
 }

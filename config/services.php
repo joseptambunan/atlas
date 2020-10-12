@@ -35,7 +35,8 @@ return [
         'setting' => 'access/master',
         'casenumbers' => 'casenumbers/index',
         'adjuster' => 'adjuster/index',
-        'approval' => 'approval/index'
+        'approval' => 'approval/index',
+        'finance'   => 'casenumbers/iou'
     ]
 
 ];

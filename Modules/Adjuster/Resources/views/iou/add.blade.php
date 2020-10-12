@@ -34,6 +34,7 @@
               <form role="form" enctype="multipart/form-data" method="post" action="{{ url('/')}}/adjuster/iou/store">
                 {{ csrf_field() }}
                 <input type="hidden" name="adjuster_id" value="{{$adjuster_data->id}}">
+
                 <div class="box-body">
                   <div class="form-group">
                     <label>Case Number</label>
@@ -45,11 +46,15 @@
                   </div>
                   <div class="form-group">
                     <label>Title</label>
-                    <input type="text" class="form-control" id="title" name="title" autocomplete="off" required>
+                    <select class="form-control" style="width: 100%;" name="title_id" id="title_id" disabled>
+                      @foreach ( $adjuster_data->cases as $key => $value )
+                        <option value="{{ $value->id}}" class="case_adjuster case_adjuster_{{$value->id}}">{{ $value->case->title}}</option>
+                      @endforeach
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Insurance Client</label>
-                    <select class="form-control" name="client" id="insurance_id">
+                    <select class="form-control" id="insurance_id" name="insurance_id" disabled>
                       @foreach ( $master_insurance as $key => $value )
                       <option value="{{ $value->id}}" class="insurance insurance_{{$value->id}}">{{ $value->insurance_name }}</option>
                       @endforeach
@@ -57,7 +62,7 @@
                   </div>
                   <div class="form-group">
                     <label>Division</label>
-                    <select class="form-control" name="division" id="division_id">
+                    <select class="form-control" id="division_id" name="division_id" disabled>
                       @foreach ( $master_division as $key => $value )
                       <option value="{{ $value->id}}" class="division division_{{$value->id}}">{{ $value->division_name }}</option>
                       @endforeach
@@ -66,9 +71,9 @@
                   <div class="form-group">
                     <label>Type of Survey</label>
                     <select class="form-control" name="tos">
-                      <option value="meeting">Meeting</option>
-                      <option value="survey">Survey</option>
-                      <option value="other">Other</option>
+                      <option value="meeting">MEETING</option>
+                      <option value="survey">SURVEY</option>
+                      <option value="other">OTHER</option>
                     </select>
                   </div>
                   <div class="form-group">

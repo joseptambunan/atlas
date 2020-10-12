@@ -35,5 +35,6 @@ Route::prefix('adjuster')->group(function() {
     Route::post('/case/approval','CasesController@request_approval');
     Route::post('/case/remove_expenses','CasesController@remove_expenses');
     Route::post('/case/revisi_expenses','CasesController@revisi_expenses');
+    Route::post('/case/history_approval','CasesController@history_approval');
 
 });

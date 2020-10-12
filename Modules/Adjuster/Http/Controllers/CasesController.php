@@ -58,6 +58,29 @@ class CasesController extends Controller
     public function save_expenses(Request $request){
 
         $iou_case_id = NULL;
+        $path = "";
+
+        if ( $request->expenses_method == "update"){
+            if ( $request->file('receipt') != ""){
+                $path = Storage::putFile('cases/'.$case_id, $request->file('receipt'));
+            }
+
+            $case_expenses = CaseExpenses::find($request->expenses_id);
+            $case_expenses->type = strtoupper($request->type_revisi);
+            $case_expenses->ammount = str_replace(",","",$request->ammount_revisi);
+            $case_expenses->description = strtoupper($request->desc_revisi);
+            $case_expenses->created_at = date("Y-m-d H:i:s");
+            $case_expenses->created_by = Auth::user()->id;
+            if ( $path != "" ){
+                $case_expenses->receipt = $path;
+            }
+            $case_expenses->save();
+
+            $data['status'] = 0;
+            echo json_encode($data);
+            exit;
+        }
+        
 
         if ( $request->iou_number != "" ){
 
@@ -93,9 +116,9 @@ class CasesController extends Controller
         $case_expenses = new CaseExpenses;
         $case_expenses->iou_lists_id = $iou_case_id;
         $case_expenses->master_casenumbers_id = $case_id;
-        $case_expenses->type = $request->type_expenses;
+        $case_expenses->type = strtoupper($request->type_expenses);
         $case_expenses->ammount = str_replace(",","",$request->ammount_expenses);
-        $case_expenses->description = $request->description;
+        $case_expenses->description = strtoupper($request->description);
         $case_expenses->created_at = date("Y-m-d H:i:s");
         $case_expenses->created_by = Auth::user()->id;
         $case_expenses->receipt = $path;
@@ -115,37 +138,6 @@ class CasesController extends Controller
     }
 
     public function revisi_expenses(Request $request){
-
-        $case_expenses = CaseExpenses::find($request->expenses_id);
-        $path = "";
-        if ( $request->file('receipt_revisi') != ""){
-            $path = Storage::putFile('cases/'.$case_expenses->iou_lists->adjuster_casenumber->case->id, $request->file('receipt_revisi'));
-        }
-
-
-        $update_cases =  CaseExpenses::find($request->expenses_id);
-        $update_cases->type = $request->type_revisi;
-        $update_cases->ammount = str_replace(",","",$request->ammount_revisi);
-        $update_cases->description = $request->desc_revisi;
-        $update_cases->updated_at = date("Y-m-d H:i:s");
-        $update_cases->updated_by = Auth::user()->id;
-        $update_cases->receipt = $path;
-        $update_cases->save();
-
-        $approval = $case_expenses->list_approva;
-        foreach ($approval->details as $key => $value) {
-            $approval_detail = ApprovalDetails::find($value->id);
-            $approval_detail->status = 1;
-            $approval_detail->updated_at = date("Y-m-d H:i:s");
-            $approval_detail->updated_by = Auth::user()->id;
-            $approval_detail->save();
-        }
-
-        $update_approval = Approvals::find($approval->id);
-        $update_approval->status = 1;
-        $update_approval->updated_by = Auth::user()->id;
-        $update_approval->updated_at = date("Y-m-d H:i:s");
-        $update_approval->save();
 
         $data['status'] = 0;
         echo json_encode($data);
@@ -180,5 +172,35 @@ class CasesController extends Controller
         }
 
         return redirect("adjuster/case/show/".$request->case_show);
+    }
+
+    public function history_approval(Request $request){
+        $case_expenses = CaseExpenses::find($request->id);
+        $approval = Approvals::find($case_expenses->list_approva->id);
+        $array_status = array(
+            "0" => array( "label" => "Not Finish", "class" => "label label-info", "status" => 0 ),
+            "1" => array( "label" => "Waiting for Approval", "class" => "label label-warning", "status" => 1  ),
+            "2" => array( "label" => "Reject", "class" => "label label-danger", "status" => 2  ),
+            "3" => array( "label" => "Approval", "class" => "label label-success", "status" => 3  ),
+            "4" => array( "label" => "Expired", "class" => "label label-danger", "status" => 4  )
+        );
+
+        $data = array();
+        $html = "";
+        if ( $approval != "" ){
+            foreach ($approval->details as $key => $value) {
+                $no = $key + 1;
+                $html .= "<tr>";
+                $html .= "<td>".$no."</td>";
+                $html .= "<td>".$value->user_detail->adjusters->name."</td>";
+                $html .= "<td><span class='".$array_status[$value->status]['class']."'>".$array_status[$value->status]['label']."</span></td>";
+                $html .= "<td>".$value->description."</td>";
+                $html .= "</tr>";
+            }
+        }
+
+        $data['status'] = "0";
+        $data['html'] = $html;
+        echo json_encode($data);
     }
 }

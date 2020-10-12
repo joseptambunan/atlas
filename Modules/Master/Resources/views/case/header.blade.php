@@ -31,4 +31,8 @@
         font-weight: bold;
         color:white;
       }
+
+      .input[type=text] {
+          text-transform: uppercase;
+      }
   </style>

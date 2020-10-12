@@ -95,19 +95,21 @@
                       <li><a href="#tab_3" data-toggle="tab">Adjuster</a></li>
                     </ul>
                     <div class="tab-content">
-                      <div class="tab-pane active" id="tab_1">
+                      <div class="tab-pane table-responsive active" id="tab_1">
                         <form action="{{url('/')}}/adjuster/case/approval" method="post" name="form1">
                           {{ csrf_field() }}
                           <input type="hidden" name="case_show" value="{{ $casenumber->id}}">
+                          @if ( count($casenumber->case_expenses) > 0 )
                           <button type="submit" class="btn btn-success">Request Approve</button>
+                          @endif
                           <h4>Expenses List</h4>
                           <h4>Total : Rp. {{ number_format($casenumber->total_expenses)}}</h4>
-                          <table id="example4" class="table table-bordered table-hover">
+                          <table id="example3" class="table table-bordered table-hover table-responsive">
                             <thead class="header_background">
                             <tr>
                               <th>No.</th>
                               <th>Type</th>
-                              <th>Ammount</th>
+                              <th>Amount</th>
                               <th>Description</th>
                               <th>Created at</th>
                               <th>Created by</th>
@@ -124,7 +126,7 @@
                                 <tr>
                                   <td>{{ $i+1 }}</td>
                                   <td>{{ $value->type }}</td>
-                                  <td>{{ $value->ammount }}</td>
+                                  <td>Rp. {{ number_format($value->ammount) }}</td>
                                   <td>{{ $value->description }}</td>
                                   <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
                                   <td>{{ $value->created->adjusters->name }}</td>
@@ -149,6 +151,11 @@
                                     @endif
 
                                     @if ( $value->status_approval($user->id)['status'] == 2 )
+                                        <input type="hidden" name="reference_id_{{$value->id}}" id="reference_id_{{$value->id}}" value="{{$value->id}}">
+                                        <input type="hidden" name="reference_type_{{$value->id}}" id="reference_type_{{$value->id}}" value="{{$value->type}}">
+                                        <input type="hidden" name="reference_ammount_{{$value->id}}" id="reference_ammount_{{$value->id}}" value="{{$value->ammount}}">
+                                        <input type="hidden" name="reference_desc_{{$value->id}}" id="reference_desc_{{$value->id}}" value="{{$value->description}}">
+
                                         <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modal-revisi" onClick="setRevisi('{{$value->id}}')" type="button">Revisi</button>
                                     @endif
                                   </td>
@@ -161,7 +168,7 @@
                         </form>
                       </div>
                       <!-- /.tab-pane -->
-                      <div class="tab-pane" id="tab_2">
+                      <div class="tab-pane table-responsive" id="tab_2">
                         <h4>IOU List</h4>
                         <h4>Total IOU: Rp. {{ number_format($casenumber->total_iou_planned)}}</h4>
                         <table id="example4" class="table table-bordered table-hover">
@@ -169,7 +176,7 @@
                           <tr>
                             <th>No.</th>
                             <th>Type</th>
-                            <th>Ammount</th>
+                            <th>Amount</th>
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
@@ -234,6 +241,7 @@
   <form method="post" enctype="multipart/form-data" id="upload_expenses">
     {{ csrf_field() }}
     <input type="hidden" name="iou_list_id" id="iou_list_id" value="{{ $casenumber->id}}">
+    <input type="hidden" name="expenses_method" id="expenses_method" value="new">
     <div class="modal fade" id="modal-default">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -249,7 +257,7 @@
               <input type="text" name="type_expenses" id="type_expenses" class="form-control" autocomplete="off" required> 
             </div>
             <div class="form-group">
-              <label>Ammount</label>
+              <label>Amount</label>
               <input type="text" name="ammount_expenses" id="ammount_expenses" class="form-control" autocomplete="off" required>
             </div>
             <div class="form-group">
@@ -274,149 +282,68 @@
     <!-- /.modal -->
   </form>
   <!-- /.modal -->
+
+  <form method="post" enctype="multipart/form-data" id="upload_expenses_revisi">
+    {{ csrf_field() }}
+    <input type="hidden" name="expenses_id" id="expenses_id" value="">
+    <input type="hidden" name="expenses_method" id="expenses_method" value="update">
+    <div class="modal fade" id="modal-revisi">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Detail Expenses</h4>
+          </div>
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label>Type</label>
+              <input type="text" name="type_revisi" id="type_revisi" class="form-control" autocomplete="off" required> 
+            </div>
+            <div class="form-group">
+              <label>Amount</label>
+              <input type="text" name="ammount_revisi" id="ammount_revisi" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" name="desc_revisi" id="desc_revisi" class="form-control" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label>Receipt</label>
+              <input type="file" name="receipt" id="receipt" class="form-control">
+            </div>
+
+            <table  class="table table-bordered table-hover">
+              <thead class="header_background">
+                <tr>
+                  <td>No.</td>
+                  <td>Username</td>
+                  <td>Status</td>
+                  <td>Description</td>
+                </tr>
+              </thead>
+              <tbody id="list_approval"></tbody>
+            </table>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="btn_expenses_revisi">Save changes</button>
+            <span id="loading_revisi" style="display: none;">Loading...</span>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+  </form>
+  <!-- /.modal -->
+  
 </div>
 <!-- ./wrapper -->
-@include("master::document.footer");
-<!-- bootstrap datepicker -->
-<script src="{{url('/')}}/assets/plugins/customd-jquery-number-c19aa59/jquery.number.min.js"></script>
-<script type="text/javascript">
-   $( document ).ready(function() {
-      $.ajaxSetup({
-          headers: {
-              'X-CSRF-Token': $('input[name=_token]').val()
-          }
-        });
+@include("adjuster::case.footer");
 
-      $("#btn_expenses").click(function(){
-        $("#btn_expenses").hide();
-        $("#loading").show();
-        saveExpenses();
-      });
-
-      $("#ammount_expenses").number(true);
-    });
-
-   $('#example4').DataTable({
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false
-    });
-
-   function cancelthiscase(id,status){
-    if ( confirm("Are you sure to update this case ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/casenumbers/delete",
-        dataType : "json",
-        data : {
-          id : id,
-          status: status
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == 0 ){
-          alert("Case has been updated");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
-
-   function submitInvoice(){
-    if ( confirm("Are you sure to create invoice ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/casenumbers/invoice/create",
-        dataType : "json",
-        data :{
-          invoice_number : $("#invoice_number").val(),
-          case_id : $("#casenumber_id").val()
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == "0"){
-          alert("Invoice has been created");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
-
-   function finishCase(id){
-    if ( $("#expenses").val() == 0 ){
-      alert("You expenses not exist or not approve. Please check before");
-      return false;
-    }
-
-    if ( confirm("Are you sure to finish this case ? ")){
-      var request = $.ajax({
-        url : "{{ url('/')}}/adjuster/invoice/finish",
-        dataType : "json",
-        data : {
-          id : id
-        },
-        type : "post"
-      });
-
-      request.done(function(data){
-        if ( data.status == "0"){
-          alert("Case has been finish");
-        }else{
-          alert("You expenses not exist. Please check before");
-        }
-
-        window.location.reload();
-      })
-    }else{
-      return false;
-    }
-   }
-
-   function saveExpenses(){
-    var data = new FormData();
-    //Form data
-    var form_data = $('#upload_expenses').serializeArray();
-    $.each(form_data, function (key, input) {
-        data.append(input.name, input.value);
-    });
-
-    //File data
-    var file_data = $('input[name="receipt"]')[0].files;
-
-    for (var i = 0; i < file_data.length; i++) {
-        data.append("receipt", file_data[i]);
-    }
-
-
-    var request = $.ajax({
-      url : "{{url('/')}}/adjuster/case/expenses",
-      dataType : "json",
-      data :data,
-      type : "post",
-            enctype: 'multipart/form-data',
-            contentType : false,
-            processData: false
-    });
-
-    request.done(function(data){
-      if ( data.status == "0"){
-        alert("Expenses has been created");
-      }
-
-      window.location.reload();
-    });
-   }
-</script>
 </body>
 </html>

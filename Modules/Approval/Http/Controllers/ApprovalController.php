@@ -72,6 +72,7 @@ class ApprovalController extends Controller
                     );
 
                 }
+                
                 return view("approval::iou.show",compact("user","config_sidebar","adjuster_data","iou_data","approval_histories","approval_detail","array_status"));
                 break;
             case "expenses":
@@ -283,7 +284,7 @@ class ApprovalController extends Controller
                             $approval->save();
                         }
 
-                        if ( count($approval->details) <= 0 ){
+                        if ( count($approval_->details) <= 0 ){
                             $approval_detail = new ApprovalDetails;
                             $approval_detail->approval_id = $approval->id;
                             $approval_detail->status = 1;

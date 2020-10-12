@@ -79,7 +79,7 @@
                 <!-- /.box-body -->
 
                 <div class="box-footer">
-                  <span class="{{ $array_status[$approval_detail->approval->status]['class']}}">{{ $array_status[$approval_detail->approval->status]['label']}}</span>
+                  <span class="{{ $array_status[$approval_detail->status]['class']}}">{{ $array_status[$approval_detail->status]['label']}}</span>
                   @if ( $approval_detail->status == 1)
                   <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}');">
                     Approve
@@ -104,7 +104,7 @@
                       <li><a href="#tab_3" data-toggle="tab">Approval</a></li>
                     </ul>
                     <div class="tab-content">
-                      <div class="tab-pane active" id="tab_1">
+                      <div class="tab-pane table-responsive active" id="tab_1">
                         <ul>
                           @foreach ( $iou_data->cases as $key_cases => $value_cases )
                             <li>{{ $value_cases->adjuster_casenumber->case->case_number }}</li>
@@ -117,7 +117,7 @@
                             <tr>
                               <td>No.</td>
                               <td>Type</td>
-                              <td>Ammount</td>
+                              <td>Amount</td>
                               <td>Description</td>
                             </tr>
                           </thead>
@@ -136,7 +136,7 @@
                         </table>
                       </div>
                       <!-- /.tab-pane -->
-                      <div class="tab-pane" id="tab_2">
+                      <div class="tab-pane table-responsive" id="tab_2">
                         <h4>Expenses List</h4>
                         <h4>Total Expenses : Rp. {{ number_format($iou_data->total_expenses)}}</h4>
                         <table id="example4" class="table table-bordered table-hover">
@@ -145,7 +145,7 @@
                                 <td>No.</td>
                                 <td>Case Number</td>
                                 <td>Type</td>
-                                <td>Ammount</td>
+                                <td>Amount</td>
                                 <td>Description</td>
                                 <td>Status</td>
                                 <td>Action</td>
@@ -282,7 +282,7 @@
             <input type="text" class="form-control" id="expenses_type" name="expenses_type" value="" disabled>
           </div>
           <div class="form-group">
-            <label>Ammount</label>
+            <label>Amount</label>
             <input type="text" class="form-control" id="expenses_ammount" name="expenses_ammount" value="" disabled>
           </div>
           <div class="form-group">

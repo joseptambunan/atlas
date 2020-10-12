@@ -30,7 +30,7 @@
               <h3 class="box-title">List Approval</h3>
             </div>
             <!-- /.box-header -->
-            <div class="box-body">
+            <div class="box-body table-responsive">
               
             
               <table id="example4" class="table table-bordered table-hover">

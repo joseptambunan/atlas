@@ -82,15 +82,16 @@
                       <li><a href="#tab_3" data-toggle="tab">Adjuster</a></li>
                     </ul>
                     <div class="tab-content">
-                      <div class="tab-pane active" id="tab_1">
+                      <div class="tab-pane table-responsive active" id="tab_1">
 
                         <h4>Expenses List</h4>
+                        <h4>Total <strong>Rp. {{ number_format($casenumber->total_expenses)}}</strong></h4>
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
                           <tr>
                             <th>No.</th>
                             <th>Type</th>
-                            <th>Ammount</th>
+                            <th>Amount</th>
                             <th>Description</th>
                             <th>Created at</th>
                             <th>Created by</th>
@@ -110,23 +111,31 @@
                                 <input type="hidden" id="ref_ammount_{{$value->id}}" value="{{ $value->ammount }}">
                                 <input type="hidden" id="ref_desc_{{$value->id}}" value="{{ $value->description }}">
                                 <input type="hidden" id="ref_receipt_{{$value->id}}" value="{{ $value->receipt }}">
-                                <input type="hidden" id="ref_approval_{{$value->id}}" value="{{ $value->approval_data($user->id)['approval_detail_id'] }}">
+                                
                               </td>
                               <td>{{ $value->type }}</td>
-                              <td>{{ $value->ammount }}</td>
+                              <td>Rp. {{ number_format($value->ammount) }}</td>
                               <td>{{ $value->description }}</td>
                               <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
                               <td>{{ $value->created->adjusters->name }}</td>
-                              <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
+                              <td>
+                                @if ( $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['status'] == "1" )
+                                  <button class="btn btn-success btn-sm" onClick="setShortApprove({{ $value->approval_data($user->id)['approval_detail_id'] }},'3')">Approve</button>
+                                  <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modal-default" onClick="setApprovalDetailId({{ $value->approval_data($user->id)['approval_detail_id'] }});">Reject</button>
+                                @else
+                                  <span class="{{ $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['class']}}">
+                                  {{ $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['label'] }}</span>
+                                @endif
+                              </td>
                               <td>
                                 @if ( $value->iou_lists_id != "" )
-                                <a href="{{ url('/')}}/approval/iou/show/{{ $value->iou_lists->iou->id }}/{{$approval_id}}" class="btn btn-primary">
+                                <a href="{{ url('/')}}/approval/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">
                                 {{ $value->iou_lists->iou->title }} </a>
                                 @endif
                               </td>
                               <td>
-                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-info" onClick="viewDetail('{{$value->id}}')">View Detail</button>
-                                <a href="{{url('/')}}/approval/expenses/approval/{{$value->id}}">Approve</a>
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-info" onClick="viewDetail('{{$value->id}}')"> Detail</button>
+                                <a href="{{url('/')}}/approval/expenses/approval/{{$value->id}}" class="btn btn-info">History</a>
                               </td>
                             </tr>
                             @php $i++; @endphp
@@ -135,7 +144,7 @@
                         </table>
                       </div>
                       <!-- /.tab-pane -->
-                      <div class="tab-pane" id="tab_2">
+                      <div class="tab-pane table-responsive" id="tab_2">
                         <h4>IOU List</h4>
                         <table id="example4" class="table table-bordered table-hover">
                           <thead class="header_background">
@@ -226,7 +235,7 @@
             <input type="text" class="form-control" id="expenses_type" name="expenses_type" value="" disabled>
           </div>
           <div class="form-group">
-            <label>Ammount</label>
+            <label>Amount</label>
             <input type="text" class="form-control" id="expenses_ammount" name="expenses_ammount" value="" disabled>
           </div>
           <div class="form-group">
@@ -237,10 +246,6 @@
             <label>Receipt</label>
             <a href="#" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
           </div>
-          <div class="form-group">
-            <label>Reason</label>
-            <textarea class="form-control" cols="30" rows="6" name="reason" id="reason"></textarea>
-          </div>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -248,7 +253,30 @@
     <!-- /.modal-dialog -->
   </div>
   <!-- /.modal -->
-  
+  <div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Detail Expenses</h4>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="approval_detail_id" name="approval_detail_id">
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea class="form-control" cols="30" rows="6" name="reason" id="reason"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" onClick="setShortApprove('','2')">Reject</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 </div>
 <!-- ./wrapper -->
 @include("master::document.footer");
@@ -281,7 +309,37 @@
       $("#expenses_receipt").removeAttr("href");
       $("#expenses_receipt").attr("href","#");
     }
-    $("#expenses_approval_id").val($("#ref_approval_"+id).val());
+  }
+
+  function setApprovalDetailId(approval_detail_id){
+    $("#reason").val("");
+    $("#approval_detail_id").val(approval_detail_id);
+  }
+
+  function setShortApprove(approval_id = "", status){
+    if ( approval_id == ""){
+      var approval_id = $("#approval_detail_id").val();
+    }
+
+    var request = $.ajax({
+      url : "{{ url('/')}}/approval/submit",
+      dataType : "json",
+      data : {
+        approval_id : approval_id,
+        status : status,
+        description : $("#reason").val()
+      },
+      type : "post"
+    });
+
+    request.done(function(data){
+      $("#reason").val("");
+      if ( data.status == 0 ){
+        alert("Data has been updated");
+      }
+
+      window.location.reload();
+    })
   }
 </script>
 </body>

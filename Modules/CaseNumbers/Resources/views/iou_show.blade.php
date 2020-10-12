@@ -61,7 +61,7 @@
                   </div>
                   <div class="col-md-6">
                     <label>Reference</label>
-                    <input type="text" class="form-control" name="location" value="{{$iou_data->document_number}}" disabled>
+                    <a href="{{url('/')}}/casenumbers/download_receipt/{{$iou_data->id}}">Download Receipt</a>
                   </div>
                   <div class="col-md-6">
                     <label>Periode Date</label><br/>
@@ -100,6 +100,8 @@
                             <li>{{ $value_cases->adjuster_casenumber->case->case_number }}</li>
                           @endforeach
                         </ul>
+                        <span>Transfer at : {{ date("d/M/Y", strtotime($iou_data->document_upload_at))}} </span><br/>
+                        <span>Transfer by : {{ $iou_data->user_transfer->adjusters->name }} </span><br/>
                         <h4>Planned Expenses Detail</h4> 
                         
                         <table id="example4" class="table table-bordered table-hover">
@@ -190,8 +192,8 @@
           <div class="modal-body">
             <p>Please input invoice number or transaction slip</p>
             <div class="form-group">
-              <label>Document Number</label>
-              <input type="text" class="form-control" name="doc_reference" value="" required>
+              <label>Receipt</label>
+              <input type="file" name="receipt" id="receipt" class="form-control">
             </div>
           </div>
           <div class="modal-footer">

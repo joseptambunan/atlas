@@ -19,7 +19,7 @@ class Approvals extends Model
     }
 
     public function details(){
-    	return $this->hasMany("App\ApprovalDetails","approval_id");
+    	return $this->hasMany("App\ApprovalDetails","approval_id")->orderBy("id","desc");
     }
 
     public function document(){

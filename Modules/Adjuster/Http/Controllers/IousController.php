@@ -22,6 +22,7 @@ use Modules\Master\Entities\MasterInsurance;
 use Modules\Master\Entities\MasterDivision;
 use Modules\Master\Entities\MasterConfigs;
 use Modules\Adjuster\Entities\CaseExpenses;
+use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
 
 class IousController extends Controller
 {
@@ -60,13 +61,16 @@ class IousController extends Controller
      */
     public function store(Request $request)
     {
+        $case_id = $request->case_id;
+        $adjuster_casenumber = AdjusterCasenumbers::find($case_id[0]);
+
         $user = User::find(Auth::user()->id);
         $new_iou = new IouLists;
-        $new_iou->client = $request->client;
-        $new_iou->title = $request->title;
-        $new_iou->division = $request->division;
-        $new_iou->type_of_survey = $request->tos;
-        $new_iou->location = $request->location;
+        $new_iou->client = strtoupper($adjuster_casenumber->case->insurance_id);
+        $new_iou->title = strtoupper($adjuster_casenumber->case->title);
+        $new_iou->division = $adjuster_casenumber->case->division_id;
+        $new_iou->type_of_survey = strtoupper($request->tos);
+        $new_iou->location = strtoupper($request->location);
         $new_iou->starttime = date("Y-m-d H:i:s", strtotime($request->datepicker_start));
         $new_iou->endtime = date("Y-m-d H:i:s", strtotime($request->datepicker_end));
         $new_iou->created_at = date("Y-m-d H:i:s");
@@ -125,9 +129,6 @@ class IousController extends Controller
     
     public function update(Request $request){
         $iou_data = IouLists::find($request->iou_id);
-        $iou_data->client = $request->client;
-        $iou_data->title = $request->title;
-        $iou_data->division = $request->division;
         $iou_data->type_of_survey = $request->tos;
         $iou_data->location = $request->location;
         $iou_data->updated_at = date("Y-m-d H:i:s");
@@ -160,9 +161,9 @@ class IousController extends Controller
     public function savedetail(Request $request){
         $save_iou_detail = new IouDetails;
         $save_iou_detail->iou_id = $request->iou_id;
-        $save_iou_detail->type = $request->type;
+        $save_iou_detail->type = strtoupper($request->type);
         $save_iou_detail->ammount = str_replace(",","",$request->ammount);
-        $save_iou_detail->description = $request->desc;
+        $save_iou_detail->description = strtoupper($request->desc);
         $save_iou_detail->created_at = date("Y-m-d H:i:s");
         $save_iou_detail->created_by = Auth::user()->id;
         $save_iou_detail->save();

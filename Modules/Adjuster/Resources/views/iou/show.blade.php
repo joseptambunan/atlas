@@ -41,23 +41,16 @@
                   </div>
                   <div class="col-md-6">
                     <label>Title</label>
-                    <input type="text" class="form-control" name="title" value="{{$iou_data->title}}" disabled>
+                    <input type="text" class="form-control" value="{{$iou_data->title}}" disabled>
                   </div>
-                  <div class="col-md-6">
-                    <label>Case Number</label>
-                    <select class="form-control select2" id="case_number_id" multiple="multiple" style="width: 100%;" name="case_id[]">
-                      @foreach ( $adjuster_data->cases as $key => $value )
-                      <option value="{{ $value->id}}">{{ $value->case->case_number}}</option>
-                      @endforeach
-                    </select>
-                  </div>
+                  
                   <div class="col-md-6">
                     <label>Client</label>
-                    <input type="text" class="form-control" name="client" value="{{$iou_data->client_name->insurance_name}}">
+                    <input type="text" class="form-control" value="{{$iou_data->client_name->insurance_name}}" disabled>
                   </div>
                   <div class="col-md-6">
                     <label>Division</label>
-                    <input type="text" class="form-control" name="division" value="{{$iou_data->division_name->division_name}}">
+                    <input type="text" class="form-control" value="{{$iou_data->division_name->division_name}}" disabled>
                   </div>
                   <div class="col-md-6">
                     <label>Type of Survey</label>
@@ -69,16 +62,30 @@
                   </div>
                   <div class="col-md-6">
                     <label>Reference</label>
-                    <input type="text" class="form-control" name="location" value="{{$iou_data->document_number}}" disabled>
+                    <a href="{{url('/')}}/casenumbers/download_receipt/{{$iou_data->id}}">Download Receipt</a>
                   </div>
-                  @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
+                   @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
                   <div class="col-md-6">
                       <label>Periode Date</label><br/>
-                      <input type="text" class="form-control pull-left" id="datepicker_start" name="datepicker_start" style="width: 30%;" autocomplete="off" value="{{ date('d-M-Y', strtotime($iou_data->starttime))}}"> 
+                      <input type="text" class="form-control pull-left" id="datepicker_start" name="datepicker_start" style="width: 30%;" autocomplete="off" value="{{ date('d-M-Y', strtotime($iou_data->starttime))}}">
                       <input type="text" class="form-control pull-left" id="datepicker_end" name="datepicker_end" style="width: 30%;" autocomplete="off" value="{{ date('d-M-Y', strtotime($iou_data->endtime))}}">
                     </div>
                   </div>
                   @endif
+                  
+                  <div class="col-md-6">
+                    <label>Case Number</label>
+                    <select class="form-control select2" id="case_number_id" multiple="multiple" style="width: 100%;" name="case_id[]">
+                      @foreach ( $adjuster_data->cases as $key => $value )
+                      <option value="{{ $value->id}}">{{ $value->case->case_number}}</option>
+                      @endforeach
+                    </select>
+                    <ul>
+                      @foreach ( $iou_data->cases as $key => $value )
+                      <li>{{ $value->adjuster_casenumber->case->case_number}}</li>
+                      @endforeach
+                    </ul>
+                  </div>
                   <div class="col-md-6">
                     <label>Total</label>
                     <h4>Rp. {{ number_format($iou_data->total)}}</h4>
@@ -88,14 +95,6 @@
                     @else
                        <span style="color:red;font-weight: bolder;">Rp. {{ number_format($balance)}}</span>
                     @endif
-                  </div>
-                  <div class="col-md-6">
-                    <label>Case Number</label>
-                    <ul>
-                      @foreach ( $iou_data->cases as $key => $value )
-                      <li>{{ $value->adjuster_casenumber->case->case_number}}</li>
-                      @endforeach
-                    </ul>
                   </div>
                 </div>
                 <!-- /.box-body -->
@@ -121,12 +120,8 @@
                       <li><a href="#tab_3" data-toggle="tab">Approval</a></li>
                     </ul>
                     <div class="tab-content">
-                      <div class="tab-pane active" id="tab_1">
-                        <ul>
-                          @foreach ( $iou_data->cases as $key_cases => $value_cases )
-                            <li>{{ $value_cases->adjuster_casenumber->case->case_number }}</li>
-                          @endforeach
-                        </ul>
+                      <div class="tab-pane table-responsive active" id="tab_1">
+                        
                         <h4>Planned Expenses Detail</h4> 
                         @if ( $iou_data->status['status'] == 2 || $iou_data->status['status'] == 0)
                           @if ( $balance > 0 )
@@ -138,7 +133,7 @@
                             <tr>
                               <td>No.</td>
                               <td>Type</td>
-                              <td>Ammount</td>
+                              <td>Amount</td>
                               <td>Description</td>
                               <td>Delete</td>
                             </tr>
@@ -163,7 +158,7 @@
                         </table>
                       </div>
                       <!-- /.tab-pane -->
-                      <div class="tab-pane" id="tab_2">
+                      <div class="tab-pane table-responsive" id="tab_2">
                         <h4>Expenses List</h4>
                         <h4>Total Expenses : Rp.{{ number_format($iou_data->total_expenses)}}</h4>
                         <form method="post" name="form1" action="{{ url('/')}}/adjuster/iou/expenses/request_approval">
@@ -179,7 +174,7 @@
                               <tr>
                                 <td>No.</td>
                                 <td>Type</td>
-                                <td>Ammount</td>
+                                <td>Amount</td>
                                 <td>Description</td>
                                 <td>Status</td>
                                 <td>Action</td>
@@ -285,7 +280,7 @@
                   <input type="text" class="form-control" id="type" name="type" autocomplete="off" required>
                 </div>
                 <div class="form-group">
-                  <label>Ammount</label>
+                  <label>Amount</label>
                   <input type="text" class="form-control" id="ammount" name="ammount" autocomplete="off" required>
                 </div>
                 <div class="form-group">

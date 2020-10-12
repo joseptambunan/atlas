@@ -42,23 +42,22 @@
                   <th>Title</th>
                   <th>Client</th>
                   <th>Created at</th>
-                  <th>Created by</th>
                   <th>Status</th>
                   <th>Detail</th>
                 </tr>
                 </thead>
                 <tbody>
-                  @foreach ( $adjuster_data->iou_not_complete as $key => $value )
-                   
+                  @foreach ( $adjuster_data->ious as $key => $value )
+                   @if ( $value->deleted_at == "" )
                     <tr>
                       <td>{{ $key + 1 }}</td>
-                      <td>{{ $value['title']}}</td>
-                      <td>{{ $value['client']}}</td>
-                      <td>{{ date("d-M-Y", strtotime($value['created_at'])) }}</td>
-                      <td>{{ $value['created'] }}</td>
-                      <td>{{ $value['status']}}</td>
+                      <td>{{ $value->title}}</td>
+                      <td>{{ $value->client}}</td>
+                      <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
+                      <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
                       <td><a class="btn btn-info" href="{{ url('/')}}/adjuster/iou/show/{{$value['id'] }}">Detail</a></td>
                     </tr>
+                  @endif
                   @endforeach
                 </tbody>
               </table>

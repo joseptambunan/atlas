@@ -50,15 +50,17 @@
                       <td>Username</td>
                       <td>Status</td>
                       <td>Message</td>
+                      <td>Date</td>
                     </tr>
                   </thead>
                   <tbody>
                     @foreach ( $case_expenses->list_approva->details as $key => $value )
                     <tr>
                       <td>{{ $start + 1 }}</td>
-                      <td>{{ $value->user_detail->adjusters->name }}</td>
+                      <td>{{ strtoupper($value->user_detail->adjusters->name) }}</td>
                       <td><span class="{{ $array_status[$value->status]['class']}}">{{ $array_status[$value->status]['label']}}</span></td>
-                      <td>{{ $value->description }}</td>
+                      <td>{{ strtoupper($value->description) }}</td>
+                      <td>{{date("d/M/Y", strtotime($value->updated_at))}}</td>
                     </tr>
                     @php $start++; @endphp
                     @endforeach

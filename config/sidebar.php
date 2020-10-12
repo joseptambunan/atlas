@@ -13,8 +13,7 @@
 			'Config' => '/setting/config',
 		],
 		'casenumbers' => [
-			'List' => '/casenumbers/index',
-			'IOU' => '/casenumbers/iou'
+			'List' => '/casenumbers/index'
 		],
 		'iou' => [
 			'CaseList' => '/iou/caselist',
@@ -28,6 +27,9 @@
 			'List' => '/approval/index',
 			'Invoice' => '/approval/invoice/',
 			'IOU' => '/approval/iou/team'
+		],
+		'finance' => [
+			'IOU' => '/casenumbers/iou'
 		]
 	];
 ?>

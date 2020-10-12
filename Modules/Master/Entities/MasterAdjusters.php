@@ -246,7 +246,7 @@ class MasterAdjusters extends Model
         $array_filter = array();
 
         foreach ($this->user_detail->approval_detail as $key => $value) {
-            if ( $value->status == 1){
+            if ( $value->status == 1 && $value->approval->status == 1 ){
                 $document_type = trim(strtolower($value->approval->document->document));
                 if ( $document_type == "iou"){
                     $title = IouLists::find($value->approval->document_id)->title;

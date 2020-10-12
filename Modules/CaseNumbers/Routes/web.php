@@ -39,4 +39,5 @@ Route::prefix('casenumbers')->group(function() {
     Route::post('/expenses/update','CaseNumbersController@update_expenses');
 
     Route::get('/testemail','CaseNumbersController@testemail');
+    Route::get('/download_receipt/{id}','CaseNumbersController@download_receipt');
 });

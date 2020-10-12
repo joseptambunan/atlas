@@ -60,7 +60,7 @@
             </div>
 
             <div class="box-body">
-
+              <h2>IOU need to be Process</h2>
               <table id="example4" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>
@@ -77,11 +77,11 @@
                 <tbody>
                   @php $i=0; @endphp
                   @foreach ( $master_iou as $key => $value )
-                    @if ( $value->status['status'] == 3 )
+                    @if ( $value->status['status'] == 3 && $value->document_number == "" )
                     <tr>
                       <td>{{ $key + 1 }}</td>
                       <td>{{ $value->title }}</td>
-                      <td>{{ $value->client}}</td>
+                      <td>{{ $value->client_name->insurance_name}}</td>
                       <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
                       <td>{{ $value->created->adjusters->name }}</td>
                       <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>

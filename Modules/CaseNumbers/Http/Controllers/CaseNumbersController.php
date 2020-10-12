@@ -25,6 +25,7 @@ use App\Approvals;
 use App\ApprovalDetails;
 use App\Export;
 use App\Jobs\SendEmailCase;
+use App\Jobs\SendIouConfirmed;
 
 class CaseNumbersController extends Controller
 {
@@ -33,9 +34,13 @@ class CaseNumbersController extends Controller
         $this->middleware("auth");
     }
 
-
     public function index()
     {
+
+        if ( !(Auth::check())){
+            return redirect("access/logout");
+        }
+
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
         $master_casenumbers = MasterCasenumbers::orderBy('created_at', 'DESC')->get();
@@ -62,7 +67,7 @@ class CaseNumbersController extends Controller
     public function create(Request $request){
         $casenumber = new MasterCasenumbers;
         $casenumber->case_number = $request->casenumber;
-        $casenumber->title = $request->title;
+        $casenumber->title = strtoupper($request->title);
         $casenumber->created_at = date("Y-m-d H:i:s");
         $casenumber->created_by = Auth::user()->id;
         $casenumber->insurance_id = $request->insurance;
@@ -205,12 +210,22 @@ class CaseNumbersController extends Controller
     }
 
     public function update_reference(Request $request){
+        $iou_ = IouLists::find($request->iou_id);
+
+        if ( $request->file('receipt') != ""){
+            $path = Storage::putFile('iou/'.$iou_->id, $request->file('receipt'));
+        }
+
         $iou_data = IouLists::find($request->iou_id);
-        $iou_data->document_number = $request->doc_reference;
+        $iou_data->document_number = $path;
         $iou_data->updated_at = date("Y-m-d H:i:s");
         $iou_data->updated_by = Auth::user()->id;
+        $iou_data->document_upload_at = date("Y-m-d H:i:s");
+        $iou_data->document_upload_by = Auth::user()->id;
         $iou_data->save();
 
+        $iou_data_ = IouLists::find($request->iou_id);
+        SendIouConfirmed::dispatch($iou_data_);
         return redirect("casenumbers/iou/show/".$iou_data->id);
 
     }
@@ -420,6 +435,12 @@ class CaseNumbersController extends Controller
         }
     
         return redirect("casenumbers/show/".$case_expenses->master_casenumbers_id);
+    }
+
+    public function download_receipt($id){
+        $iou_lists = IouLists::find($id);
+        $receipt = $iou_lists->document_number;
+        return Storage::download($receipt);
     }
 
 }

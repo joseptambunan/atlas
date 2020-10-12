@@ -19,7 +19,8 @@
 	$(function () {
 		$('.select2').select2();
 		$('#datepicker_start').datepicker({
-	      autoclose: true
+	      autoclose: true,
+        dateFormat:'d/M/Y'
 	    });
 
 		$('#datepicker_end').datepicker({
@@ -211,6 +212,8 @@
     var insurance = ($(this).children('option:selected').attr('data-attribute-insurance'));
     $("#division_id").val(division);
     $("#insurance_id").val(insurance);
+    $("#title_id").val($("#case_id").val());
+
   });
    
 </script>

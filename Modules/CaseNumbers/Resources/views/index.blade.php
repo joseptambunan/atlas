@@ -53,20 +53,14 @@
                 </div>
                 <div class="form-group">
                   <button class="btn btn-success" type="submit">Search</button>
-                  <a href="{{ url('/')}}/casenumbers/iou/" class="btn btn-warning">Reset</a>
+                  <a href="{{ url('/')}}/casenumbers/iou/" class="btn btn-warning">Reset</a> 
+                  <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>
                 </div>
               </div>
               </form>
             </div>
 
             <div class="box-body">
-              <div class="col-md-12">
-                <a class="btn btn-info" type="submit" href="{{ url('/')}}/casenumbers/expenses/add">Add Expenses</a>
-                <a class="btn btn-success" type="submit" href="{{ url('/')}}/casenumbers/add">Add New Case</a>
-                <a href="{{ url('/')}}/casenumbers/iou" class="btn btn-warning">Go to IOU</a>
-                <h4>Total IOU need to process : <strong>{{ $total_iou }}</strong> IOU </h4> 
-              </div>
-            
               <table id="example4" class="table table-bordered table-hover">
                 <thead class="header_background">
                 <tr>
@@ -76,7 +70,6 @@
                   <th>Created at</th>
                   <th>Created by</th>
                   <th>Status</th>
-                  <th>Detail</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -90,7 +83,7 @@
                       <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
                       <td>{{ $value->created }}</td>
                       <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                      <td><a class="btn btn-info" href="{{ url('/')}}/casenumbers/show/{{$value->id}}">Detail</a></td>
+                      
                     </tr>
                     @php $i++;@endphp
                     @endif
