@@ -117,7 +117,8 @@ class IousController extends Controller
                     "name" => $value->user_detail->adjusters->name,
                     "status" => $value->status_description['label'],
                     "class" => $value->status_description['class'],
-                    "message" => $value->description
+                    "message" => $value->description,
+                    "date" => $value->updated_at
                 );
             }
         }
@@ -205,6 +206,25 @@ class IousController extends Controller
         }
 
         return redirect("adjuster/iou/show/".$request->document_id);
+    }
+
+    public function expired(){
+        $data = array();
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
+
+        foreach ($user->ious as $key => $value) {
+            if ( $value->status['status'] == 4 ){
+                $array['iou_id'] = $value->id;
+                $array['iou_title'] = $value->title;
+                $array['iou_created'] = date("d/M/Y", strtotime($value->created_at));
+                $array['iou_status'] = "Expired";
+                $data[] = $array;
+            }
+        }
+
+        return view("adjuster::iou.expired",compact("data","config_sidebar","adjuster_data","user"));
     }
     
 }

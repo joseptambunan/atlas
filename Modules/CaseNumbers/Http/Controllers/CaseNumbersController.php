@@ -202,7 +202,8 @@ class CaseNumbersController extends Controller
                     "name" => $value->user_detail->adjusters->name,
                     "status" => $value->status_description['label'],
                     "class" => $value->status_description['class'],
-                    "message" => $value->description
+                    "message" => $value->description,
+                    "date" => $value->updated_at
                 );
             }
         }
@@ -441,6 +442,13 @@ class CaseNumbersController extends Controller
         $iou_lists = IouLists::find($id);
         $receipt = $iou_lists->document_number;
         return Storage::download($receipt);
+    }
+
+    public function invoice(){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $invoices = Invoices::get();
+        return view('casenumbers::invoice',compact("user","config_sidebar","invoices"));
     }
 
 }

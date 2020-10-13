@@ -100,8 +100,10 @@
                             <li>{{ $value_cases->adjuster_casenumber->case->case_number }}</li>
                           @endforeach
                         </ul>
+                        @if ( $iou_data->document_upload_at != "")
                         <span>Transfer at : {{ date("d/M/Y", strtotime($iou_data->document_upload_at))}} </span><br/>
                         <span>Transfer by : {{ $iou_data->user_transfer->adjusters->name }} </span><br/>
+                        @endif
                         <h4>Planned Expenses Detail</h4> 
                         
                         <table id="example4" class="table table-bordered table-hover">
@@ -140,6 +142,7 @@
                               <td>Name</td>
                               <td>Status</td>
                               <td>Message</td>
+                              <td>Date</td>
                             </tr>
                           </thead>
                           <tbody>
@@ -150,6 +153,7 @@
                               <td>{{ $value['name']}}</td>
                               <td><span class="{{ $value['class']}}">{{ $value['status']}}</span></td>
                               <td>{{ $value['message']}}</td>
+                              <td>{{ $value['date']}}</td>
                             </tr>
                             @endforeach
                           </tbody>

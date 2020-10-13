@@ -66,7 +66,6 @@
                 <tr>
                   <th>No.</th>
                   <th>Case Number</th>
-                  <th>Title</th>
                   <th>Created at</th>
                   <th>Created by</th>
                   <th>Status</th>
@@ -75,16 +74,14 @@
                 </thead>
                 <tbody>
                   @php $i=0; @endphp
-                  @foreach ( $master_casenumbers as $key => $value )
+                  @foreach ( $invoices as $key => $value )
                     @if ( $value->deleted_at == "")
                     <tr>
                       <td>{{ $i + 1 }}</td>
-                      <td>{{ $value->case_number}}</td>
-                      <td>{{ $value->title}}</td>
+                      <td>{{ $value->cases->case_number}}</td>
                       <td>{{ date("d-M-Y", strtotime($value->created_at)) }}</td>
                       <td>{{ $value->created }}</td>
-                      <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                      <td><a class="btn btn-info" href="{{ url('/') }}/casenumbers/show/{{ $value->id }}">Detail</a></td>
+                      <td><a class="btn btn-info" href="{{ url('/') }}/casenumbers/show/{{ $value->cases->id }}">Detail</a></td>
                     </tr>
                     @php $i++;@endphp 
                     @endif

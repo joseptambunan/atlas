@@ -30,6 +30,7 @@
 		],
 		'finance' => [
 			'IOU' => '/casenumbers/iou'
+			'Invoice' => '/casenumbers/invoice'
 		]
 	];
 ?>

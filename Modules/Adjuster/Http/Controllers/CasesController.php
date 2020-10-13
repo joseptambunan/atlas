@@ -82,7 +82,7 @@ class CasesController extends Controller
         }
         
 
-        if ( $request->iou_number != "" ){
+        if ( $request->iou_number != "" && $request->iou_list_id != "" ){
 
             $iou_list = IouLists::find($request->iou_number);
             $iou_list->updated_at = date("Y-m-d H:i:s");
@@ -97,6 +97,7 @@ class CasesController extends Controller
                         $case_id = $request->iou_list_id;
                     }
                 }
+                $iou_case_id = $iou_list_->id;
             }
 
         }elseif ( $request->iou_list_id != "" ){

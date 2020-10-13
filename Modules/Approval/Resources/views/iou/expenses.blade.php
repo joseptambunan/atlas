@@ -34,12 +34,14 @@
               <div class="col-md-12">
                 <a class="btn btn-warning" href="{{ url('/')}}/approval/case/show/{{ $case_expenses->master_casenumbers_id}}">Back</a>
                 <input type="hidden" id="expenses_approval_id" value="{{ $approval_detail->id }}">
+                @if ( $approval_detail->status == 1 )
                 <button type="button" class="btn btn-success" onClick="setApprove('{{$approval_detail->id}}')">
                     Approve
                   </button>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-default">
                   Reject
                 </button>
+                @endif
                 @if ( $case_expenses->iou_lists_id != "" ) <p>IOU : {{ $case_expenses->iou_lists->iou->title }}</p>@endif
                 <p>Ammount : {{ $case_expenses->ammount }}</p>
                 <p>Desc : {{ $case_expenses->description}} </p>

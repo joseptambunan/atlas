@@ -121,7 +121,6 @@
                    <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#modal-default">Create Invoice</button>
                   @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/casenumbers/">Back</a>
-                  <a class="btn btn-info" href="{{ url('/')}}/casenumbers/download/{{$casenumber->id}}">Download as Excel</a>
                   @if ( $casenumber->invoice)
                    <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#modal-pengembalian">Input Return</button>
                   @endif

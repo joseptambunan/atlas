@@ -196,6 +196,7 @@
                               <td>Name</td>
                               <td>Status</td>
                               <td>Message</td>
+                              <td>Date</td>
                             </tr>
                           </thead>
                           <tbody>
@@ -206,6 +207,7 @@
                               <td>{{ $value['name']}}</td>
                               <td><span class="{{ $value['class']}}">{{ $value['status']}}</span></td>
                               <td>{{ $value['message']}}</td>
+                              <td>{{ $value['date']}}</td>
                             </tr>
                             @php $i++; @endphp
                             @endforeach

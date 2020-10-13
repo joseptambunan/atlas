@@ -49,4 +49,8 @@ class User extends Authenticatable
         return $this->hasMany("App\ApprovalDetails","approval_by")->where("status",1);
     }
 
+    public function ious(){
+        return $this->hasMany("Modules\Adjuster\Entities\IouLists","created_by")->orderBy("id","desc");
+    }
+
 }

@@ -29,6 +29,7 @@ Route::prefix('adjuster')->group(function() {
     Route::get('/iou/index','IousController@index');
     Route::post('/iou/request_approval','IousController@request_approval');
     Route::post('/iou/expenses/request_approval','IousController@request_expenses_approval');
+    Route::get('/iou/expired','IousController@expired');
 
     Route::get('/case/show/{id}','CasesController@show');
     Route::post('/case/expenses','CasesController@save_expenses');

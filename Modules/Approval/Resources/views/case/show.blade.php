@@ -120,8 +120,9 @@
                               <td>{{ $value->created->adjusters->name }}</td>
                               <td>
                                 @if ( $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['status'] == "1" )
-                                  <button class="btn btn-success btn-sm" onClick="setShortApprove({{ $value->approval_data($user->id)['approval_detail_id'] }},'3')">Approve</button>
-                                  <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modal-default" onClick="setApprovalDetailId({{ $value->approval_data($user->id)['approval_detail_id'] }});">Reject</button>
+                                  <button class="btn btn-success btn-sm btn_approve_{{ $value->approval_data($user->id)['approval_detail_id'] }}" onClick="setShortApprove('{{ $value->approval_data($user->id)['approval_detail_id'] }}','3')">Approve</button>
+                                  <button class="btn btn-danger btn-sm btn_approve_{{ $value->approval_data($user->id)['approval_detail_id'] }}" data-toggle="modal" data-target="#modal-default" onClick="setApprovalDetailId('{{ $value->approval_data($user->id)['approval_detail_id'] }}','2');">Reject</button>
+                                  <span class="loading_{{ $value->approval_data($user->id)['approval_detail_id'] }}" style="display: none;">Loading...</span>
                                 @else
                                   <span class="{{ $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['class']}}">
                                   {{ $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['label'] }}</span>
@@ -244,6 +245,7 @@
           </div>
           <div class="form-group">
             <label>Receipt</label>
+            <span class="expenses_receipt_label">No Receipt Available</span>
             <a href="#" id="expenses_receipt" name="expenses_receipt" target="_blank">Download Receipt</a>
           </div>
         </div>
@@ -303,23 +305,34 @@
     $("#expenses_type").val($("#ref_type_"+id).val());
     $("#expenses_ammount").val($("#ref_ammount_"+id).val());
     $("#expenses_description").val($("#ref_desc_"+id).val());
+    $(".expenses_receipt_label").show();
     if ( $("#ref_receipt_" + id).val() != ""){
       $("#expenses_receipt").attr("href","{{ url('/')}}/approval/download/" + id); 
+      $(".expenses_receipt_label").hide();
+      $("#expenses_receipt").show();
     }else{
       $("#expenses_receipt").removeAttr("href");
       $("#expenses_receipt").attr("href","#");
+      $(".expenses_receipt_label").show();
+      $("#expenses_receipt").hide();
     }
   }
 
   function setApprovalDetailId(approval_detail_id){
     $("#reason").val("");
+    $(".btn_approve_ "+ approval_detail_id).hide();
+    $(".loading_"+ approval_detail_id).show();
     $("#approval_detail_id").val(approval_detail_id);
   }
 
   function setShortApprove(approval_id = "", status){
     if ( approval_id == ""){
       var approval_id = $("#approval_detail_id").val();
-    }
+    } 
+
+    
+    $(".btn_approve_ " + approval_id).hide();
+    $(".loading_" + approval_id).show();
 
     var request = $.ajax({
       url : "{{ url('/')}}/approval/submit",
@@ -334,6 +347,8 @@
 
     request.done(function(data){
       $("#reason").val("");
+      $(".btn_approve_"+ approval_id).hide();
+      $(".loading_"+ approval_id).show();
       if ( data.status == 0 ){
         alert("Data has been updated");
       }

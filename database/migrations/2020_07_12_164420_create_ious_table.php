@@ -29,6 +29,9 @@ class CreateIousTable extends Migration
             $table->integer("deleted_by")->nullable();
             $table->integer('adjuster_id')->nullable();
             $table->string("document_number")->nullable();
+            $table->dateTime("document_upload_at")->nullable();
+            $table->integer("document_upload_by")->nullable();
+            $table->dateTime("finish_at")->nullable();
             $table->index(['adjuster_id']);
         });
     }

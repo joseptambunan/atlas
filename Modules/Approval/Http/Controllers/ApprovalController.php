@@ -68,7 +68,8 @@ class ApprovalController extends Controller
                         "name" => $value->user_detail->adjusters->name,
                         "status" => $value->status_description['label'],
                         "class" => $value->status_description['class'],
-                        "message" => $value->description
+                        "message" => $value->description,
+                        "date" => $value->updated_at
                     );
 
                 }
@@ -196,12 +197,15 @@ class ApprovalController extends Controller
 
             $approval = Approvals::find($check_approval->first()->id);
             foreach ($approval->details as $key => $value) {
-                $approval_histories[] = array(
-                    "name" => $value->user_detail->adjusters->name,
-                    "status" => $value->status_description['label'],
-                    "class" => $value->status_description['class'],
-                    "message" => $value->description
-                );
+                    
+                    $approval_histories[] = array(
+                        "name" => $value->user_detail->adjusters->name,
+                        "status" => $value->status_description['label'],
+                        "class" => $value->status_description['class'],
+                        "message" => $value->description,
+                        "date" => $value->updated_at
+                    );
+                
 
             }
 
@@ -209,6 +213,7 @@ class ApprovalController extends Controller
             foreach ($approval->details as $key => $value) {
                 if ( $value->approval_by == $user->id ){
                     $approval_id = $value->id;
+                    break;
                 }
             }
 

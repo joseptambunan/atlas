@@ -11,4 +11,8 @@ class Invoices extends Model
     public function cases(){
     	return $this->hasMany("Modules\Master\Entities\MasterCasenumbers","invoice_number");
     }
+
+    public function created(){
+    	return $this->belongsTo("App\User","created_by");
+    }
 }
