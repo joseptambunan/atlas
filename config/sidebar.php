@@ -25,11 +25,12 @@
 		],
 		'approval' => [
 			'List' => '/approval/index',
-			'Invoice' => '/approval/invoice/',
+			'Invoice' => '/approval/invoice/index',
 			'IOU' => '/approval/iou/team'
 		],
 		'finance' => [
-			'IOU' => '/casenumbers/iou'
+			'Case List' => '/casenumbers/case/all',
+			'IOU' => '/casenumbers/iou',
 			'Invoice' => '/casenumbers/invoice'
 		]
 	];

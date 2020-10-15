@@ -36,7 +36,7 @@ return [
         'casenumbers' => 'casenumbers/index',
         'adjuster' => 'adjuster/index',
         'approval' => 'approval/index',
-        'finance'   => 'casenumbers/iou'
+        'finance'   => 'casenumbers/case/all'
     ]
 
 ];
