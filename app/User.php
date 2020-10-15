@@ -53,4 +53,9 @@ class User extends Authenticatable
         return $this->hasMany("Modules\Adjuster\Entities\IouLists","created_by")->orderBy("id","desc");
     }
 
+    public function getModuleCheckAttribute(){
+        
+        return redirect("access/logout");
+    }
+
 }

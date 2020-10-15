@@ -83,7 +83,7 @@
                     @foreach ( $adjuster_data->ious as $key => $value )
                       @if ( $value->deleted_at == "" )
                         <tr>
-                          <td>{{ $i + 1 }}</td>
+                          <td>{{ $key + 1 }}</td>
                           <td>
                             <ul>
                               @foreach ( $value->cases as $key_cases => $value_cases )

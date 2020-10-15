@@ -230,4 +230,27 @@
       return false;
     }
   }
+
+  function createInvoice(id){
+    if ( confirm("Are you sure to create invoice ? ")){
+      var request = $.ajax({
+        url : "{{url('/')}}/adjuster/invoice/create",
+        data : {
+          id : id
+        },
+        type : "post",
+        dataType : "json"
+      });
+
+      request.done(function(data){
+        if ( data.status == "0"){
+          alert("Invoice has been created");
+        }
+
+        window.location.reload();
+      })
+    }else{
+      return false;
+    }
+  }
 </script>

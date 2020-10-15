@@ -91,7 +91,7 @@ class IouLists extends Model
         if (count($this->cases) > 0 ){
             foreach ($this->cases as $key => $value) {
                 if ( count($value->expenses) > 0 ){
-                    $data['total_expenses'] += count($value->expenses);
+                    $data['total_expenses'] += count($this->expenses);
                     $start_approval = 0;
                     foreach ($value->expenses as $key_expenses => $value_expenses) {
                         if ( $value_expenses->status['status'] == 3 ){
@@ -144,5 +144,10 @@ class IouLists extends Model
             }
         }
         return $array_status[0];
+    }
+
+    public function getUserFinishAttribute(){
+        $user = User::find($this->deleted_by );
+        return $user;
     }
 }

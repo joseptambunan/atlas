@@ -9,10 +9,14 @@ class Invoices extends Model
     protected $fillable = [];
 
     public function cases(){
-    	return $this->hasMany("Modules\Master\Entities\MasterCasenumbers","invoice_number");
+    	return $this->belongsTo("Modules\Master\Entities\MasterCasenumbers","invoice_number");
     }
 
-    public function created(){
+    public function getCreatedAttribute(){
+    	return $this->belongsTo("App\User","created_by");
+    }
+
+    public function user_name(){
     	return $this->belongsTo("App\User","created_by");
     }
 }

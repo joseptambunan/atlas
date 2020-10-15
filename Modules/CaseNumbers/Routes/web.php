@@ -22,22 +22,30 @@ Route::prefix('casenumbers')->group(function() {
     Route::post('/saveadjusters','CaseNumbersController@saveadjusters');
     Route::get('/adjuster/all/{id}','CaseNumbersController@alladjuster');
     Route::post('/remove/adjuster','CaseNumbersController@removeadjuster');
-    Route::post('/invoice/create','CaseNumbersController@createinvoice');
 
-    Route::get('/iou','CaseNumbersController@iou');
-    Route::get('/iou/show/{id}','CaseNumbersController@iou_show');
-    Route::post('/iou/update_reference',"CaseNumbersController@update_reference");
+    //Finance
+    Route::get('/invoice','FinanceController@index');
+    Route::post('/invoice/search','FinanceController@search_case');
 
-    Route::post('/search/iou','CaseNumbersController@search');
-    Route::post('/search/case','CaseNumbersController@search_case');
+    Route::get('/case/all','FinanceController@case_all');
+    Route::get('/case/show/{id}','FinanceController@case_show');
 
-    Route::get('/download/{id}','CaseNumbersController@download');
-    Route::post('/update_return','CaseNumbersController@update_return');
+    Route::get('/iou','FinanceController@iou');
+    Route::get('/iou/show/{id}','FinanceController@iou_show');
+    Route::post('/iou/update_reference',"FinanceController@update_reference");
+    Route::post('/search/iou','FinanceController@search');
+    Route::post('/iou/set_finish','FinanceController@update_return');
 
-    Route::get('/expenses/add','CaseNumbersController@add_expenses');
-    Route::post('/expenses/store','CaseNumbersController@save_expenses');
-    Route::post('/expenses/update','CaseNumbersController@update_expenses');
 
+    Route::get('/expenses/add','FinanceController@add_expenses');
+    Route::post('/expenses/store','FinanceController@save_expenses');
+    Route::post('/expenses/update','FinanceController@update_expenses');
+
+    Route::get('/download/{id}','FinanceController@download');
+    Route::get('/download_receipt/{id}','FinanceController@download_receipt');
+    Route::get('/download_return/{id}','FinanceController@download_return');
     Route::get('/testemail','CaseNumbersController@testemail');
-    Route::get('/download_receipt/{id}','CaseNumbersController@download_receipt');
+
+    Route::post('/reiumberse/add','FinanceController@reiumberse');
+
 });

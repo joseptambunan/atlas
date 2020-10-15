@@ -89,4 +89,16 @@ class MasterCasenumbers extends Model
         return $this->belongsTo("Modules\Master\Entities\MasterInsurance");
     }
 
+    public function rembes(){
+        return $this->hasMany("Modules\CaseNumbers\Entities\Reiumberses");
+    }
+
+    public function getTotalRembesAttribue(){
+        $total = 0;
+        foreach ($this->rembes as $key => $value) {
+            $total = $value->total + $total;
+        }
+
+        return $total;
+    }
 }

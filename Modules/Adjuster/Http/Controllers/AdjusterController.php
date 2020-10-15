@@ -141,4 +141,22 @@ class AdjusterController extends Controller
         $data['status'] = 0;
         echo json_encode($data);
     }
+
+    public function create_invoice(Request $request){
+        $case = MasterCaseNumbers::find($request->id);
+        $invoice = new Invoices;
+        $invoice->invoice_number = $case->id;
+        $invoice->created_at = date("Y-m-d H:i:s");
+        $invoice->created_by = Auth::user()->id;
+        $invoice->save();
+
+        $case_ = MasterCaseNumbers::find($request->id);
+        $case_->invoice_number = $invoice->id;
+        $case_->invoice_number_by = Auth::user()->id;
+        $case_->invoice_number_at = date("Y-m-d H:i:s");
+        $case_->save();
+
+        $data['status'] = "0";
+        echo json_encode($data);
+    }
 }

@@ -18,6 +18,7 @@ Route::prefix('adjuster')->group(function() {
     Route::get('/invoice','AdjusterController@invoice');
     Route::post('/invoice/finish',"AdjusterController@finish_invoice");
     Route::post('/loadcases',"AdjusterController@loadcases");
+    Route::post('/invoice/create','AdjusterController@create_invoice');
 
     Route::get('/iou/add','IousController@create');
     Route::post('/iou/store','IousController@store');

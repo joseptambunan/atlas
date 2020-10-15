@@ -204,13 +204,16 @@ class MasterAdjusters extends Model
             $invoice = Invoices::get();
             foreach ($invoice as $key => $value) {
                 foreach ($value->cases as $key_cases => $value_cases) {
-                    if ( $value_cases->updated_by == "" ){
+                    if ( $value_cases->deleted_at == "" ){
                         $array[$i] = array(
                             "id" => $value_cases->id,
                             "case_number" => $value_cases->case_number,
                             "title" => $value_cases->title,
                             "created_at" => $value_cases->created_at,
-                            "created_by" => $value_cases->created
+                            "created_by" => $value_cases->created,
+                            "insurance_name" => $value_cases->insurance->insurance_name,
+                            "document_type" => "case",
+                            "document_id" => $value_cases->id
                         );
                         $i++;
                     }

@@ -170,7 +170,7 @@
                                   <td>{{ $value_expenses->type}}</td>
                                   <td>{{ number_format($value_expenses->ammount)}}</td>
                                   <td>{{ $value_expenses->description}}</td>
-                                  <td><span class="{{ $value_expenses->status_approval($user->id)['class']}}">{{ $value_expenses->status_approval($user->id)['label']}}</span></td>
+                                  <td><span class="{{ $value_expenses->status_approval_self($user->id,$value_expenses->approval_data($user->id)['approval_id'])['class'] }}">{{ $value_expenses->status_approval_self($user->id,$value_expenses->approval_data($user->id)['approval_id'])['label'] }}</span></td>
                                   <td>
                                       <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-info" onClick="viewDetail('{{$value_expenses->id}}')">View Detail</button>
                                     

@@ -32,6 +32,7 @@ class CreateIousTable extends Migration
             $table->dateTime("document_upload_at")->nullable();
             $table->integer("document_upload_by")->nullable();
             $table->dateTime("finish_at")->nullable();
+            $table->string("finish_document")->nullable();
             $table->index(['adjuster_id']);
         });
     }

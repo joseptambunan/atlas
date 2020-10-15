@@ -97,6 +97,7 @@
                             <th>Created by</th>
                             <th>Status Approval</th>
                             <th>IOU Reference</th>
+                            <th>Reimbursement Date</th>
                             <th>Detail</th>
                           </tr>
                           </thead>
@@ -135,6 +136,15 @@
                                 @endif
                               </td>
                               <td>
+                                @if ( $value->iou_lists_id == "" )
+                                  @if ( $value->reimbursement != "" )
+                                    {{ date("d/M/Y", strtotime($value->reiumbersement->created_at)) }}
+                                  @else
+                                    <span class="label label-warning">Reimbursement Date not available </span>
+                                  @endif
+                                @endif
+                              </td>
+                              <td>
                                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-info" onClick="viewDetail('{{$value->id}}')"> Detail</button>
                                 <a href="{{url('/')}}/approval/expenses/approval/{{$value->id}}" class="btn btn-info">History</a>
                               </td>
@@ -152,10 +162,13 @@
                           <tr>
                             <th>No.</th>
                             <th>Type</th>
-                            <th>Ammount</th>
+                            <th>Amount</th>
+                            <th>Expenses</th>
+                            <th>Plan/Real</th>
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
+                            <th>Return Date</th>
                             <th>Detail</th>
                           </tr>
                           </thead>
@@ -169,9 +182,18 @@
                                     <td>{{ $i + 1 }}</td>
                                     <td>{{ $value_ious->iou->type_of_survey }}</td>
                                     <td>Rp. {{ number_format($value_ious->iou->total) }}</td>
+                                    <td>Rp. {{ number_format($value_ious->iou->total_expenses) }}</td>
+                                    <td>Rp. {{ number_format($value_ious->iou->total - $value_ious->iou->total_expenses) }}</td>
                                     <td>{{ $value_ious->iou->created->adjusters->name }}</td>
                                     <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
                                     <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
+                                    <td>
+                                      @if ( $value_ious->finish_at != "" )
+                                        {{ date("d-M-Y", strtotime($value_ious->finish_at)) }}
+                                      @else
+                                        <span class="label label-warning">Return Date not available </span>
+                                      @endif
+                                    </td>
                                     <td><a href="{{ url('/')}}/approval/iou/show/{{$value_ious->iou->id}}" target="_blank" class="btn btn-warning">Detail</a></td>
                                   </tr>
                                   @php $i++; @endphp

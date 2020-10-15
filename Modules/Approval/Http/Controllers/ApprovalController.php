@@ -231,14 +231,7 @@ class ApprovalController extends Controller
             return redirect("approval/iou/team");
         }
     }
-
-    public function invoice(){
-        $user = User::find(Auth::user()->id);
-        $config_sidebar = Config::get('sidebar');
-        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
-        return view("approval::invoice.index",compact("user","config_sidebar","adjuster_data"));
-    }
-
+    
     public function invoice_show(Request $request){
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
@@ -359,6 +352,15 @@ class ApprovalController extends Controller
         $adjuster_data = MasterAdjusters::find($user->adjuster_id);
         $casenumber = MasterCasenumbers::find($id);
         return view("approval::case.show",compact("user","config_sidebar","adjuster_data","casenumber"));
+
+    }
+
+    public function invoice(){
+        $user = User::find(Auth::user()->id);
+        $config_sidebar = Config::get('sidebar');
+        $adjuster_data = MasterAdjusters::find($user->adjuster_id);
+        $start = 0;
+        return view('approval::approval.invoice',compact("user","config_sidebar","adjuster_data","start"));
 
     }
 }

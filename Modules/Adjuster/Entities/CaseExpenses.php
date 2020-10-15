@@ -116,4 +116,21 @@ class CaseExpenses extends Model
         return $array_status[0];
     }
 
+    public function reimbursement(){
+        return $this->hasOne("Modules\CaseNumbers\Entities\ReiumberseDetails");
+    }
+
+    public function getNeedRembesAttribute(){
+
+        $adjusters = array();
+        foreach ($this->master_casenumbers->adjusters as $key => $value) {
+            $adjusters[] = $value->adjuster_id;
+        }
+
+        if ( in_array($this->created_by, $adjusters)){
+            return true;
+        }
+
+        return false;
+    }
 }

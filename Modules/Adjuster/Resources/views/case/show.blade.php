@@ -82,6 +82,7 @@
                   @if ( $casenumber->deleted_at == "" && $finish_status == "")
                     <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default">Create Expenses</a>
                   @endif
+                  <a class="btn btn-success" onClick="createInvoice('{{$casenumber->id}}')">Create Invoice</a>
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
               </form>
@@ -115,7 +116,7 @@
                               <th>Created by</th>
                               <th>Request Approve</th>
                               <th>Status Approval</th>
-                              <th>IOU Reference</th>
+                              <th>Reimbursement Date</th>
                               <th>Detail</th>
                             </tr>
                             </thead>
@@ -137,13 +138,17 @@
                                   </td>
                                   <td><span class="{{ $value->status_approval($user->id)['class']}}">{{ $value->status_approval($user->id)['label']}}</span></td>
                                   <td>
-                                    @if ( $value->iou_lists_id != "")
-                                      {{ $value->iou_lists->iou->title }}
+                                    @if ( $value->iou_lists_id == "" )
+                                      @if ( $value->reimbursement != "" )
+                                        {{ date("d/M/Y", strtotime($value->reiumbersement->created_at)) }}
+                                      @else
+                                        -
+                                      @endif
                                     @endif
                                   </td>
                                   <td>
                                      @if ( $value->iou_lists_id != "")
-                                    <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">Detail</a>
+                                    <a href="{{ url('/')}}/adjuster/iou/show/{{ $value->iou_lists->iou->id }}" class="btn btn-primary">IOU : {{ $value->iou_lists->iou->title }}</a>
                                     @endif
 
                                     @if ( $value->status_approval($user->id)['status'] == 0 )
