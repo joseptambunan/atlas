@@ -47,5 +47,6 @@ Route::prefix('casenumbers')->group(function() {
     Route::get('/testemail','CaseNumbersController@testemail');
 
     Route::post('/reiumberse/add','FinanceController@reiumberse');
+    Route::post('/close_case','FinanceController@close_case');
 
 });

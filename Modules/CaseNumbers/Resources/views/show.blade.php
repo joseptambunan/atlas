@@ -231,9 +231,7 @@
                         <h4>Adjuster</h4>
                         <ul>
                         @foreach ( $casenumber->adjusters as $key => $value )
-                          @if ( $value->deleted_at == "")
                             <li> {{ $value->adjuster->name }} @if ( $value->updated_by ) <i>Finish at</i> {{ date('d-M-Y', strtotime($value->updated_at))}} @endif </li>
-                          @endif
                         @endforeach
                         </ul>
                         @if ( $casenumber->invoice_number == "")

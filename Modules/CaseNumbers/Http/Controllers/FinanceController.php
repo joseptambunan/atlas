@@ -394,4 +394,20 @@ class FinanceController extends Controller
         return redirect("casenumbers/case/show/".$request->case_id);
     }
 
+
+    public function close_case(Request $request){
+        $invoice = Invoices::find($request->id);
+        $invoice->deleted_at = date("Y-m-d H:i:s");
+        $invoice->deleted_by = Auth::user()->id;
+        $invoice->save();
+
+        $casenumbers = MasterCasenumbers::find($invoice->invoice_number);
+        $casenumbers->deleted_at = date("Y-m-d H:i:s");
+        $casenumbers->deleted_by = Auth::user()->id;
+        $casenumbers->save();
+
+        $data['status'] = 0;
+        echo json_encode($data);
+    }
+
 }

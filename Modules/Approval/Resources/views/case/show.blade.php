@@ -43,6 +43,22 @@
                     <input type="text" class="form-control" id="title" name="title" value="{{ $casenumber->title }}" autocomplete="off" required>
                   </div>
                   <div class="form-group">
+                    <label>Total IOU(Rp)</label>
+                    <input type="text" class="form-control" value="{{ number_format($casenumber->total_iou_planned) }}" autocomplete="off" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label>Total Reiumberse(Rp)</label>
+                    <input type="text" class="form-control" value="{{ number_format($casenumber->total_rembes) }}" autocomplete="off" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label>Total Expenses(Rp)</label>
+                    <input type="text" class="form-control" value="{{ number_format($casenumber->total_expenses) }}" autocomplete="off" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label>Selisih(Rp)</label>
+                    <input type="text" class="form-control" value="{{ number_format(($casenumber->total_iou_planned + $casenumber->total_rembes ) - $casenumber->total_expenses) }}" autocomplete="off" disabled>
+                  </div>
+                  <div class="form-group">
                     
                     <div class="col-md-6">
                       Status : 
@@ -138,9 +154,7 @@
                               <td>
                                 @if ( $value->iou_lists_id == "" )
                                   @if ( $value->reimbursement != "" )
-                                    {{ date("d/M/Y", strtotime($value->reiumbersement->created_at)) }}
-                                  @else
-                                    <span class="label label-warning">Reimbursement Date not available </span>
+                                    {{ date("d/M/Y", strtotime($value->reimbursement->created_at)) }}
                                   @endif
                                 @endif
                               </td>
@@ -169,6 +183,7 @@
                             <th>Created by</th>
                             <th>Status Approval</th>
                             <th>Return Date</th>
+                            <th>Return By</th>
                             <th>Detail</th>
                           </tr>
                           </thead>
@@ -177,7 +192,6 @@
                             @foreach ( $casenumber->adjusters as $key => $value )
                               @foreach ( $value->ious as $key_iou => $value_ious )
                                 @if ( isset($value_ious->iou ))
-                                  @if ( $value_ious->iou->deleted_at == "")
                                   <tr>
                                     <td>{{ $i + 1 }}</td>
                                     <td>{{ $value_ious->iou->type_of_survey }}</td>
@@ -188,16 +202,25 @@
                                     <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
                                     <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
                                     <td>
-                                      @if ( $value_ious->finish_at != "" )
-                                        {{ date("d-M-Y", strtotime($value_ious->finish_at)) }}
+                                      @if ( $value_ious->iou->finish_at != "" )
+                                        {{ date("d-M-Y", strtotime($value_ious->iou->finish_at)) }}
+                                        @if ( $value_ious->iou->finish_document != "")
+                                          <a href="{{url('/')}}/casenumbers/download_return/{{$value_ious->iou->id}}">Download</a><br/>
+                                        @else
+                                          Return Not Available
+                                        @endif
                                       @else
                                         <span class="label label-warning">Return Date not available </span>
                                       @endif
                                     </td>
+                                    <td>
+                                       @if ( $value_ious->iou->deleted_by != "" )
+                                       {{ $value_ious->iou->user_finish->name }}
+                                       @endif
+                                    </td>
                                     <td><a href="{{ url('/')}}/approval/iou/show/{{$value_ious->iou->id}}" target="_blank" class="btn btn-warning">Detail</a></td>
                                   </tr>
                                   @php $i++; @endphp
-                                  @endif
                                 @endif
                               @endforeach
                             @endforeach
@@ -208,9 +231,7 @@
                         <h4>Adjuster</h4>
                         <ul>
                         @foreach ( $casenumber->adjusters as $key => $value )
-                          @if ( $value->deleted_at == "")
                           <li>{{ $value->adjuster->name }} @if ( $value->updated_by != "" ) <strong>Finish at {{ date("d-M-Y",strtotime($value->updated_at)) }} @endif</strong></li>
-                          @endif
                         @endforeach
                         </ul>
                         <a href="{{ url('/')}}/casenumbers/adjuster/all/{{$casenumber->id}}" class="btn btn-success">Add Adjuster</a>

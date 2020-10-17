@@ -72,17 +72,28 @@
 
                 <div class="box-footer">
                   @if ( isset($casenumber->invoice))
-                    @if ( $finish_status == "" )
+                    @if ( $casenumber->allow_finish($user->id) == "OK" )
                       <p>This case have Invoice Number. Please confirm to finish this case</p>
-                      <button type="button" class="btn btn-success" onClick="finishCase('{{ $casenumber->invoice->id }}')">Finish</button>
+                      @foreach ( $casenumber->adjusters as $key_adjuster => $value_adjuster)
+                        @if ( $user->id == $value_adjuster->adjuster_id )
+                          @if ( $value_adjuster->deleted_at == "" )
+                            <button type="button" class="btn btn-success" onClick="finishCase('{{ $casenumber->invoice->id }}')">Finish</button>
+                          @else
+                            <span>Finish at {{ date("d/M/Y", strtotime($value_adjuster->deleted_at)) }}</span>
+                          @endif
+                        @endif
+                      @endforeach
                     @else
-                      <label class="label label-info">Finish by Adjuster</label>
+                      <p>{{ $casenumber->allow_finish($user->id) }}</p>
                     @endif
                   @endif
                   @if ( $casenumber->deleted_at == "" && $finish_status == "")
                     <a href="#" class="btn btn-info" data-toggle="modal" data-target="#modal-default">Create Expenses</a>
                   @endif
+
+                  @if ( $casenumber->invoice == "" )
                   <a class="btn btn-success" onClick="createInvoice('{{$casenumber->id}}')">Create Invoice</a>
+                  @endif
                   <a class="btn btn-warning" href="{{ url('/')}}/adjuster/index/">Back</a>
                 </div>
               </form>
@@ -140,7 +151,7 @@
                                   <td>
                                     @if ( $value->iou_lists_id == "" )
                                       @if ( $value->reimbursement != "" )
-                                        {{ date("d/M/Y", strtotime($value->reiumbersement->created_at)) }}
+                                        {{ date("d/M/Y", strtotime($value->reimbursement->created_at)) }}
                                       @else
                                         -
                                       @endif
@@ -185,6 +196,8 @@
                             <th>Created at</th>
                             <th>Created by</th>
                             <th>Status Approval</th>
+                            <td>Return at </td>
+                            <td>Return by</td>
                             <th>Detail</th>
                           </tr>
                           </thead>
@@ -192,7 +205,6 @@
                             @php $i=0; @endphp
                             @foreach ( $casenumber->adjusters as $key => $value )
                               @foreach ( $value->ious as $key_iou => $value_ious )
-                                @if ( $value_ious->iou->deleted_at == "")
                                 <tr>
                                   <td>{{ $i + 1 }}</td>
                                   <td>{{ $value_ious->iou->type_of_survey }}</td>
@@ -200,10 +212,19 @@
                                   <td>{{ $value_ious->iou->created->adjusters->name }}</td>
                                   <td>{{ date("d-M-Y", strtotime($value_ious->iou->created_at)) }}</td>
                                   <td><span class="{{ $value_ious->iou->status['class'] }}">{{ $value_ious->iou->status['label'] }}</span></td>
+                                  <td>
+                                    @if ( $value_ious->iou->finish_at != "" )
+                                    {{ date("d/M/Y", strtotime($value_ious->iou->finish_at)) }}
+                                    @endif
+                                  </td>
+                                  <td>
+                                    @if ( $value_ious->iou->user_finish != "" )
+                                    {{ $value_ious->iou->user_finish->name }}
+                                    @endif
+                                  </td>
                                   <td><a href="{{ url('/')}}/adjuster/iou/show/{{$value_ious->iou->id}}" class="btn btn-warning">Detail</a></td>
                                 </tr>
                                 @php $i++; @endphp
-                                @endif
                               @endforeach
                             @endforeach
                           </tbody>
@@ -218,7 +239,6 @@
                           @endif
                         @endforeach
                         </ul>
-                        <a href="{{ url('/')}}/casenumbers/adjuster/all/{{$casenumber->id}}" class="btn btn-success">Add Adjuster</a>
                       </div>
                     </div>
                     <!-- /.tab-content -->

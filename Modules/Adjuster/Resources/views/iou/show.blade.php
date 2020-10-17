@@ -86,6 +86,21 @@
                       @endforeach
                     </ul>
                   </div>
+                  
+                  @if ( $iou_data->finish_at != "" )
+                  <div class="col-md-6">
+                    <label>Return at</label>
+                    {{ date("d/M/Y", strtotime($iou_data->finish_at)) }}
+                    </div>
+                  @endif
+
+                  @if ( $iou_data->user_finish != "" )
+                  <div class="col-md-6">
+                    <label>Return By</label>
+                    {{ $iou_data->user_finish->name }}
+                    </div>
+                  @endif
+                  
                   <div class="col-md-6">
                     <label>Total</label>
                     <h4>Rp. {{ number_format($iou_data->total)}}</h4>
@@ -166,8 +181,10 @@
                           <input type="hidden" name="document_id" value="{{ $iou_data->id}}">
                           <input type="hidden" name="document_type" value="2">
                           @if ( $iou_data->status['status'] == 3 )
-                          <button type="submit" class="btn btn-success">Request Approve</button>
-                          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-detail">Create Expenses</button>
+                            @if ( $iou_data->finish_at == "")
+                            <button type="submit" class="btn btn-success">Request Approve</button>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-detail">Create Expenses</button>
+                            @endif
                           @endif
                           <table id="example4" class="table table-bordered table-hover">
                             <thead class="header_background">

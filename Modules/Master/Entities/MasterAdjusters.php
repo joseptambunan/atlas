@@ -203,21 +203,21 @@ class MasterAdjusters extends Model
         if ( count($detail_jabatan->approval) > 0 ){
             $invoice = Invoices::get();
             foreach ($invoice as $key => $value) {
-                foreach ($value->cases as $key_cases => $value_cases) {
-                    if ( $value_cases->deleted_at == "" ){
-                        $array[$i] = array(
-                            "id" => $value_cases->id,
-                            "case_number" => $value_cases->case_number,
-                            "title" => $value_cases->title,
-                            "created_at" => $value_cases->created_at,
-                            "created_by" => $value_cases->created,
-                            "insurance_name" => $value_cases->insurance->insurance_name,
-                            "document_type" => "case",
-                            "document_id" => $value_cases->id
-                        );
-                        $i++;
-                    }
+                //foreach ($value->cases as $key_cases => $value_cases) {
+                if ( $value->cases->deleted_at == "" ){
+                    $array[$i] = array(
+                        "id" => $value->id,
+                        "case_number" => $value->cases->case_number,
+                        "title" => $value->cases->title,
+                        "created_at" => $value->cases->created_at,
+                        "created_by" => $value->cases->created,
+                        "insurance_name" => $value->cases->insurance->insurance_name,
+                        "document_type" => "case",
+                        "document_id" => $value->cases->id
+                    );
+                    $i++;
                 }
+               // }
             }
         }
 

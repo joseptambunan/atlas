@@ -117,24 +117,14 @@ class AdjusterController extends Controller
         $start_flag = 0;
         $start_count = 0;
         $expenses = 0;
-        foreach ($invoice->cases as $key => $value) {
-            $start_flag = count($value->adjusters);
-            foreach ($value->adjusters as $key_adjuster => $value_adjuster) {
-                if ( $value_adjuster->adjuster_id == $user->adjuster_id){
-                    $start_count++;
-                    $adjuster_casenumber = AdjusterCasenumbers::find($value_adjuster->id);
-                    $adjuster_casenumber->updated_by = $user->id;
-                    $adjuster_casenumber->updated_at = date("Y-m-d H:i:s");
-                    $adjuster_casenumber->save();
-                }
-            }
-        }
-
-        if ( $start_flag > 0 ){
-            if ( $start_flag == $start_count ){
-                $invoice = Invoices::find($request->id);
-                $invoice->updated_by = Auth::user()->id;
-                $invoice->save();   
+        foreach ($invoice->cases->adjusters as $key_adjuster => $value_adjuster) {
+            if ( $value_adjuster->adjuster_id == $user->adjusters->id ){
+                $adjuster_casenumber = AdjusterCasenumbers::find($value_adjuster->id);
+                $adjuster_casenumber->updated_by = $user->id;
+                $adjuster_casenumber->updated_at = date("Y-m-d H:i:s");
+                $adjuster_casenumber->deleted_by = $user->id;
+                $adjuster_casenumber->deleted_at = date("Y-m-d H:i:s");
+                $adjuster_casenumber->save();
             }
         }
 

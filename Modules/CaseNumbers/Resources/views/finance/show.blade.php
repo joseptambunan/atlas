@@ -72,6 +72,15 @@
                       <h5>Complete: <span class="label label-success">{{ $casenumber->total_iou['expenses_complete']}}</span></h5>
                       <h5>In Complete: <span class="label label-danger">{{ $casenumber->total_iou['in_progress']}}</span></h5>
 
+                      @if ( ($casenumber->allow_close == true) &&  ( $casenumber->invoice_number != "") )
+                        @if ( $casenumber->deleted_at == "")
+                          <span class="loading_close" style="display: none;">Loading...</span>
+                          <button type="button" class="btn btn-success btn_close" onClick="closeCase('{{ $casenumber->invoice_number }}')">Close Case</button>
+                        @else
+                          <span>Finish at {{ date("d/M/Y", strtotime($casenumber->deleted_at)) }}</span>
+                        @endif
+
+                      @endif
                       <a href="{{ url('/')}}" class="btn btn-warning">Back</a>
                     </div>
                     <div class="col-md-6">
@@ -213,9 +222,7 @@
                         <h4>Adjuster</h4>
                         <ul>
                           @foreach ( $casenumber->adjusters as $key => $value )
-                          @if ( $value->deleted_at == "")
                             <li>{{ $value->adjuster->name }} @if ( $value->updated_by != "" ) <i>Finish at</i> {{ date('d-M-Y', strtotime($value->updated_at))}} @endif</li>
-                          @endif
                           @endforeach
                         </ul>
                       </div>
@@ -377,6 +384,32 @@
 
     $("#total_rembes").text(total);
     $("#total_rembes").number(true);
+  }
+
+  function closeCase(id){
+    if ( confirm("Are you sure to close case ?")){
+        $(".loading_close").show();
+        $(".btn_close").hide();
+
+        var request = $.ajax({
+          url : "{{ url('/')}}/casenumbers/close_case",
+          dataType : "json",
+          data : {
+            id : id
+          },
+          type : "post"
+        });
+
+        request.done(function(data){
+          $(".loading_close").hide();
+          $(".btn_close").show();
+          alert("Case has closed");
+          window.location.reload();
+        });
+
+    }else{
+      return false;
+    }
   }
 </script>
 </body>
