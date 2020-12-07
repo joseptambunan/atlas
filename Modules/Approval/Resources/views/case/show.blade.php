@@ -140,6 +140,8 @@
                                   <button class="btn btn-success btn-sm btn_approve_{{ $value->approval_data($user->id)['approval_detail_id'] }}" onClick="setShortApprove('{{ $value->approval_data($user->id)['approval_detail_id'] }}','3')">Approve</button>
                                   <button class="btn btn-danger btn-sm btn_approve_{{ $value->approval_data($user->id)['approval_detail_id'] }}" data-toggle="modal" data-target="#modal-default" onClick="setApprovalDetailId('{{ $value->approval_data($user->id)['approval_detail_id'] }}','2');">Reject</button>
                                   <span class="loading_{{ $value->approval_data($user->id)['approval_detail_id'] }}" style="display: none;">Loading...</span>
+                                  <span class="label_{{ $value->approval_data($user->id)['approval_detail_id']}}_approve label label-danger" style="display: none;">Approve</span>
+                                  <span class="label_{{ $value->approval_data($user->id)['approval_detail_id']}}_reject label label-danger"  style="display: none;">Reject</span>
                                 @else
                                   <span class="{{ $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['class']}}">
                                   {{ $value->status_approval_self($user->id,$value->approval_data($user->id)['approval_id'])['label'] }}</span>
@@ -394,9 +396,17 @@
       $(".loading_"+ approval_id).show();
       if ( data.status == 0 ){
         alert("Data has been updated");
+        $(".loading_"+ approval_id).hide();
+        if ( status == 3 ){
+          $(".label_"+ approval_id + "_approve").show();
+          $(".label_"+ approval_id +"_reject").hide();
+        }else{
+          $(".label_"+ approval_id + "_approve").hide();
+          $(".label_"+ approval_id + "_reject").show();
+        }
       }
 
-      window.location.reload();
+      //window.location.reload();
     })
   }
 </script>

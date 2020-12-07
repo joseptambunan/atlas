@@ -38,7 +38,7 @@
                 <div class="box-body">
                   <div class="form-group">
                     <label>Case Number</label>
-                    <select class="form-control select2" multiple="multiple" style="width: 100%;" name="case_id[]" id="case_id">
+                    <select class="form-control select2" multiple="multiple" style="width: 100%;" name="case_id[]" id="case_id" required>
                       @foreach ( $adjuster_data->cases as $key => $value )
                       <option value="{{ $value->id}}" data-attribute-insurance="{{$value->case->insurance_id}}" data-attribute-division="{{ $value->case->division_id}}">{{ $value->case->case_number}}</option>
                       @endforeach

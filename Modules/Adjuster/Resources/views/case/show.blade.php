@@ -75,7 +75,7 @@
                     @if ( $casenumber->allow_finish($user->id) == "OK" )
                       <p>This case have Invoice Number. Please confirm to finish this case</p>
                       @foreach ( $casenumber->adjusters as $key_adjuster => $value_adjuster)
-                        @if ( $user->id == $value_adjuster->adjuster_id )
+                        @if ( $user->id == $value_adjuster->adjuster->user_detail->id )
                           @if ( $value_adjuster->deleted_at == "" )
                             <button type="button" class="btn btn-success" onClick="finishCase('{{ $casenumber->invoice->id }}')">Finish</button>
                           @else

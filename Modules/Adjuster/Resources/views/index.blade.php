@@ -32,7 +32,7 @@
             <div class="box-body box-profile">
               <img class="profile-user-img img-responsive img-circle" src="{{url('/')}}/assets/images.png" alt="User profile picture">
               <h3 class="profile-username text-center">{{ $adjuster_data->name }}</h3>
-              <p class="text-muted text-center">Adjuster</p>
+              <p class="text-muted text-center"> <strong>@if (isset($adjuster_data->position)) {{ $adjuster_data->position->position_name}}</strong> @endif</p>
             </div>
             <!-- /.box-body -->
           </div>

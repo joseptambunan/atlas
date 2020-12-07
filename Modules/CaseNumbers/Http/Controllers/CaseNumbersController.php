@@ -150,7 +150,7 @@ class CaseNumbersController extends Controller
     public function alladjuster(Request $request){
         $user = User::find(Auth::user()->id);
         $config_sidebar = Config::get('sidebar');
-        $master_adjuster = MasterAdjusters::whereIn("position_id",[2,3,4])->get();
+        $master_adjuster = MasterAdjusters::whereIn("position_id",[6,7,8])->get();
         $case_number = MasterCasenumbers::find($request->id);
         return view('casenumbers::adjuster',compact("user","config_sidebar","master_adjuster","case_number"));
     }
