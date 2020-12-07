@@ -75,8 +75,8 @@
                 </thead>
                 <tbody>
                   @php $i=0; @endphp
-                  @foreach ( $master_casenumbers as $key => $value )
-                    @if ( $value->deleted_at == "")
+		  @foreach ( $master_casenumbers as $key => $value )
+                   
                     <tr>
                       <td>{{ $i + 1 }}</td>
                       <td>{{ $value->case_number }}</td>
@@ -87,7 +87,7 @@
                       <td><a class="btn btn-info" href="{{ url('/') }}/casenumbers/case/show/{{ $value->id }}">Detail</a></td>
                     </tr>
                     @php $i++;@endphp 
-                    @endif
+                    
                   @endforeach
                 </tbody>
               </table>

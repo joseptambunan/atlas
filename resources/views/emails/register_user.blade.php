@@ -1,8 +1,8 @@
-<h4>Hi {{ $data->user_detail->adjusters->name}} </h4>
+<h4>Hi {{ $data->name}} </h4>
 
 <p>Your account has been created. Please use this account</p>
 <ul>
-	<li>Username 	: {{ $data->detail_approval['document_type'] }}</li>
+	<li>Username 	: {{ $data->email }}</li>
 	<li>Password	:  {{ $password }}</li>
 </ul>
 

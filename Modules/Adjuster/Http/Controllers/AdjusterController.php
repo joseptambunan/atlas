@@ -10,7 +10,7 @@ use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Config;
 use Modules\Master\Entities\MasterAdjusters;
-use Modules\Master\Entities\MasterCaseNumbers;
+use Modules\Master\Entities\MasterCasenumbers;
 use Modules\Adjuster\Entities\IouCases;
 use Modules\CaseNumbers\Entities\Invoices;
 use Modules\CaseNumbers\Entities\AdjusterCasenumbers;
@@ -133,14 +133,14 @@ class AdjusterController extends Controller
     }
 
     public function create_invoice(Request $request){
-        $case = MasterCaseNumbers::find($request->id);
+        $case = MasterCasenumbers::find($request->id);
         $invoice = new Invoices;
         $invoice->invoice_number = $case->id;
         $invoice->created_at = date("Y-m-d H:i:s");
         $invoice->created_by = Auth::user()->id;
         $invoice->save();
 
-        $case_ = MasterCaseNumbers::find($request->id);
+        $case_ = MasterCasenumbers::find($request->id);
         $case_->invoice_number = $invoice->id;
         $case_->invoice_number_by = Auth::user()->id;
         $case_->invoice_number_at = date("Y-m-d H:i:s");

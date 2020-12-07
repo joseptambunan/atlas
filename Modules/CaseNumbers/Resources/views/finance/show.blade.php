@@ -138,12 +138,12 @@
                                 <td>{{ date('d-M-Y',strtotime($value->created_at))}}</td>
                                 <td>{{ $value->created->adjusters->name }}</td>
                                 <td><span class="{{ $value->status['class']}}">{{ $value->status['label']}}</span></td>
-                                <td>
+				<td>
                                   @if ( $value->iou_lists_id == "" )
                                     @if ( $value->reimbursement != "" )
                                       {{ date("d/M/Y", strtotime($value->reimbursement->created_at)) }}
-                                    @else
-                                      @if ( $value->need_rembers == true )
+				      @else
+                                      @if ( $value->need_rembes == true )
                                       <input type="checkbox" id="rembes_{{$value->id}}" onClick="buildHtml('{{$value->id}}')" value="{{$value->id}}"  data-attribute-desc="{{ $value->description}}" data-attribute-type="{{ $value->type}}" data-attribute-ammount="{{ number_format($value->ammount)}}" data-attribute-created-by="{{ $value->created->adjusters->name }}" data-attribute-created-at="{{ date('d-M-Y',strtotime($value->created_at)) }}" data-attribute-cash="{{ $value->ammount }}">Reiumbersement
                                       @endif
                                     @endif

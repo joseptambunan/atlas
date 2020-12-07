@@ -92,8 +92,8 @@ class FinanceController extends Controller
             case 'case':
                 $master_casenumbers = MasterCasenumbers::where("case_number",'like','%'.$keyword.'%')->get();
             break;
-        }
-
+	}
+	
         $total_iou = 0;
         $iou_list = IouLists::where("document_number",NULL)->get();
         foreach ($iou_list as $key => $value) {

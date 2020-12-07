@@ -100,11 +100,11 @@ class CasesController extends Controller
                 $iou_case_id = $iou_list_->id;
             }
 
-        }elseif ( $request->iou_list_id != "" ){
+	}elseif ( $request->iou_list_id != "" && $request->iou_number == "" ){
             
             $iou_case = IouCases::find($request->iou_list_id);
-            $iou_case_id = $iou_case->id;
-            $case_id = $iou_case->adjuster_casenumber->case->id;
+            //$iou_case_id = $iou_case->id;
+            $case_id = $request->iou_list_id;
         }else{
             $case_id = $request->iou_list_id;
         }

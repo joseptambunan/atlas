@@ -12,7 +12,8 @@ class RegisterMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $data
+    protected $data;
+    protected $password;
 
     public function __construct(User $user, $password){
         $this->user = $user;
@@ -26,7 +27,8 @@ class RegisterMail extends Mailable
      */
     public function build(){
         $data = $this->user;
-        $password = $this->password;
-        return $this->view('emails.result_approval',compact("data","password"));
+	$password = $this->password;
+	error_log($password.'   disi');
+        return $this->view('emails.register_user',compact("data","password"));
     }
 }
