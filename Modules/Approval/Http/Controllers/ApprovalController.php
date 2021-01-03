@@ -27,6 +27,14 @@ class ApprovalController extends Controller
     
     public function _construct(){
         $this->middleware("auth");
+        $user = User::find(Auth::user()->id);
+        if ( isset($user->adjusters)){
+            if ( isset($user->adjusters->position)){
+                if ( count($user->adjusters->position) <=0 ){
+                    redirect("access/logout");
+                }
+            }
+        }
     }
 
     public function index()
